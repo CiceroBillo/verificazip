@@ -404,7 +404,8 @@ begin
     begin
       GProdutos.Cells[RColunaGrade(clCodProduto),GProdutos.ALinha] := CodProduto;
       GProdutos.Cells[RColunaGrade(clNomProduto),GProdutos.ALinha] := NomProduto;
-      //VprDItem.DesCodBarra:= FunProdutos.RCodigoBarraProduto(VprDRomaneio.CodFilial, VprDItem.SeqProduto, VprDItem.CodCor, VprDItem.CodTamanho);
+      VprDItem.DesCodBarra:= FunProdutos.RCodigoBarraProduto(VprDRomaneio.CodFilial, VprDItem.SeqProduto, VprDItem.CodCor, VprDItem.CodTamanho);
+      GProdutos.Cells[RColunaGrade(clCodBarra),GProdutos.ALinha] := VprDItem.DesCodBarra;
       VprProdutoAnterior := CodProduto;
       RecuperaDadosCotacao;
     end;
@@ -733,7 +734,8 @@ begin
       if result then
       begin
         GProdutos.cells[RColunaGrade(clNomProduto),GProdutos.ALinha] := VprDItem.NomProduto;
-//        VprDItem.DesCodBarra:= FunProdutos.RCodigoBarraProduto(VprDRomaneio.CodFilial, VprDItem.SeqProduto, VprDItem.CodCor, VprDItem.CodTamanho);
+        VprDItem.DesCodBarra:= FunProdutos.RCodigoBarraProduto(VprDRomaneio.CodFilial, VprDItem.SeqProduto, VprDItem.CodCor, VprDItem.CodTamanho);
+        GProdutos.Cells[RColunaGrade(clCodBarra),GProdutos.ALinha] := VprDItem.DesCodBarra;
         VprProdutoAnterior := GProdutos.cells[RColunaGrade(clCodProduto),GProdutos.ALinha];
         RecuperaDadosCotacao;
       end;

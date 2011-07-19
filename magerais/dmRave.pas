@@ -208,6 +208,8 @@ type
     procedure ImprimeTransferenciaExterna(VpaSeqTransferencia : integer);
     procedure ImprimeMotivoAtrasoAmostra(VpaDatInicio,VpaDatFim : TDatetime; VpaCaminhoRelatorio: String);
     procedure ImprimeNotasFiscaisdeEntrada(VpaDatInicio,VpaDatFim : TDateTime;VpaCodFilial,VpaCodCliente: Integer;VpaCaminhoRelatorio,VpaNomFilial,VpaNomCliente: String);
+    procedure ImprimeConhecimentoTransporteEntrada(VpaDatInicio, VpaDatFim: TDateTime; VpaCodFilial, VpaCodTransportadora: Integer; VpaCaminhoRelatorio, VpaNomFilial, VpaNomTransportadora:String);
+    procedure ImprimeConhecimentoTransporteSaida(VpaDatInicio, VpaDatFim: TDateTime; VpaCodFilial, VpaCodTransportadora: Integer; VpaCaminhoRelatorio, VpaNomFilial, VpaNomTransportadora:String);
   end;
 
 
@@ -1869,15 +1871,18 @@ begin
                                   ' AND ROM.SEQROMANEIO = ' + IntToStr(VpaSeqRomaneio));
 
   AdicionaSqlAbreTabela(Item,' SELECT ROM.QTDPRODUTO, ROM.QTDPEDIDO,' +
-                             ' ROM.DESUM, ROM.CODCOR, ROM.DESORDEMCORTE,' +
+                             ' ROM.DESUM, ROM.CODCOR, ROM.DESORDEMCORTE, ROM.CODTAMANHO,' +
                              ' ROM.VALUNITARIO, ROM.VALTOTAL, ROM.DESREFERENCIACLIENTE, ROM.DESORDEMCOMPRA, ' +
                              ' PRO.C_NOM_PRO, PRO.C_COD_PRO,  '+
-                             ' COR.NOM_COR '+
-                             ' FROM ROMANEIOORCAMENTOITEM ROM, CADPRODUTOS PRO, COR ' +
+                             ' COR.NOM_COR, '+
+                             ' MOV.C_COD_BAR '+
+                             ' FROM ROMANEIOORCAMENTOITEM ROM, CADPRODUTOS PRO, COR, MOVQDADEPRODUTO MOV ' +
                              ' WHERE ROM.CODFILIAL = ' + IntToStr(VpaCodFilial) +
                              ' AND ROM.SEQROMANEIO= ' + IntToStr(VpaSeqRomaneio) +
                              ' AND '+SQLTextoRightJoin('ROM.CODCOR','COR.COD_COR')+
-                             ' AND ROM.SEQPRODUTO = PRO.I_SEQ_PRO ');
+                             ' AND ROM.SEQPRODUTO = PRO.I_SEQ_PRO ' +
+                             ' AND '+SQLTextoRightJoin('ROM.SEQPRODUTO','MOV.I_SEQ_PRO')+
+                             ' AND '+SQLTextoRightJoin('ROM.CODFILIAL','MOV.I_EMP_FIL'));
   Sistema.CarDFilial(VprDFilial,VpaCodFilial);
   FunRave.EnviaParametrosFilial(Rave,VprDFilial);
   Rave.Execute;
@@ -2291,6 +2296,82 @@ begin
   Principal.Open;
   Item.Open;
   Item2.Open;
+  Rave.Execute;
+end;
+
+{******************************************************************************}
+procedure TdtRave.ImprimeConhecimentoTransporteEntrada(VpaDatInicio,
+  VpaDatFim: TDateTime; VpaCodFilial, VpaCodTransportadora: Integer;
+  VpaCaminhoRelatorio, VpaNomFilial, VpaNomTransportadora: String);
+begin
+  Rave.close;
+  RvSystem1.SystemPrinter.Title := 'Eficácia - Conhecimento de Transporte';
+  Rave.projectfile := varia.PathRelatorios+'\Faturamento\2000ES_Conhecimento de Transporte Entrada.rav';
+  Rave.clearParams;
+  LimpaSqlTabela(Principal);
+  AdicionaSqlTabeLa(Principal, 'SELECT CON.NUMCONHECIMENTO, CON.DATCONHECIMENTO, CON.VALCONHECIMENTO, ' +
+                               ' CON.VALBASEICMS, CON.VALICMS, CON.PESFRETE, CON.VALNAOTRIBUTADO, ' +
+                               ' CLI.C_NOM_CLI, ' +
+                               ' NOF.I_NRO_NOT, ' +
+                               ' TIP.NOMTIPODOCUMENTOFISCAL ' +
+                               ' FROM CONHECIMENTOTRANSPORTE CON, CADCLIENTES CLI, CADNOTAFISCAISFOR NOF, TIPODOCUMENTOFISCAL TIP ' +
+                               ' WHERE CON.CODTRANSPORTADORA = CLI.I_COD_CLI ' +
+                               ' AND CON.SEQNOTAENTRADA = NOF.I_SEQ_NOT ' +
+                               ' AND CON.CODMODELODOCUMENTO = TIP.CODTIPODOCUMENTOFISCAL ' +
+                               ' AND CON.SEQNOTAENTRADA IS NOT NULL ' +
+                               SQLTextoDataEntreAAAAMMDD('CON.DATCONHECIMENTO',VpaDatInicio,VpaDatFim,True));
+  if VpaCodFILIAL <> 0 then
+  begin
+    AdicionaSqlTabela(Principal,'AND CON.CODFILIALNOTA = '+IntTostr(VpaCodFilial));
+    Rave.SetParam('FILIAL',VpaNomFilial);
+  end;
+  if VpaCodTransportadora <> 0 then
+  begin
+    AdicionaSqlTabela(Principal,'AND CON.CODTRANSPORTADORA = '+IntTostr(VpaCodTransportadora));
+    Rave.SetParam('TRANSPORTADORA',VpaNomTransportadora);
+  end;
+  AdicionaSqlTabela(Principal,'ORDER BY CON.DATCONHECIMENTO, CON.NUMCONHECIMENTO');
+  Rave.SetParam('PERIODO',FormatDatetime('DD/MM/YYYY',VpaDatInicio)+' até '+FormatDateTime('DD/MM/YYYY',VpaDatFim));
+  Rave.SetParam('CAMINHO',VpaCaminhoRelatorio);
+  Principal.open;
+  Rave.Execute;
+end;
+
+{******************************************************************************}
+procedure TdtRave.ImprimeConhecimentoTransporteSaida(VpaDatInicio,
+  VpaDatFim: TDateTime; VpaCodFilial, VpaCodTransportadora: Integer;
+  VpaCaminhoRelatorio, VpaNomFilial, VpaNomTransportadora: String);
+begin
+  Rave.close;
+  RvSystem1.SystemPrinter.Title := 'Eficácia - Conhecimento de Transporte';
+  Rave.projectfile := varia.PathRelatorios+'\Faturamento\3000FA_Conhecimento de Transporte Saida.rav';
+  Rave.clearParams;
+  LimpaSqlTabela(Principal);
+  AdicionaSqlTabeLa(Principal, 'SELECT CON.NUMCONHECIMENTO, CON.DATCONHECIMENTO, CON.VALCONHECIMENTO, ' +
+                               ' CON.VALBASEICMS, CON.VALICMS, CON.PESFRETE, CON.VALNAOTRIBUTADO, ' +
+                               ' CLI.C_NOM_CLI, ' +
+                               ' NOF.I_NRO_NOT, ' +
+                               ' TIP.NOMTIPODOCUMENTOFISCAL ' +
+                               ' FROM CONHECIMENTOTRANSPORTE CON, CADCLIENTES CLI, CADNOTAFISCAIS NOF, TIPODOCUMENTOFISCAL TIP ' +
+                               ' WHERE CON.CODTRANSPORTADORA = CLI.I_COD_CLI ' +
+                               ' AND CON.SEQNOTASAIDA = NOF.I_SEQ_NOT ' +
+                               ' AND CON.CODMODELODOCUMENTO = TIP.CODTIPODOCUMENTOFISCAL ' +
+                               ' AND CON.SEQNOTASAIDA IS NOT NULL ' +
+                               SQLTextoDataEntreAAAAMMDD('CON.DATCONHECIMENTO',VpaDatInicio,VpaDatFim,True));
+  if VpaCodFILIAL <> 0 then
+  begin
+    AdicionaSqlTabela(Principal,'AND CON.CODFILIALNOTA = '+IntTostr(VpaCodFilial));
+    Rave.SetParam('FILIAL',VpaNomFilial);
+  end;
+  if VpaCodTransportadora <> 0 then
+  begin
+    AdicionaSqlTabela(Principal,'AND CON.CODTRANSPORTADORA = '+IntTostr(VpaCodTransportadora));
+    Rave.SetParam('TRANSPORTADORA',VpaNomTransportadora);
+  end;
+  AdicionaSqlTabela(Principal,'ORDER BY CON.DATCONHECIMENTO, CON.NUMCONHECIMENTO');
+  Rave.SetParam('PERIODO',FormatDatetime('DD/MM/YYYY',VpaDatInicio)+' até '+FormatDateTime('DD/MM/YYYY',VpaDatFim));
+  Rave.SetParam('CAMINHO',VpaCaminhoRelatorio);
+  Principal.open;
   Rave.Execute;
 end;
 

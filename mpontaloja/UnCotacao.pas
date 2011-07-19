@@ -5047,11 +5047,11 @@ begin
     CotCadastro.FieldByName('DESORDEMCORTE').AsString := VpfDItem.DesOrdemCorte;
     CotCadastro.post;
     result := CotCadastro.AMensagemErroGravacao;
-{    if Result = '' then
+    if Result = '' then
     begin
       if VpfDItem.DesCodBarra <> '' then
        Result:= FunProdutos.GravaCodigoBarraProdutos(VpfDItem.CodFilialOrcamento, VpfDItem.SeqProduto, VpfDItem.CodCor, VpfDItem.CodTamanho, VpfDItem.DesCodBarra);
-    end;                 }
+    end;
     if result <> ''  then
       break;
   end;

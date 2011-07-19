@@ -7270,19 +7270,15 @@ var
   VpfResultado: String;
 begin
   result := '';
-  AdicionaSQLAbreTabela(ProCadastro,'Select C_COD_BAR from MOVQDADEPRODUTO '+
+  AdicionaSQLAbreTabela(ProCadastro,'Select * from MOVQDADEPRODUTO '+
                                      ' Where I_EMP_FIL = ' + IntToStr(VpaCodFilial) +
                                      ' AND I_SEQ_PRO = ' + IntToStr(VpaSeqProduto) +
                                      ' AND I_COD_COR = ' + IntToStr(VpaCodCor) +
                                      ' AND I_COD_TAM = ' + IntToStr(VpaCodTamanho));
-  if ProCadastro.Eof then
-  begin
-    ProCadastro.Edit;
-    ProCadastro.FieldByName('C_COD_BAR').AsString := VpaCodBarra;
-    ProCadastro.Post;
-    result := ProCadastro.AMensagemErroGravacao;
-  end;
-  ProCadastro.close;
+  ProCadastro.Edit;
+  ProCadastro.FieldByName('C_COD_BAR').AsString := VpaCodBarra;
+  ProCadastro.Post;
+  result := ProCadastro.AMensagemErroGravacao;
 end;
 
 {******************************************************************************}

@@ -773,6 +773,12 @@ begin
                 else
                 if (VpaNomRelatorio = 'NOTAS DE ENTRADA') then
                   AlterarVisibleDet([PFilial,Pcliente,PPeriodo],true)
+                else
+                if (VpaNomRelatorio = 'CONHECIMENTO DE TRANSPORTE ENTRADA') then
+                  AlterarVisibleDet([PFilial,PTransportadora,PPeriodo],true)
+                else
+                if (VpaNomRelatorio = 'CONHECIMENTO DE TRANSPORTE SAIDA') then
+                  AlterarVisibleDet([PFilial,PTransportadora,PPeriodo],true);
 end;
 
 
@@ -1145,7 +1151,13 @@ begin
                 dtRave.ImprimeMotivoAtrasoAmostra(CDataIni.DateTime,CDataFim.Date, VprCaminhoRelatorio)
             else
               if (VprNomRelatorio = 'NOTAS DE ENTRADA') then
-                dtRave.ImprimeNotasFiscaisdeEntrada(CDataIni.Date,CdataFim.Date,EFilial.AInteiro,ECliente.AInteiro,VprCaminhoRelatorio,LFilial.Caption,LCliente.caption);
+                dtRave.ImprimeNotasFiscaisdeEntrada(CDataIni.Date,CdataFim.Date,EFilial.AInteiro,ECliente.AInteiro,VprCaminhoRelatorio,LFilial.Caption,LCliente.caption)
+            else
+              if (VprNomRelatorio = 'CONHECIMENTO DE TRANSPORTE ENTRADA') then
+                dtRave.ImprimeConhecimentoTransporteEntrada(CDataIni.Date,CdataFim.Date,EFilial.AInteiro,ETransportadora.AInteiro,VprCaminhoRelatorio,LFilial.Caption,LCliente.caption)
+            else
+              if (VprNomRelatorio = 'CONHECIMENTO DE TRANSPORTE SAIDA') then
+                dtRave.ImprimeConhecimentoTransporteSaida(CDataIni.Date,CdataFim.Date,EFilial.AInteiro,ETransportadora.AInteiro,VprCaminhoRelatorio,LFilial.Caption,LCliente.caption);
 
   dtRave.free;
 end;
