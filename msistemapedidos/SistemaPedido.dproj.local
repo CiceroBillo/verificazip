@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2009/07/27 14:23:20.203.dproj,C:\Documents and Settings\Rafael Budag\Meus documentos\RAD Studio\Projects\Project1.dproj=C:\Eficacia\siscorp\mcrm\CRM.dproj</Transaction>
+    <Transaction>2009/10/22 09:29:23.515.dfm,C:\Eficacia\siscorp\mcrm\formpadraopermissao.dfm=C:\Eficacia\SisCorp\mcrm\ADepartamentoAmostra.dfm</Transaction>
+    <Transaction>2009/10/22 09:29:23.515.pas,C:\Eficacia\siscorp\mcrm\formpadraopermissao.pas=C:\Eficacia\SisCorp\mcrm\ADepartamentoAmostra.pas</Transaction>
+    <Transaction>2009/11/13 14:19:47.796.pas,C:\Eficacia\siscorp\mcrm\formpadraopermissao.pas=C:\Eficacia\SisCorp\mcrm\ATipoMateriaPrima.pas</Transaction>
+    <Transaction>2009/11/13 14:19:47.796.dfm,C:\Eficacia\siscorp\mcrm\formpadraopermissao.dfm=C:\Eficacia\SisCorp\mcrm\ATipoMateriaPrima.dfm</Transaction>
+    <Transaction>2010/02/19 14:10:53.828.dfm,D:\Eficacia\SisCorp\mcrm\formpadraopermissao.dfm=D:\Eficacia\SisCorp\mcrm\ACorpoEmailProposta.dfm</Transaction>
+    <Transaction>2010/02/22 16:57:25.484.dproj,D:\Eficacia\SisCorp\msistemapedidos\CRM.dproj=D:\Eficacia\SisCorp\msistemapedidos\SistemaPedido.dproj</Transaction>
+    <Transaction>2010/02/22 19:03:48.265.dfm,D:\Eficacia\SisCorp\msistemapedidos\formpadraopermissao.dfm=D:\Eficacia\SisCorp\msistemapedidos\AImportacaoDados.dfm</Transaction>
+    <Transaction>2010/04/03 08:14:44.411.dfm,D:\Eficacia\SisCorp\msistemapedidos\formpadraopermissao.dfm=D:\Eficacia\SisCorp\msistemapedidos\AExportacaoDados.dfm</Transaction>
+    <Transaction>2010/04/05 11:28:20.750.dfm,D:\Eficacia\SisCorp\msistemapedidos\formpadraopermissao.dfm=D:\Eficacia\SisCorp\msistemapedidos\AConsultaCodigo.dfm</Transaction>
+    <Transaction>2010/04/05 11:28:20.750.pas,D:\Eficacia\SisCorp\msistemapedidos\formpadraopermissao.pas=D:\Eficacia\SisCorp\msistemapedidos\AConsultaCodigo.pas</Transaction>
+    <Transaction>2010/04/05 14:03:16.390.dfm,D:\Eficacia\SisCorp\msistemapedidos\formpadraopermissao.dfm=D:\Eficacia\SisCorp\msistemapedidos\ANovaTabelaImportacaoRepresentante.dfm</Transaction>
+    <Transaction>2010/04/05 15:40:01.734.pas,D:\Eficacia\SisCorp\msistemapedidos\formpadraopermissao.pas=D:\Eficacia\SisCorp\msistemapedidos\AErrosExportacaoDados.pas</Transaction>
+    <Transaction>2010/04/05 15:40:01.734.dfm,D:\Eficacia\SisCorp\msistemapedidos\formpadraopermissao.dfm=D:\Eficacia\SisCorp\msistemapedidos\AErrosExportacaoDados.dfm</Transaction>
+    <Transaction>2010/04/05 15:40:34.859.dfm,D:\Eficacia\SisCorp\msistemapedidos\AErrosExportacaoDados.dfm=D:\Eficacia\SisCorp\msistemapedidos\AMostraErrosExportacaoDados.dfm</Transaction>
+    <Transaction>2010/04/05 16:50:38.656.dfm,D:\Eficacia\SisCorp\msistemapedidos\formpadraopermissao.dfm=D:\Eficacia\SisCorp\msistemapedidos\AMostraPedidosEClientesExportados.dfm</Transaction>
+    <Transaction>2010/06/02 11:06:49.716.dfm,D:\Eficacia\SisCorp\msistemapedidos\formpadraopermissao.dfm=D:\Eficacia\SisCorp\msistemapedidos\AVersaoDesatualizada.dfm</Transaction>
+  </Transactions>
+</BorlandProject>

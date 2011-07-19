@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2011/02/06 15:00:19.000.620,D:\Eficacia\SisCorp\mpontaloja\pontoloja.dproj=C:\Users\RAFAEL BUDAG\Documents\RAD Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>2011/02/09 10:21:45.000.847,D:\Eficacia\SisCorp\mpontaloja\AMostraObservacaoPedido.dfm=D:\Eficacia\SisCorp\mpontaloja\formpadraopermissao.dfm</Transaction>
+    <Transaction>2011/04/06 20:09:17.000.216,D:\Eficacia\SisCorp\mpontaloja\formpadraopermissao.dfm=D:\Eficacia\SisCorp\mpontaloja\ATelefonesCliente.dfm</Transaction>
+  </Transactions>
+</BorlandProject>

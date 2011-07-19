@@ -1,0 +1,156 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{D763F5D2-3976-4E48-82FC-88FEF8AFC1D2}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="mpontaloja\pontoloja.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="MChamado\ChamadoTecnico.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="mestoque\EstoqueCusto.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="mabertura\SisCorp.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="mcaixa\Caixa.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="mconfiguracoessistema\configuracoessistema.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="mcrm\CRM.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="mefiPDV\efiPDV.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="mfaturamento\faturamento.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="mfinanceiro\Financeiro.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="msistemapedidos\SistemaPedido.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="pontoloja">
+			<MSBuild Projects="mpontaloja\pontoloja.dproj"/>
+		</Target>
+		<Target Name="pontoloja:Clean">
+			<MSBuild Projects="mpontaloja\pontoloja.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="pontoloja:Make">
+			<MSBuild Projects="mpontaloja\pontoloja.dproj" Targets="Make"/>
+		</Target>
+		<Target Name="ChamadoTecnico">
+			<MSBuild Projects="MChamado\ChamadoTecnico.dproj"/>
+		</Target>
+		<Target Name="ChamadoTecnico:Clean">
+			<MSBuild Projects="MChamado\ChamadoTecnico.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="ChamadoTecnico:Make">
+			<MSBuild Projects="MChamado\ChamadoTecnico.dproj" Targets="Make"/>
+		</Target>
+		<Target Name="EstoqueCusto">
+			<MSBuild Projects="mestoque\EstoqueCusto.dproj"/>
+		</Target>
+		<Target Name="EstoqueCusto:Clean">
+			<MSBuild Projects="mestoque\EstoqueCusto.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="EstoqueCusto:Make">
+			<MSBuild Projects="mestoque\EstoqueCusto.dproj" Targets="Make"/>
+		</Target>
+		<Target Name="SisCorp">
+			<MSBuild Projects="mabertura\SisCorp.dproj"/>
+		</Target>
+		<Target Name="SisCorp:Clean">
+			<MSBuild Projects="mabertura\SisCorp.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="SisCorp:Make">
+			<MSBuild Projects="mabertura\SisCorp.dproj" Targets="Make"/>
+		</Target>
+		<Target Name="Caixa">
+			<MSBuild Projects="mcaixa\Caixa.dproj"/>
+		</Target>
+		<Target Name="Caixa:Clean">
+			<MSBuild Projects="mcaixa\Caixa.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="Caixa:Make">
+			<MSBuild Projects="mcaixa\Caixa.dproj" Targets="Make"/>
+		</Target>
+		<Target Name="configuracoessistema">
+			<MSBuild Projects="mconfiguracoessistema\configuracoessistema.dproj"/>
+		</Target>
+		<Target Name="configuracoessistema:Clean">
+			<MSBuild Projects="mconfiguracoessistema\configuracoessistema.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="configuracoessistema:Make">
+			<MSBuild Projects="mconfiguracoessistema\configuracoessistema.dproj" Targets="Make"/>
+		</Target>
+		<Target Name="CRM">
+			<MSBuild Projects="mcrm\CRM.dproj"/>
+		</Target>
+		<Target Name="CRM:Clean">
+			<MSBuild Projects="mcrm\CRM.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="CRM:Make">
+			<MSBuild Projects="mcrm\CRM.dproj" Targets="Make"/>
+		</Target>
+		<Target Name="efiPDV">
+			<MSBuild Projects="mefiPDV\efiPDV.dproj"/>
+		</Target>
+		<Target Name="efiPDV:Clean">
+			<MSBuild Projects="mefiPDV\efiPDV.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="efiPDV:Make">
+			<MSBuild Projects="mefiPDV\efiPDV.dproj" Targets="Make"/>
+		</Target>
+		<Target Name="faturamento">
+			<MSBuild Projects="mfaturamento\faturamento.dproj"/>
+		</Target>
+		<Target Name="faturamento:Clean">
+			<MSBuild Projects="mfaturamento\faturamento.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="faturamento:Make">
+			<MSBuild Projects="mfaturamento\faturamento.dproj" Targets="Make"/>
+		</Target>
+		<Target Name="Financeiro">
+			<MSBuild Projects="mfinanceiro\Financeiro.dproj"/>
+		</Target>
+		<Target Name="Financeiro:Clean">
+			<MSBuild Projects="mfinanceiro\Financeiro.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="Financeiro:Make">
+			<MSBuild Projects="mfinanceiro\Financeiro.dproj" Targets="Make"/>
+		</Target>
+		<Target Name="SistemaPedido">
+			<MSBuild Projects="msistemapedidos\SistemaPedido.dproj"/>
+		</Target>
+		<Target Name="SistemaPedido:Clean">
+			<MSBuild Projects="msistemapedidos\SistemaPedido.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="SistemaPedido:Make">
+			<MSBuild Projects="msistemapedidos\SistemaPedido.dproj" Targets="Make"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="pontoloja;ChamadoTecnico;EstoqueCusto;SisCorp;Caixa;configuracoessistema;CRM;efiPDV;faturamento;Financeiro;SistemaPedido"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="pontoloja:Clean;ChamadoTecnico:Clean;EstoqueCusto:Clean;SisCorp:Clean;Caixa:Clean;configuracoessistema:Clean;CRM:Clean;efiPDV:Clean;faturamento:Clean;Financeiro:Clean;SistemaPedido:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="pontoloja:Make;ChamadoTecnico:Make;EstoqueCusto:Make;SisCorp:Make;Caixa:Make;configuracoessistema:Make;CRM:Make;efiPDV:Make;faturamento:Make;Financeiro:Make;SistemaPedido:Make"/>
+		</Target>
+		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')" Project="$(BDS)\Bin\CodeGear.Group.Targets"/>
+	</Project>
