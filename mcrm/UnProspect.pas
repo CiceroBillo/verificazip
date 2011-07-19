@@ -47,6 +47,7 @@ Type TRBFuncoesProspect = class(TRBLocalizaProspect)
     function AtualizaDTElemarketing(VpaDTelemarketing : TRBDTelemarketingProspect) : string;
     function AdicionaEmailContatoProspect(VpaCodProspect : Integer; VpaDesEmail, VpaDesObservacoes : String):String;
     function CadastraEmailEmailSuspect(VpaDSuspect : TRBDProspect;VpaDesEmail : String;VpaEmailsCadatrados, VpaDominios : TMemo;Var VpaQtdEmailCadastradoPrincipal : Integer;Var VpaQtdCadastradoAutomatico : integer) : string;
+    procedure ApagaEmailContatoSuspect(VpaDesEmail : String);
 end;
 
 var
@@ -280,6 +281,13 @@ begin
     end;
   end;
   Cadastro.Close;
+end;
+
+{******************************************************************************}
+procedure TRBFuncoesProspect.ApagaEmailContatoSuspect(VpaDesEmail: String);
+begin
+  ExecutaComandoSql(Aux,'DELETE FROM CONTATOPROSPECT ' +
+                        ' Where DESEMAIL = '''+VpaDesEmail+'''');
 end;
 
 {******************************************************************************}

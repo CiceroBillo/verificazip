@@ -32,7 +32,6 @@ type
     EDominios: TMemoColor;
     Label6: TLabel;
     OpenDialog: TOpenDialog;
-    BitBtn2: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ESuspectRetorno(VpaColunas: TRBColunasLocaliza);
@@ -42,7 +41,6 @@ type
       Shift: TShiftState);
     procedure BitBtn1Click(Sender: TObject);
     procedure ESuspectChange(Sender: TObject);
-    procedure BitBtn2Click(Sender: TObject);
   private
     { Private declarations }
     VprAcao : Boolean;
@@ -188,14 +186,6 @@ begin
   else
     aviso('SUSPECT NÃO PREENCHIDO!!!'#13'É necessário preencher o codigo do suspect que sera guardados os e-mails');
 
-end;
-
-procedure TFCadastraEmailSuspect.BitBtn2Click(Sender: TObject);
-var
-  VpfArquivo : TStringList;
-begin
-  VpfArquivo := TStringList.Create;
-  VpfArquivo.LoadFromFile(');
 end;
 
 {******************************************************************************}
