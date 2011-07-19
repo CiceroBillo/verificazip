@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2009/07/31 16:46:28.375.dproj,C:\Eficacia\siscorp\mcaixa\Caixa.dproj=C:\Documents and Settings\Rafael Budag\Meus documentos\RAD Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>2011/05/17 14:06:51.000.116,M:\Eficacia\Siscorp\mcaixa\formpadraopermissao.dfm=M:\Eficacia\Siscorp\mcaixa\ATipoCaixaTransferencia.dfm</Transaction>
+    <Transaction>2011/05/17 14:06:51.000.116,M:\Eficacia\Siscorp\mcaixa\formpadraopermissao.pas=M:\Eficacia\Siscorp\mcaixa\ATipoCaixaTransferencia.pas</Transaction>
+    <Transaction>2011/05/17 14:07:08.000.930,M:\Eficacia\Siscorp\mcaixa\ATipoCaixaTransferencia.dfm=M:\Eficacia\Siscorp\mcaixa\ATipoTransferenciaCaixa.dfm</Transaction>
+    <Transaction>2011/05/17 14:33:22.000.626,M:\Eficacia\Siscorp\mcaixa\formpadraopermissao.dfm=M:\Eficacia\Siscorp\mcaixa\ANovaTransferenciaExterna.dfm</Transaction>
+    <Transaction>2011/05/17 16:11:26.000.491,M:\Eficacia\Siscorp\mcaixa\formpadraopermissao.dfm=M:\Eficacia\Siscorp\mcaixa\ANovaTransferenciaCheques.dfm</Transaction>
+    <Transaction>2011/06/29 09:36:01.000.827,=M:\Eficacia\Siscorp\mestoque\ARetornoFracaoFaccionista.pas</Transaction>
+  </Transactions>
+</BorlandProject>
