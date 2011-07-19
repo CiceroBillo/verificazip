@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2009/07/20 09:44:34.750.dproj,C:\Eficacia\siscorp\mestoque\EstoqueCusto.dproj=C:\Documents and Settings\Rafael Budag\Meus documentos\RAD Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>2009/07/28 13:59:27.234.dfm,C:\Eficacia\siscorp\mestoque\AComposicoes.dfm=C:\Eficacia\siscorp\mestoque\formpadraopermissao.dfm</Transaction>
+    <Transaction>2009/07/28 13:59:27.234.pas,C:\Eficacia\siscorp\mestoque\AComposicoes.pas=C:\Eficacia\siscorp\mestoque\formpadraopermissao.pas</Transaction>
+    <Transaction>2009/07/28 14:09:56.796.pas,C:\Eficacia\siscorp\mestoque\ANovaComposicao.pas=C:\Eficacia\siscorp\mestoque\formpadraopermissao.pas</Transaction>
+    <Transaction>2009/07/28 14:09:56.796.dfm,C:\Eficacia\siscorp\mestoque\ANovaComposicao.dfm=C:\Eficacia\siscorp\mestoque\formpadraopermissao.dfm</Transaction>
+    <Transaction>2009/10/15 05:31:21.625.pas,C:\Eficacia\SisCorp\mestoque\AMotivoParada.pas=C:\Eficacia\siscorp\mestoque\formpadraopermissao.pas</Transaction>
+    <Transaction>2009/10/15 05:31:21.625.dfm,C:\Eficacia\SisCorp\mestoque\AMotivoParada.dfm=C:\Eficacia\siscorp\mestoque\formpadraopermissao.dfm</Transaction>
+    <Transaction>2009/11/19 15:14:04.515.dfm,C:\Eficacia\SisCorp\mestoque\AGeraFracaoOPProdutos.dfm=C:\Eficacia\siscorp\mestoque\formpadraopermissao.dfm</Transaction>
+    <Transaction>2009/11/19 15:14:04.515.pas,C:\Eficacia\SisCorp\mestoque\AGeraFracaoOPProdutos.pas=C:\Eficacia\siscorp\mestoque\formpadraopermissao.pas</Transaction>
+    <Transaction>2009/11/30 08:19:43.000.dfm,C:\Eficacia\SisCorp\mestoque\ABaixaOrdemCorte.dfm=C:\Eficacia\siscorp\mestoque\formpadraopermissao.dfm</Transaction>
+    <Transaction>2009/11/30 08:19:43.000.pas,C:\Eficacia\SisCorp\mestoque\ABaixaOrdemCorte.pas=C:\Eficacia\siscorp\mestoque\formpadraopermissao.pas</Transaction>
+    <Transaction>2009/11/30 08:51:43.953.pas,C:\Eficacia\SisCorp\mestoque\AOrdemCortePendente.pas=C:\Eficacia\siscorp\mestoque\formpadraopermissao.pas</Transaction>
+    <Transaction>2009/11/30 08:51:43.953.dfm,C:\Eficacia\SisCorp\mestoque\AOrdemCortePendente.dfm=C:\Eficacia\siscorp\mestoque\formpadraopermissao.dfm</Transaction>
+    <Transaction>2009/12/17 10:23:25.265.pas,C:\Eficacia\SisCorp\mestoque\AImprimeEtiquetaPrateleira.pas=C:\Eficacia\siscorp\mestoque\formpadraopermissao.pas</Transaction>
+    <Transaction>2009/12/17 10:23:25.265.dfm,C:\Eficacia\SisCorp\mestoque\AImprimeEtiquetaPrateleira.dfm=C:\Eficacia\siscorp\mestoque\formpadraopermissao.dfm</Transaction>
+    <Transaction>2010/02/02 15:00:45.536.dfm,D:\Eficacia\Siscorp\mestoque\AFichaAmostrasPendentes.dfm=D:\Eficacia\Siscorp\mestoque\AAmostrasPendentes.dfm</Transaction>
+    <Transaction>2010/02/24 14:22:43.380.dfm,D:\Eficacia\SisCorp\mestoque\AMostraEstoqueChapas.dfm=D:\Eficacia\Siscorp\mestoque\formpadraopermissao.dfm</Transaction>
+    <Transaction>2010/03/17 09:17:08.581.dfm,D:\Eficacia\SisCorp\mestoque\ACadastraEstoqueChapa.dfm=D:\Eficacia\Siscorp\mestoque\formpadraopermissao.dfm</Transaction>
+    <Transaction>2010/04/20 12:08:05.316.pas,D:\Eficacia\SisCorp\mestoque\ANovaTerceirizacao.pas=D:\Eficacia\Siscorp\mestoque\formpadraopermissao.pas</Transaction>
+    <Transaction>2010/04/20 14:39:49.937.dfm,D:\Eficacia\SisCorp\mestoque\AAdicionaProdutosTerceirizacao.dfm=D:\Eficacia\Siscorp\mestoque\formpadraopermissao.dfm</Transaction>
+    <Transaction>2010/06/09 16:18:25.266.dfm,D:\Eficacia\SisCorp\mestoque\AMapaCompras.dfm=D:\Eficacia\SisCorp\mestoque\formpadraopermissao.dfm</Transaction>
+    <Transaction>2010/06/24 14:36:17.945.dfm,D:\Eficacia\SisCorp\mestoque\ANovoEstagio.dfm=D:\Eficacia\Siscorp\mestoque\formpadraopermissao.dfm</Transaction>
+    <Transaction>2010/07/21 09:20:17.256.dfm,D:\Eficacia\SisCorp\mestoque\ASelecionarFornecedorMapaCompras.dfm=D:\Eficacia\SisCorp\mestoque\formpadraopermissao.dfm</Transaction>
+    <Transaction>2010/08/02 16:48:48.973.dfm,D:\Eficacia\SisCorp\mestoque\AOPProdutosAReservar.dfm=D:\Eficacia\Siscorp\mestoque\formpadraopermissao.dfm</Transaction>
+  </Transactions>
+</BorlandProject>

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2009/07/27 14:23:20.203.dproj,C:\Eficacia\siscorp\mcrm\CRM.dproj=C:\Documents and Settings\Rafael Budag\Meus documentos\RAD Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>2009/10/22 09:29:23.515.dfm,C:\Eficacia\SisCorp\mcrm\ADepartamentoAmostra.dfm=C:\Eficacia\siscorp\mcrm\formpadraopermissao.dfm</Transaction>
+    <Transaction>2009/10/22 09:29:23.515.pas,C:\Eficacia\SisCorp\mcrm\ADepartamentoAmostra.pas=C:\Eficacia\siscorp\mcrm\formpadraopermissao.pas</Transaction>
+    <Transaction>2009/11/13 14:19:47.796.pas,C:\Eficacia\SisCorp\mcrm\ATipoMateriaPrima.pas=C:\Eficacia\siscorp\mcrm\formpadraopermissao.pas</Transaction>
+    <Transaction>2009/11/13 14:19:47.796.dfm,C:\Eficacia\SisCorp\mcrm\ATipoMateriaPrima.dfm=C:\Eficacia\siscorp\mcrm\formpadraopermissao.dfm</Transaction>
+    <Transaction>2010/02/19 14:10:53.828.dfm,D:\Eficacia\SisCorp\mcrm\ACorpoEmailProposta.dfm=D:\Eficacia\SisCorp\mcrm\formpadraopermissao.dfm</Transaction>
+    <Transaction>2010/04/13 16:21:01.578.dfm,D:\Eficacia\SisCorp\mcrm\AAplicacao.dfm=D:\Eficacia\SisCorp\mcrm\formpadraopermissao.dfm</Transaction>
+    <Transaction>2010/10/20 20:41:29.201.dfm,D:\Eficacia\SisCorp\mcrm\AEnvioEmarketingProspect.dfm=D:\Eficacia\Siscorp\mcrm\formpadraopermissao.dfm</Transaction>
+  </Transactions>
+</BorlandProject>

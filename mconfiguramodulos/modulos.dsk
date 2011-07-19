@@ -1,0 +1,21 @@
+[PVCS Browser]
+Left=236
+Top=105
+Width=625
+Height=393
+State=0
+Visible=0
+
+[PVCS VDiff]
+Left=257
+Top=160
+Width=591
+Height=608
+Layout=1
+Orientation=1
+State=0
+Visible=0
+File1Color=16711680
+File2Color=255
+SpaceColor=16776960
+TextColor=0

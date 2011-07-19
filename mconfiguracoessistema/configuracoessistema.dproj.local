@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2009/08/01 10:08:46.953.dproj,C:\Eficacia\siscorp\mconfiguracoessistema\configuracoessistema.dproj=C:\Documents and Settings\Rafael Budag\Meus documentos\RAD Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>2009/11/25 17:20:02.734.pas,C:\Eficacia\SisCorp\mconfiguracoessistema\ACoeficientes.pas=C:\Eficacia\siscorp\mconfiguracoessistema\formpadraopermissao.pas</Transaction>
+    <Transaction>2009/11/25 17:20:02.734.dfm,C:\Eficacia\SisCorp\mconfiguracoessistema\ACoeficientes.dfm=C:\Eficacia\siscorp\mconfiguracoessistema\formpadraopermissao.dfm</Transaction>
+    <Transaction>2009/12/02 15:02:05.609.dfm,C:\Eficacia\SisCorp\mconfiguracoessistema\ANovoCoeficienteCusto.dfm=C:\Eficacia\siscorp\mconfiguracoessistema\formpadraopermissao.dfm</Transaction>
+    <Transaction>2009/12/02 15:02:05.609.pas,C:\Eficacia\SisCorp\mconfiguracoessistema\ANovoCoeficienteCusto.pas=C:\Eficacia\siscorp\mconfiguracoessistema\formpadraopermissao.pas</Transaction>
+    <Transaction>2010/06/26 09:34:12.590.dfm,D:\Eficacia\SisCorp\mconfiguracoessistema\ALimpaBancoDados.dfm=D:\Eficacia\Siscorp\mconfiguracoessistema\formpadraopermissao.dfm</Transaction>
+    <Transaction>2010/08/09 11:23:02.252.pas,D:\Eficacia\SisCorp\mconfiguracoessistema\APrecoLarguraTear.pas=D:\Eficacia\Siscorp\mconfiguracoessistema\formpadraopermissao.pas</Transaction>
+    <Transaction>2010/08/09 11:23:02.252.dfm,D:\Eficacia\SisCorp\mconfiguracoessistema\APrecoLarguraTear.dfm=D:\Eficacia\Siscorp\mconfiguracoessistema\formpadraopermissao.dfm</Transaction>
+    <Transaction>2011/04/15 15:26:35.000.222,D:\Eficacia\SisCorp\mconfiguracoessistema\APermissaoRelatorio.dfm=D:\Eficacia\SisCorp\mconfiguracoessistema\formpadraopermissao.dfm</Transaction>
+    <Transaction>2011/06/29 09:32:12.000.921,=M:\Eficacia\Siscorp\mestoque\ARetornoFracaoFaccionista.pas</Transaction>
+  </Transactions>
+</BorlandProject>

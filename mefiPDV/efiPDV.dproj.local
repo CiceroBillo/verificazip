@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2010/03/13 17:58:50.865.dfm,C:\Users\Rafael Budag\Documents\RAD Studio\Projects\Unit1.dfm=D:\Eficacia\SisCorp\mefiPDV\APrincipal.dfm</Transaction>
+    <Transaction>2010/03/13 17:58:56.925.dproj,C:\Users\Rafael Budag\Documents\RAD Studio\Projects\Project1.dproj=D:\Eficacia\SisCorp\mefiPDV\efiPDV.dproj</Transaction>
+    <Transaction>2010/03/22 06:42:58.804.dfm,D:\Eficacia\SisCorp\mefiPDV\formpadraopermissao.dfm=D:\Eficacia\SisCorp\mefiPDV\AMenuFiscalECF.dfm</Transaction>
+    <Transaction>2010/03/24 19:48:16.489.dfm,D:\Eficacia\SisCorp\mefiPDV\formpadraopermissao.dfm=D:\Eficacia\SisCorp\mefiPDV\AComandoFiscalFiltro.dfm</Transaction>
+    <Transaction>2010/08/31 08:29:14.034.pas,D:\Eficacia\SisCorp\mefiPDV\formpadraopermissao.pas=D:\Eficacia\SisCorp\mefiPDV\ABotaoMenufiscal.pas</Transaction>
+    <Transaction>2010/09/02 14:01:00.198.dfm,D:\Eficacia\SisCorp\mefiPDV\formpadraopermissao.dfm=D:\Eficacia\SisCorp\mefiPDV\ASangriaSuprimento.dfm</Transaction>
+    <Transaction>2011/06/29 09:38:37.000.129,=M:\Eficacia\Siscorp\mestoque\ARetornoFracaoFaccionista.pas</Transaction>
+  </Transactions>
+</BorlandProject>
