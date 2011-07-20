@@ -5,9 +5,9 @@ interface
 
 Const
   VersaoEstoque = '3.300';
-  VersaoFinanceiro = '2.851';
+  VersaoFinanceiro = '2.852';
   VersaoConfiguracaoSistema = '2.425';
-  VersaoPontoLoja = '3.999';
+  VersaoPontoLoja = '4.001';
   VersaoFaturamento = '2.781';
   VersaoChamadoTecnico = '2.572';
   VersaoAgenda = '1.06';

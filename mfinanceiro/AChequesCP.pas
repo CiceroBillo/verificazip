@@ -155,6 +155,7 @@ end;
 function TFChequesCP.ExisteCheque : Boolean;
 begin
   result := true;
+  VprDCheque.CodCliente:= VprDBaixa.CodFornecedor;
   if (VprDCheque.TipFormaPagamento in[fpChequeTerceiros,fpCheque])then
   begin
     result := false;
@@ -176,6 +177,7 @@ begin
             end
             else
             begin
+              aviso('CHEQUE INVALIDO!!!'#13'O cheque digitado nao existe ou ele esta reservado para outro Fornecedor.');
               VprDCheque.SeqCheque := 0;
               if VprExisteVariosCheques then
                 result := LocalizaCheque;

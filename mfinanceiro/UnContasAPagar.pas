@@ -2071,17 +2071,23 @@ begin
                                   ' from CHEQUE CHE, CADCONTAS CON ' +
                                   ' Where CHE.NUMCHEQUE = ' +IntToStr(VpaNumCheque)+
                                   ' AND CHE.DATCOMPENSACAO IS NULL'+
-                                  ' AND CHE.NUMCONTACAIXA = CON.C_NRO_CON');
-
-      result := true;
-      VpaDCheque.SeqCheque := Tabela.FieldByname('SEQCHEQUE').AsInteger;
-      VpaDCheque.CodBanco := Tabela.FieldByname('CODBANCO').AsInteger;
-      VpaDCheque.NumCheque := Tabela.FieldByname('NUMCHEQUE').AsInteger;
-      VpaDCheque.ValCheque := Tabela.FieldByname('VALCHEQUE').AsFloat;
-      VpaDCheque.NomEmitente := Tabela.FieldByname('NOMEMITENTE').AsString;
-      VpaDCheque.NumContaCaixa := Tabela.FieldByname('NUMCONTACAIXA').AsString;
-      VpaDCheque.TipCheque := 'C';
-      VpaDCheque.TipContaCaixa := Tabela.FieldByname('C_TIP_CON').AsString;
+                                  ' AND CHE.NUMCONTACAIXA = CON.C_NRO_CON' +
+                                  ' AND (CHE.CODFORNECEDORRESERVA IS NULL OR ' +
+                                  ' CHE.CODFORNECEDORRESERVA = ' + IntToStr(VpaDCheque.CodCliente)+ ')');
+      if tabela.Eof then
+       result := false
+      else
+      begin
+        result := true;
+        VpaDCheque.SeqCheque := Tabela.FieldByname('SEQCHEQUE').AsInteger;
+        VpaDCheque.CodBanco := Tabela.FieldByname('CODBANCO').AsInteger;
+        VpaDCheque.NumCheque := Tabela.FieldByname('NUMCHEQUE').AsInteger;
+        VpaDCheque.ValCheque := Tabela.FieldByname('VALCHEQUE').AsFloat;
+        VpaDCheque.NomEmitente := Tabela.FieldByname('NOMEMITENTE').AsString;
+        VpaDCheque.NumContaCaixa := Tabela.FieldByname('NUMCONTACAIXA').AsString;
+        VpaDCheque.TipCheque := 'C';
+        VpaDCheque.TipContaCaixa := Tabela.FieldByname('C_TIP_CON').AsString;
+      end;
     end;
   Tabela.close;
 end;

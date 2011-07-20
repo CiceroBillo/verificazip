@@ -10,7 +10,7 @@ unit UnCotacao;
 interface
 uses classes, DBTables, Db, dbClient,SysUtils, ConvUnidade, UnDados, UnContasAReceber, UnProdutos, UnDadosCR, UnDadosProduto,
      Parcela, UnContasAPagar, UnSistema, UnImpressaoBoleto, Registry, IdMessage, IdSMTP, UnVendedor, windows,comctrls, variants,
-     IdAttachmentfile, idText, SQLExpr, tabela, UnArgox, UnVersoes;
+     IdAttachmentfile, idText, SQLExpr, tabela, UnArgox, UnVersoes, FunString;
 
 type TCalculosCotacao = class
   private
@@ -256,7 +256,7 @@ var
 
 implementation
 
-uses FunSql, Constantes, FunString,FunObjeto, UnNotaFiscal, ConstMsg, unClientes, FunData,
+uses FunSql, Constantes, FunObjeto, UnNotaFiscal, ConstMsg, unClientes, FunData,
      FunNumeros, dmRave, FunArquivos;
 
 {(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
@@ -1248,6 +1248,8 @@ end;
 
 {******************************************************************************}
 procedure TFuncoesCotacao.VerificaPrecoCliente(VpaDCotacao : TRBDOrcamento;VpaDProCotacao : TRBDOrcProduto);
+var
+  VpfDataTabelaPreco: TDateTime;
 begin
   if not Config.SalvarPrecosProdutosTabelaCliente then
   begin
@@ -1299,11 +1301,16 @@ begin
         CotCadastro2.FieldByName('I_COD_CLI').AsInteger := VpaDCotacao.CodCliente;
         CotCadastro2.FieldByName('I_COD_MOE').AsInteger := VARIA.MoedaBase;
         CotCadastro2.FieldByName('C_CIF_MOE').AsString := CurrencyString;
+        CotCadastro2.FieldByName('N_VLR_VEN').AsFloat := FunProdutos.CalculaValorPadrao(VpaDProCotacao.UMOriginal,VpaDProCotacao.UM,VpaDProCotacao.ValUnitario,InttoStr(VpaDProCotacao.SeqProduto));
+        CotCadastro2.FieldByName('D_ULT_ALT').AsDateTime := date;
+        cotcadastro2.Post;
       end
       else
         if VpaDProCotacao.ValUnitarioOriginal <> FunProdutos.CalculaValorPadrao(VpaDProCotacao.UM,VpaDProCotacao.UMOriginal,VpaDProCotacao.ValUnitario,InttoStr(VpaDProCotacao.SeqProduto)) then
         begin
-          if not (VpaDCotacao.DatOrcamento < CotCadastro2.FieldByName('D_ULT_ALT').AsDateTime) then
+          VpfDataTabelaPreco:= StrToDate(CopiaAteChar(DateToStr(CotCadastro2.FieldByName('D_ULT_ALT').AsDateTime), ' '));
+          if not (VpaDCotacao.DatOrcamento < VpfDataTabelaPreco) or
+                 (VpaDCotacao.DatOrcamento = VpfDataTabelaPreco) then
           begin
             CotCadastro2.Edit;
             CotCadastro2.FieldByName('N_VLR_VEN').AsFloat := FunProdutos.CalculaValorPadrao(VpaDProCotacao.UMOriginal,VpaDProCotacao.UM,VpaDProCotacao.ValUnitario,InttoStr(VpaDProCotacao.SeqProduto));
