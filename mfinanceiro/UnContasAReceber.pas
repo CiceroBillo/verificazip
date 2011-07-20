@@ -981,7 +981,7 @@ begin
   VpaChequeDestino.CodBanco := VpaChequeOrigem.CodBanco;
   VpaChequeDestino.CodFormaPagamento := VpaChequeOrigem.CodFormaPagamento;
   VpaChequeDestino.CodCliente := VpaChequeOrigem.CodCliente;
-  VpaChequeDestino.NumCheque := VpaChequeOrigem.NumCheque;
+  VpaChequeDestino.NumCheque := VpaChequeOrigem.NumCheque+1;
   VpaChequeDestino.CodUsuario := VpaChequeOrigem.CodUsuario;
   VpaChequeDestino.NumConta := VpaChequeOrigem.NumConta;
   VpaChequeDestino.NumAgencia := VpaChequeOrigem.NumAgencia;
@@ -995,7 +995,7 @@ begin
   VpaChequeDestino.NomCliente := VpaChequeOrigem.NomCliente;
   VpaChequeDestino.ValCheque := VpaChequeOrigem.ValCheque;
   VpaChequeDestino.DatCadastro := VpaChequeOrigem.DatCadastro;
-  VpaChequeDestino.DatVencimento := VpaChequeOrigem.DatVencimento;
+  VpaChequeDestino.DatVencimento := IncMes(VpaChequeOrigem.DatVencimento,1);
   VpaChequeDestino.DatCompensacao := VpaChequeOrigem.DatCompensacao;
   VpaChequeDestino.DatDevolucao := VpaChequeOrigem.DatDevolucao;
   VpaChequeDestino.DatEmissao := VpaChequeOrigem.DatEmissao;

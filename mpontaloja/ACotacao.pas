@@ -2824,7 +2824,6 @@ end;
 {******************************************************************************}
 procedure TFCotacao.BCancelarClick(Sender: TObject);
 begin
-  if confirmacao('Tem certeza que deseja cancelar a cotação?') then
     CancelaOrcamento;
 end;
 

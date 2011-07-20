@@ -5479,8 +5479,9 @@ Var
 begin
   result := '';
   VpfCodEstagioAtual := REstagioAtualCotacao(VpaCodFilial,VpaLanOrcamento);
-  if VpaCodEstagio <> VpfCodEstagioAtual then
-    result := GeraFinanceiroEstagio(VpaCodFilial,VpaCodUsuario,VpaLanOrcamento,VpaCodEstagio);
+//19/07/2011 - colocado em comentario pois na MLR estava gerando financeiro quando cancelava ou exclui a cotacao;
+//  if VpaCodEstagio <> VpfCodEstagioAtual then
+//    result := GeraFinanceiroEstagio(VpaCodFilial,VpaCodUsuario,VpaLanOrcamento,VpaCodEstagio);
 
   if result = '' then
     result := GravaLogEstagio(VpaCodFilial,VpaLanOrcamento,VpaCodEstagio,VpaCodUsuario,VpaDesMotivo);

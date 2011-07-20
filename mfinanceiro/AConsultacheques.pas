@@ -392,7 +392,8 @@ var
 begin
   if VpaSeqCheque <> 0 then
   begin
-    IF (ChequeC_FLA_TIP.AsString <> 'C') and (ChequeC_FLA_TIP.AsString <> 'R') and (ChequeC_FLA_TIP.AsString <> 'P')then
+    IF (ChequeC_FLA_TIP.AsString <> 'C') and (ChequeC_FLA_TIP.AsString <> 'R') and (ChequeC_FLA_TIP.AsString <> 'P') and
+       (ChequeC_FLA_TIP.AsString <> 'E') and (ChequeC_FLA_TIP.AsString <> 'T') then
       aviso('TIPO DA FORMA DE PAGAMENTO INVÁLIDO!!!!'#13'Essa operação só é permitido com formas de pagamento do tipo CHEQUE  e CHEQUE DE TERCEIROS')
     else
     begin
@@ -446,7 +447,8 @@ var
 begin
   if Confirmacao('Tem certeza que deseja extornar o cheque?') then
   begin
-    IF (ChequeC_FLA_TIP.AsString <> 'C') and (ChequeC_FLA_TIP.AsString <> 'R') AND (ChequeC_FLA_TIP.AsString <> 'P')then
+    IF (ChequeC_FLA_TIP.AsString <> 'C') and (ChequeC_FLA_TIP.AsString <> 'R') AND (ChequeC_FLA_TIP.AsString <> 'P') and
+       (ChequeC_FLA_TIP.AsString <> 'E') and (ChequeC_FLA_TIP.AsString <> 'T') then
       aviso('TIPO DA FORMA DE PAGAMENTO INVÁLIDO!!!!'#13'Essa operação só é permitido com formas de pagamento do tipo CHEQUE  e CHEQUE DE TERCEIROS')
     else
     begin

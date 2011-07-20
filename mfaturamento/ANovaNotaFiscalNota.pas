@@ -3121,6 +3121,8 @@ begin
     else
       if VpaDOrcamento.ValDesconto > 0 then
         VpaDNota.ValDesconto := VpaDOrcamento.ValDesconto;
+  if VpaDOrcamento.ValTroca > 0 then
+    VpaDNota.ValDesconto := VpaDNota.ValDesconto+  VpaDOrcamento.ValTroca;
 
   if VpaDOrcamento.ValTaxaEntrega <> 0 then
     VpaDNota.ValFrete := VpaDOrcamento.ValTaxaEntrega;
@@ -3141,7 +3143,6 @@ begin
       end;
     end;
   end;
-  VpaDNota.ValDescontoTroca := VpaDOrcamento.ValTroca;
   VpaDNota.DesOrdemCompra := ROrdensCompra;
   if VpaDOrcamento.NumCupomfiscal <> '' then
   begin
@@ -3181,6 +3182,8 @@ begin
         else
           VpaDNota.ValDesconto :=  VpaDNota.ValDesconto + VpfDCotacao.ValDesconto;
       end;
+    if VpfDCotacao.ValTroca > 0  then
+      VpaDNota.ValDesconto := VpaDNota.ValDesconto + VpfDCotacao.ValTroca;
     VpaDNota.ValFrete := VpaDNota.ValFrete + VpfDCotacao.ValTaxaEntrega;
     if VpfDCotacao.PerDesconto > 0 then
       VpaDNota.PerDesconto := VpfDCotacao.PerDesconto
