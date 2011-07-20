@@ -34,7 +34,7 @@ end;
 
 implementation
 
-Uses FunSql, FunString, FunArquivos, UnSistema;
+Uses FunSql, FunString, FunArquivos, UnSistema, FunNumeros;
 
 {(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
                               eventos da classe TRBLocalizaExportaRPS
@@ -201,7 +201,7 @@ begin
   LocalizaNotas(Notas,VpaDExportaRPS);
   while not Notas.Eof do
   begin
-    VpaDExportaRPS.ValTotalServicos := VpaDExportaRPS.ValTotalServicos + Notas.FieldByName('N_TOT_SER').AsFloat;
+    VpaDExportaRPS.ValTotalServicos := VpaDExportaRPS.ValTotalServicos + ArredondaDecimais(Notas.FieldByName('N_TOT_SER').AsFloat,2);
     AtualizaStatus('Gerando nota fiscal "'+Notas.FieldByName('I_NRO_NOT').AsString);
     if (VpfCodfiscalAtual <> Notas.FieldByName('I_COD_FIS').AsInteger) or
        (VpfSeqNotaAtual <> Notas.FieldByName('I_SEQ_NOT').AsInteger) then
@@ -256,7 +256,7 @@ begin
         DesCEP := Notas.FieldByName('C_CEP_CLI').AsString;
       end;
     end;
-    VpfDNotaBlu.ValServicos := VpfDNotaBlu.ValServicos + Notas.FieldByName('N_TOT_SER').AsFloat;
+    VpfDNotaBlu.ValServicos := VpfDNotaBlu.ValServicos + ArredondaDecimais(Notas.FieldByName('N_TOT_SER').AsFloat,2);
     VpfDNotaBlu.DesServico := VpfDNotaBlu.DesServico + Notas.FieldByName('C_NOM_SER').AsString+ ' /  ';
     Notas.Next;
   end;
@@ -314,6 +314,7 @@ begin
 
   VpfNomArquivo :=RetornaDiretorioCorrente+'\RPS\'+IntToStr(VpaDExportaRPS.CodFilial)+'_'+ FormatDateTime('DDMMYYYY',now)+'.txt';
   NaoExisteCriaDiretorio(RetornaDiretorioArquivo(VpfNomArquivo),false);
+  DeletaArquivo(RetornaDiretorioArquivo(VpfNomArquivo)+'\*.*');
   VpaDExportaRPS.Arquivo.SaveToFile(VpfNomArquivo);
   AtualizaStatus('Arquivo gerado com sucesso "'+VpfNomArquivo+'"');
 end;

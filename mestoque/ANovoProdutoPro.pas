@@ -528,6 +528,7 @@ type
     EFilial: TRBEditLocaliza;
     MImagem: TPopupMenu;
     SalvarImagemAreaTranferenciaWindows1: TMenuItem;
+    BLimpaFoto: TBitBtn;
 
     procedure PaginasChange(Sender: TObject);
     procedure PaginasChanging(Sender: TObject; var AllowChange: Boolean);
@@ -722,6 +723,7 @@ type
     procedure GAcessoriosRowMoved(Sender: TObject; FromIndex, ToIndex: Integer);
     procedure EFilialRetorno(VpaColunas: TRBColunasLocaliza);
     procedure SalvarImagemAreaTranferenciaWindows1Click(Sender: TObject);
+    procedure BLimpaFotoClick(Sender: TObject);
   private
     VprCodClassificacao,
     VprCodClassificacaoAnterior : String;
@@ -2285,6 +2287,11 @@ begin
   FMontaKit:= TFMontaKit.CriarSDI(Application,'',True);
   FMontaKit.ConsumoMP(VprDProduto);
   FMontaKit.Free;
+end;
+
+procedure TFNovoProdutoPro.BLimpaFotoClick(Sender: TObject);
+begin
+  LPatFoto.Caption:= '';
 end;
 
 {******************************************************************************}

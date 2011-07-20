@@ -301,22 +301,22 @@ procedure TFAvaliacaoReceber.FormCreate(Sender: TObject);
 begin
    EDataIni.Date := PrimeiroDiaMes(Date);
    EDataFim.Date := Date;
-   TipoClick(Sender);
-   TeclaPresionada := True;
+{   TipoClick(Sender);
+   TeclaPresionada := True;}
 end;
 
 { ******************* Quando o formulario e fechado ************************** }
 procedure TFAvaliacaoReceber.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-   FechaTabela(MovParcelas);
+//   FechaTabela(MovParcelas);
    Action := CaFree;
 end;
 
 {********************Quando o formulario é mostrado****************************}
 procedure TFAvaliacaoReceber.FormShow(Sender: TObject);
 begin
-  ExecutaParcelaPai;
-  PPage.ActivePage := TitulosTab;
+{  ExecutaParcelaPai;
+  PPage.ActivePage := TitulosTab;}
 end;
 
 {(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
@@ -403,7 +403,7 @@ begin
         CarregaAdicionais
       else
         ExecutaParcelaPai; }
-  ExecutaParcelaPai;
+ // ExecutaParcelaPai;
 end;
 
 

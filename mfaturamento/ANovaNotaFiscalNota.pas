@@ -3184,7 +3184,10 @@ begin
       end;
     if VpfDCotacao.ValTroca > 0  then
       VpaDNota.ValDesconto := VpaDNota.ValDesconto + VpfDCotacao.ValTroca;
-    VpaDNota.ValFrete := VpaDNota.ValFrete + VpfDCotacao.ValTaxaEntrega;
+    if config.ColocaroFreteemDespAcessoriasQuandoMesmaCidade and (VprDCliente.DesCidade = varia.CidadeFilial) then
+      VpaDNota.ValOutrasDepesesas := VpaDNota.ValOutrasDepesesas + VpfDCotacao.ValTaxaEntrega
+    else
+      VpaDNota.ValFrete := VpaDNota.ValFrete + VpfDCotacao.ValTaxaEntrega;
     if VpfDCotacao.PerDesconto > 0 then
       VpaDNota.PerDesconto := VpfDCotacao.PerDesconto
     else

@@ -99,6 +99,7 @@ object FNovoProdutoPro: TFNovoProdutoPro
           TabOrder = 0
           AUsarCorForm = False
           ACorForm = FPrincipal.CorForm
+          ExplicitTop = -1
           object SpeedButton1: TSpeedButton
             Left = 282
             Top = 0
@@ -1061,6 +1062,32 @@ object FNovoProdutoPro: TFNovoProdutoPro
             Font.Style = []
             ParentFont = False
             TabOrder = 32
+          end
+          object BLimpaFoto: TBitBtn
+            Left = 309
+            Top = 365
+            Width = 36
+            Height = 30
+            HelpContext = 27
+            DoubleBuffered = True
+            Glyph.Data = {
+              76010000424D7601000000000000760000002800000020000000100000000100
+              04000000000000010000120B0000120B00001000000000000000000000000000
+              800000800000008080008000000080008000808000007F7F7F00BFBFBF000000
+              FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00500005000555
+              555557777F777555F55500000000555055557777777755F75555005500055055
+              555577F5777F57555555005550055555555577FF577F5FF55555500550050055
+              5555577FF77577FF555555005050110555555577F757777FF555555505099910
+              555555FF75777777FF555005550999910555577F5F77777775F5500505509990
+              3055577F75F77777575F55005055090B030555775755777575755555555550B0
+              B03055555F555757575755550555550B0B335555755555757555555555555550
+              BBB35555F55555575F555550555555550BBB55575555555575F5555555555555
+              50BB555555555555575F555555555555550B5555555555555575}
+            NumGlyphs = 2
+            ParentDoubleBuffered = False
+            PopupMenu = MImagem
+            TabOrder = 33
+            OnClick = BLimpaFotoClick
           end
         end
       end
@@ -7823,10 +7850,10 @@ object FNovoProdutoPro: TFNovoProdutoPro
     Align = alTop
     Alignment = taLeftJustify
     Caption = '  Produto  '
-    Font.Charset = ANSI_CHARSET
+    Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
-    Font.Height = -27
-    Font.Name = 'Times New Roman'
+    Font.Height = -16
+    Font.Name = 'MS Sans Serif'
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 0

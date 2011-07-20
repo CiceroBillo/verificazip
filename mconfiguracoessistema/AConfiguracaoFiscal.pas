@@ -390,6 +390,8 @@ type
     DBEditLocaliza38: TDBEditLocaliza;
     SpeedButton42: TSpeedButton;
     Label99: TLabel;
+    DBCheckBox12: TDBCheckBox;
+    CFGC_CID_FRE: TWideStringField;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure DBEditLocaliza2Retorno(Retorno1, Retorno2: String);

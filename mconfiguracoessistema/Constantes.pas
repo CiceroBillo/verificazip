@@ -455,7 +455,7 @@ type
       SenhaLiberacao : String;    // fim das variaveis do financeiro
       GrupoUsuarioMaster : Integer;
       QtdDiasProtesto,
-      QtdDiasVencimento : Integer;
+      QtdDiasVencimentoBoletoVencido : Integer;
       MascaraPlanoConta : string;
       FormaPagamentoPadrao,
       FormaPagamentoCarteira,
@@ -842,7 +842,7 @@ type
     MensagemBoleto :Boolean;
     ImprimirFormaPagamentonaNota,
     ImprimirClassificacaoProdutonaNota: Boolean;
-
+    ColocaroFreteemDespAcessoriasQuandoMesmaCidade : boolean;
 
 
     //---------------------Ecf
@@ -2137,7 +2137,7 @@ begin
         CondicaoPagamentoPadrao := VpfTabela.FieldByName('I_CON_PAD').AsInteger;
         ClienteFornecedorbancario := VpfTabela.fieldByName('I_CLI_BAN').AsInteger;
         DocReciboPadrao := VpfTabela.fieldByName('I_REC_PAD').AsInteger;
-        QtdDiasVencimento := VpfTabela.fieldByName('I_QTD_VEN').AsInteger;
+        QtdDiasVencimentoBoletoVencido := VpfTabela.fieldByName('I_QTD_VEN').AsInteger;
         if LENGTH(VpfTabela.fieldByName('C_CON_GER').AsString) > 0 then
           ConsultaPor := VpfTabela.fieldByName('C_CON_GER').AsString[1]
         else
@@ -2313,6 +2313,7 @@ begin
         PermiteAlterarPlanoContasnaNotafiscal := TipoCheck(VpfTabela.fieldByName('C_ALT_PLC').AsString);
         ImprimirFormaPagamentonaNota := TipoCheck(VpfTabela.fieldByName('C_IMP_FNF').AsString);
         ImprimirClassificacaoProdutonaNota := TipoCheck(VpfTabela.fieldByName('C_IMP_CPN').AsString);
+        ColocaroFreteemDespAcessoriasQuandoMesmaCidade := TipoCheck(VpfTabela.fieldByName('C_CID_FRE').AsString);
       end;
     end;
 

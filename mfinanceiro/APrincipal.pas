@@ -143,6 +143,8 @@ type
     Button1: TButton;
     N9: TMenuItem;
     ExportaPagamentosSCI1: TMenuItem;
+    N13: TMenuItem;
+    AvaliaoFinanceira1: TMenuItem;
     procedure MostraHint(Sender : TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -499,6 +501,11 @@ begin
              FClientes := TFClientes.CriarSDI(application, '',VerificaPermisao('FClientes'));
              FClientes.ShowModal;
              FClientes.free;
+           end;
+    2650 : begin
+             FAvaliacaoReceber := TFAvaliacaoReceber.criarSDI(Application,'',FPrincipal.VerificaPermisao('FAvaliacaoReceber'));
+             FAvaliacaoReceber.showmodal;
+             FAvaliacaoReceber.free;
            end;
     2700 : begin
              FHistoricoLigacao := TFHistoricoLigacao.CriarSDI(application,'', FPrincipal.VerificaPermisao('FHistoricoLigacao'));

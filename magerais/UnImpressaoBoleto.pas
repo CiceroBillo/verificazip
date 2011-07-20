@@ -134,7 +134,7 @@ begin
     if VpaDParcela.DatProrrogacao > date then
       VpaTitulo.DataVencimento := VpaDParcela.DatProrrogacao
     else
-      VpaTitulo.DataVencimento := IncDia(date, Varia.QtdDiasVencimento);
+      VpaTitulo.DataVencimento := IncDia(date, Varia.QtdDiasVencimentoBoletoVencido);
     VpaTitulo.ValorDocumento := VpaDParcela.Valor +VpaDParcela.ValAcrescimo+VpaDParcela.ValTarifasBancarias;
   end
   else

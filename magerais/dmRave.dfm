@@ -269,8 +269,9 @@ object dtRave: TdtRave
   end
   object rvItem: TRvDataSetConnection
     RuntimeVisibility = rtDeveloper
+    OnGetRow = rvItemGetRow
     DataSet = Item
-    Left = 136
+    Left = 144
     Top = 64
   end
   object Item2: TSQL
@@ -487,13 +488,6 @@ object dtRave: TdtRave
     DataSet = Item5
     Left = 368
     Top = 64
-  end
-  object RVJPG: TRvDataSetConnection
-    RuntimeVisibility = rtDeveloper
-    OnGetRow = RVJPGGetRow
-    DataSet = Item
-    Left = 184
-    Top = 144
   end
   object Item6: TSQL
     Aggregates = <>

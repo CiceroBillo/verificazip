@@ -51,7 +51,6 @@ type
     PedidosPendentesI_COD_COR: TFMTBCDField;
     Item5: TSQL;
     rvItem5: TRvDataSetConnection;
-    RVJPG: TRvDataSetConnection;
     Item6: TSQL;
     rvItem6: TRvDataSetConnection;
     ChamadoProposta: TSQL;
@@ -65,6 +64,7 @@ type
     procedure RvSystem2AfterPreviewPrint(Sender: TObject);
     procedure RVJPGGetRow(Connection: TRvCustomConnection);
     procedure ItemAfterExecute(Sender: TObject; var OwnerData: OleVariant);
+    procedure rvItemGetRow(Connection: TRvCustomConnection);
   private
     { Private declarations }
     FunRave : TRBFunRave;
@@ -236,6 +236,7 @@ begin
     // Pesquisa componentes dentro do projeto rave.
     P := Rave.ProjMan.FindRaveComponent(rvPagina, nil) as TRavePage;
     B := Rave.ProjMan.FindRaveComponent(rvImagemNome, P) as TRaveBitmap;
+    B.Image := nil;
     // verifica se existe um JPG referente a imagem
     if FileExists(bdArquivo) then
        begin
@@ -3325,12 +3326,25 @@ begin
 end;
 
 {******************************************************************************}
+procedure TdtRave.rvItemGetRow(Connection: TRvCustomConnection);
+begin
+  if UpperCase(Rave.ProjectFile) =  Uppercase(varia.PathRelatorios+'\Proposta\XX_Proposta.rav') then
+  begin
+    if (varia.CNPJFilial = CNPJ_Reloponto) or
+       (varia.CNPJFilial = CNPJ_Relopoint) then
+      CarregaRaveImagem('Vendas.page1','IProduto',VARIA.DriveFoto+Item.FieldByName('C_PAT_FOT').AsString);
+  end;
+  Connection.DoGetRow
+end;
+
+{******************************************************************************}
 procedure TdtRave.RVJPGGetRow(Connection: TRvCustomConnection);
 begin
-  CarregaRaveImagem('report1.page1','Bitmap2',VARIA.DriveFoto+Item.FieldByName('C_PAT_FOT').AsString);
-  Connection.DoGetRow
+{  CarregaRaveImagem('Vendas.page1','Bitmap2',VARIA.DriveFoto+Item.FieldByName('C_PAT_FOT').AsString);
+  Connection.DoGetRow}
  end;
 
+{******************************************************************************}
 procedure TdtRave.RvSystem2AfterPreviewPrint(Sender: TObject);
 begin
 
