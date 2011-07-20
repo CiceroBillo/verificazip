@@ -2991,7 +2991,7 @@ begin
                                SQLTextoDataEntreAAAAMMDD('CAD.D_DAT_REC',VpaDSped.DatInicio,VpaDSped.DatFinal,true)+
                                ' AND '+SQLTextoRightJoin('CAD.I_COD_PAG','PAG.I_COD_PAG')+
                                ' AND '+SQLTextoRightJoin('CAD.I_COD_TRA','TRA.I_COD_CLI'));
-// Tabela.SQL.SaveToFile('c:\notasentrada.sql');
+ Tabela.SQL.SaveToFile('c:\notasentrada.sql');
 end;
 
 {********************************************************************************}

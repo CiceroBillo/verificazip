@@ -7,7 +7,8 @@ uses
   Grids, DBGrids, Tabela, DBKeyViolation, Componentes1, ExtCtrls,
   PainelGradiente, Db, DBTables, StdCtrls, Localizacao, Buttons, ComCtrls,  UnImpressao,
   Mask, numericos, UnContasAReceber, unDadosCR, Menus, DBClient,sqlexpr, RpBase,
-  RpSystem, RpRave, RpDefine, RpCon, RpConDS, unClassesImprimir, ACBrECF, ACBrBase, ACBrCHQ;
+  RpSystem, RpRave, RpDefine, RpCon, RpConDS, unClassesImprimir, ACBrECF, ACBrBase, ACBrCHQ,
+  DBCtrls, UnDadosLocaliza;
 
 type
   TFConsultaCheques = class(TFormularioPermissao)
@@ -92,6 +93,11 @@ type
     ChequeDESORIGEM: TWideStringField;
     Label4: TLabel;
     EValCheque: Tnumerico;
+    N3: TMenuItem;
+    ReservaCheque1: TMenuItem;
+    ChequeC_NOM_CLI: TWideStringField;
+    EFornecedor: TRBEditLocaliza;
+    ExtornaReserva1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure GradeOrdem(Ordem: String);
@@ -117,6 +123,10 @@ type
     procedure BtExcluirClick(Sender: TObject);
     procedure BCadastrarClick(Sender: TObject);
     procedure GradeCellClick(Column: TColumn);
+    procedure ReservaCheque1Click(Sender: TObject);
+    procedure EFornecedorRetorno(VpaColunas: TRBColunasLocaliza);
+    procedure EFornecedorSelect(Sender: TObject);
+    procedure ExtornaReserva1Click(Sender: TObject);
   private
     { Private declarations }
     VprAcao,
@@ -245,12 +255,16 @@ begin
                  ' CHE.NOMNOMINAL, CHE.NUMCONTA, CHE.NUMAGENCIA,CHE.DESORIGEM,'+
                  ' FRM.C_NOM_FRM, FRM.C_FLA_TIP, '+
                  ' CON.C_NOM_CRR, CON.C_TIP_CON, '+
-                 ' USU.C_NOM_USU '+
-                 ' from CHEQUE CHE, CADFORMASPAGAMENTO FRM, CADCONTAS CON, CADUSUARIOS USU ' +
+                 ' USU.C_NOM_USU, '+
+                 ' CLI.C_NOM_CLI ' +
+                 ' from CHEQUE CHE, CADFORMASPAGAMENTO FRM, CADCONTAS CON, CADUSUARIOS USU, CADCLIENTES CLI ' +
                  ' Where CHE.CODFORMAPAGAMENTO = FRM.I_COD_FRM  '+
                  ' AND CHE.NUMCONTACAIXA = CON.C_NRO_CON '+
-                 ' AND CHE.CODUSUARIO = USU.I_COD_USU');
+                 ' AND CHE.CODUSUARIO = USU.I_COD_USU'+
+                 ' AND ' + SQLTextoRightJoin('CHE.CODFORNECEDORRESERVA', 'CLI.I_COD_CLI'));
   AdicionaFiltros(Cheque.sql);
+  if VprConsultaChequeBaixaCP then
+    Cheque.sql.add('AND (CHE.CODFORNECEDORRESERVA = 0 or CHE.CODFORNECEDORRESERVA is null or CHE.CODFORNECEDORRESERVA = ' + IntToStr(VprDCheque.CodCliente)+')');
   Cheque.SQl.add(VprOrdem);
   Grade.ALinhaSQLOrderBy := Cheque.sql.count - 1;
   Cheque.open;
@@ -259,7 +273,6 @@ begin
   Cheque.FreeBookmark(VpfPosicao);
   if CTotal.Checked then
     AtualizaTotal;
-//  Cheque.SQL.SaveToFile('CHEQUE.SQL');
 end;
 
 {******************************************************************************}
@@ -468,6 +481,24 @@ begin
 end;
 
 {******************************************************************************}
+procedure TFConsultaCheques.ExtornaReserva1Click(Sender: TObject);
+var
+  VpfCheques: TList;
+  VpfResultado: String;
+begin
+  VpfCheques := TList.Create;
+  VpfResultado := CarChequesSelecionados(VpfCheques);
+  if VpfResultado = '' then
+    VpfResultado := FunContasAReceber.EstornaReservaCheque(VpfCheques);
+
+  if VpfResultado <> '' then
+    aviso(VpfResultado)
+  else
+    AtualizaConsulta(true);
+  FreeTObjectsList(VpfCheques);
+end;
+
+{******************************************************************************}
 procedure TFConsultaCheques.CarDCheque;
 begin
   VprDCheque.SeqCheque := ChequeSEQCHEQUE.AsInteger;
@@ -485,6 +516,12 @@ end;
 procedure TFConsultaCheques.GradeOrdem(Ordem: String);
 begin
   VprOrdem := Ordem;
+end;
+
+{******************************************************************************}
+procedure TFConsultaCheques.ReservaCheque1Click(Sender: TObject);
+begin
+  EFornecedor.AAbreLocalizacao;
 end;
 
 {******************************************************************************}
@@ -523,6 +560,32 @@ procedure TFConsultaCheques.EFormaPagamentoKeyDown(Sender: TObject;
 begin
   if key = 13 then
     AtualizaConsulta(false);
+end;
+
+{******************************************************************************}
+procedure TFConsultaCheques.EFornecedorRetorno(VpaColunas: TRBColunasLocaliza);
+var
+  VpfCheques: TList;
+  VpfResultado: String;
+begin
+  if VpaColunas.items[0].AValorRetorno <> '' then
+  begin
+    VpfCheques := TList.Create;
+    VpfResultado := CarChequesSelecionados(VpfCheques);
+    if VpfResultado = '' then
+      VpfResultado := FunContasAReceber.ReservaCheque(VpfCheques, StrToInt(EFornecedor.Text));
+
+    if VpfResultado <> '' then
+      aviso(VpfResultado)
+    else
+      AtualizaConsulta(true);
+  end;
+  FreeTObjectsList(VpfCheques);
+end;
+
+{******************************************************************************}
+procedure TFConsultaCheques.EFornecedorSelect(Sender: TObject);
+begin
 end;
 
 {******************************************************************************}

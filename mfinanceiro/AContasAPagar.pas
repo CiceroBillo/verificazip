@@ -959,6 +959,7 @@ begin
       end;
     end;
   end;
+  VpaDBaixa.CodFornecedor:= VpfDParcela.CodCliente;
 end;
 
 {*******************Chama o formulario para efetuar baixa**********************}

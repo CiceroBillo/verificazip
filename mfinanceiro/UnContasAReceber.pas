@@ -250,6 +250,8 @@ type
     function ExisteSinalPagamentoCotacao(VpaCodFilial, VpaLanOrcamento : Integer):Boolean;
     function CompensaCheque(VpaDCheque : TRBDCheque;VpaTipOperacao : String;VpaAdicionarnoCaixa : Boolean) :string;
     function DevolveCheque(VpaCheques : TList;VpaData : TDateTime) :string;
+    function ReservaCheque(VpaCheques: TList; VpaCodFornecedor: Integer): String;
+    function EstornaReservaCheque(VpaCheques: TList): String;
     function EstornaCheque(VpaDCheque: TRBDCheque;VpaOrigemEstorno : TRBDOrigemEstorno) :string;
     function AlteraVencimentoCheque(VpaSeqCheque : Integer;VpaDatVencimento : TDatetime):string;
     function GeraComissaoNegativa(VpaDNotaFor : TRBDNotaFiscalFor):string;
@@ -1549,6 +1551,27 @@ begin
                                  ' AND I_NRO_PAR = '+IntToStr(VpaDECobrancaItem.NumParcela));
     Cadastro.edit;
     Cadastro.FieldByName('D_ULT_EMA').AsDateTime := now;
+    Cadastro.post;
+    result := Cadastro.AMensagemErroGravacao;
+    if Cadastro.AErronaGravacao then
+      exit;
+  end;
+  Cadastro.close;
+end;
+
+{******************************************************************************}
+function TFuncoesContasAReceber.ReservaCheque(VpaCheques: TList;VpaCodFornecedor: Integer): String;
+var
+  VpfLaco: Integer;
+  VpfDCheque : TRBDCheque;
+begin
+  for VpfLaco := 0 to VpaCheques.Count - 1 do
+  begin
+    VpfDCheque := TRBDCheque(VpaCheques.Items[VpfLaco]);
+    AdicionaSQLAbreTabela(Cadastro, 'SELECT * FROM CHEQUE' +
+                                    ' WHERE SEQCHEQUE = ' + IntToStr(VpfDCheque.SeqCheque));
+    Cadastro.edit;
+    Cadastro.FieldByName('CODFORNECEDORRESERVA').AsInteger := VpaCodFornecedor;
     Cadastro.post;
     result := Cadastro.AMensagemErroGravacao;
     if Cadastro.AErronaGravacao then
@@ -3628,6 +3651,27 @@ begin
     end;
     Cadastro.close;
   end;
+end;
+
+{******************************************************************************}
+function TFuncoesContasAReceber.EstornaReservaCheque(VpaCheques: TList): String;
+var
+  VpfLaco: Integer;
+  VpfDCheque : TRBDCheque;
+begin
+  for VpfLaco := 0 to VpaCheques.Count - 1 do
+  begin
+    VpfDCheque := TRBDCheque(VpaCheques.Items[VpfLaco]);
+    AdicionaSQLAbreTabela(Cadastro, 'SELECT * FROM CHEQUE' +
+                                    ' WHERE SEQCHEQUE = ' + IntToStr(VpfDCheque.SeqCheque));
+    Cadastro.edit;
+    Cadastro.FieldByName('CODFORNECEDORRESERVA').AsInteger := 0;
+    Cadastro.post;
+    result := Cadastro.AMensagemErroGravacao;
+    if Cadastro.AErronaGravacao then
+      exit;
+  end;
+  Cadastro.close;
 end;
 
 {******************************************************************************}

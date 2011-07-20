@@ -687,7 +687,8 @@ end;
 type
   TRBDBaixaCP = class
     public
-      CodFormaPagamento: Integer;
+      CodFormaPagamento,
+      CodFornecedor: Integer;
       TipFormaPagamento,
       NumContaCaixa : String;
       ValorAcrescimo,

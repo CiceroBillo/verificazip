@@ -194,6 +194,7 @@ function TFChequesCP.LocalizaCheque : Boolean;
 var
   VpfNumCheque : Integer;
 begin
+  VprDCheque.CodCliente:= VprDBaixa.CodFornecedor;
   if VprDCheque.TipFormaPagamento = fpChequeTerceiros then
   begin
     if (Grade.Cells[5,Grade.ALinha] <> '') and VprExisteVariosCheques then

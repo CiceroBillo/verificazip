@@ -2072,6 +2072,7 @@ begin
                                   ' Where CHE.NUMCHEQUE = ' +IntToStr(VpaNumCheque)+
                                   ' AND CHE.DATCOMPENSACAO IS NULL'+
                                   ' AND CHE.NUMCONTACAIXA = CON.C_NRO_CON');
+
       result := true;
       VpaDCheque.SeqCheque := Tabela.FieldByname('SEQCHEQUE').AsInteger;
       VpaDCheque.CodBanco := Tabela.FieldByname('CODBANCO').AsInteger;
