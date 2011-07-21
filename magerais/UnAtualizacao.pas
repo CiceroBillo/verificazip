@@ -5,7 +5,7 @@ interface
        SQLExpr,IniFiles, UnProgramador1, Tabela ;
 
 Const
-  CT_VersaoBanco = 2112;
+  CT_VersaoBanco = 2114;
   CT_VersaoInvalida = 'SISTEMA DESATUALIZADO!!! Este sistema já possui novas versões, essa versão pode não funcionar corretamente,  para o bom funcionamento do mesmo é necessário fazer a atualização...' ;
 
   CT_SenhaAtual = '9774';
@@ -5928,6 +5928,19 @@ begin
     ExecutaComandoSql(Aux,'ALTER TABLE CFG_FISCAL ADD C_CID_FRE CHAR(1) NULL');
     ExecutaComandoSql(Aux,'UPDATE CFG_FISCAL SET C_CID_FRE = ''F''');
     ExecutaComandoSql(Aux,'Update CFG_GERAL set I_Ult_Alt = 2112');
+  end;
+  if VpaNumAtualizacao < 2113 then
+  begin
+    result := '2113';
+    ExecutaComandoSql(Aux,'ALTER TABLE CFG_PRODUTO ADD( C_UNI_QUI CHAR(2) NULL, ' +
+                          ' C_UNI_MIL CHAR(2) NULL)');
+    ExecutaComandoSql(Aux,'Update CFG_GERAL set I_Ult_Alt = 2113');
+  end;
+  if VpaNumAtualizacao < 2114 then
+  begin
+    result := '2114';
+    ExecutaComandoSql(Aux,'alter table CADFILIAIS ADD (D_ULT_RPS DATE NULL)');
+    ExecutaComandoSql(Aux,'Update CFG_GERAL set I_Ult_Alt = 2114');
   end;
 end;
 

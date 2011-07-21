@@ -281,6 +281,9 @@ type
     CadFiliaisC_CST_PIE: TWideStringField;
     CadFiliaisC_CST_COS: TWideStringField;
     CadFiliaisC_CST_COE: TWideStringField;
+    DBEditColor27: TDBEditColor;
+    Label100: TLabel;
+    CadFiliaisD_ULT_RPS: TSQLTimeStampField;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FecharClick(Sender: TObject);

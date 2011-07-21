@@ -41,7 +41,7 @@ var
 
 implementation
 
-uses APrincipal, Constantes;
+uses APrincipal, Constantes, FunDAta;
 
 {$R *.DFM}
 
@@ -51,8 +51,8 @@ procedure TFExportaRPS.FormCreate(Sender: TObject);
 begin
   {  abre tabelas }
   { chamar a rotina de atualização de menus }
-  EDatInicio.date := date;
-  EDatFim.Date := date;
+  EDatInicio.date := incdia(Varia.DatUltimoRPS,1);
+  EDatFim.Date := decDia(date,1);
   EFilial.AInteiro := varia.CodigoEmpFil;
   EFilial.Atualiza;
   FunExportaRPS := TRBFuncoesExportaRPS.cria(FPrincipal.BaseDados);
@@ -64,6 +64,7 @@ procedure TFExportaRPS.BExportarClick(Sender: TObject);
 begin
   CarDClasse;
   FunExportaRPS.ExportaRPS(VprDExportaRPS,StatusBar1);
+
 end;
 
 {******************************************************************************}

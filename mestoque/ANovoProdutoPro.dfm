@@ -99,7 +99,6 @@ object FNovoProdutoPro: TFNovoProdutoPro
           TabOrder = 0
           AUsarCorForm = False
           ACorForm = FPrincipal.CorForm
-          ExplicitTop = -1
           object SpeedButton1: TSpeedButton
             Left = 282
             Top = 0
@@ -7850,10 +7849,10 @@ object FNovoProdutoPro: TFNovoProdutoPro
     Align = alTop
     Alignment = taLeftJustify
     Caption = '  Produto  '
-    Font.Charset = DEFAULT_CHARSET
+    Font.Charset = ANSI_CHARSET
     Font.Color = clWhite
-    Font.Height = -16
-    Font.Name = 'MS Sans Serif'
+    Font.Height = -27
+    Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 0

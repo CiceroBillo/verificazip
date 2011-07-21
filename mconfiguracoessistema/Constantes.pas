@@ -230,7 +230,9 @@ type
       UnidadeCX : string;
       UnidadeUN,
       UnidadeKit,
-      UnidadeBarra : string;
+      UnidadeBarra,
+      UnidadeKilo,
+      UnidadeMilheiro : string;
       ClassificacaoFiscal : string;
       DiasValidade : integer;  // dias de validade para os orcamentos
       TabelaPreco,
@@ -419,6 +421,7 @@ type
       EmailCopiaCotacao : string;
       TipoModeloEtiquetaVolume: TRBDModeloEtiquetaVolume;
       TipEtiquetaRomaneioOrcamento : TRBDModeloEtiquetaRomaneioOrcamento;
+      DatUltimoRPS : TDateTime;
 
       //sped fiscal
       PerfilSped : String;
@@ -1567,6 +1570,7 @@ begin
           FormaEmissaoNFE := feScan
         else
           FormaEmissaoNFE := feNormal;
+        DatUltimoRPS := VpfTabela.FieldByName('D_ULT_RPS').AsDateTime;
     end;
     with Config do   // boolean
     begin
@@ -1988,6 +1992,8 @@ begin
          UnidadeUN := VpfTabela.fieldByName('C_UNI_PEC').AsString;
          UnidadeKit := VpfTabela.fieldByName('C_UNI_KIT').AsString;
          UnidadeBarra := VpfTabela.fieldByName('C_UNI_BAR').AsString;
+         UnidadeKilo := VpfTabela.fieldByName('C_UNI_QUI').AsString;
+         UnidadeMilheiro := VpfTabela.fieldByName('C_UNI_MIL').AsString;
          OperacaoEstoqueInicial := VpfTabela.fieldByName('I_OPE_INI').AsInteger;
          UltimoMesEstoque := VpfTabela.fieldByName('I_MES_EST').AsInteger;
          UltimoAnoEstoque := VpfTabela.fieldByName('I_ANO_EST').AsInteger;

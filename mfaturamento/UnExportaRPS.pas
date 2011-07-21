@@ -24,6 +24,7 @@ Type TRBFuncoesExportaRPS = class(TRBLocalizaExportaRPS)
     function ExportaRodapeNotaBlu(VpaDExportaRPS : TRBDExportacaoRPS):string;
     function ExportaRPSNotaBlu(VpaDExportaRPS : TRBDExportacaoRPS):string;
     function AdicionaItensArquivoNotaBlu(VpaDExportaRPS : TRBDExportacaoRPS):string;
+    function AtualizaDataUltimoRPS(VpaDExportaRPS : TRBDExportacaoRPS):string;
   public
     constructor cria(VpaBaseDados : TSQLConnection);
     destructor destroy;override;
@@ -34,7 +35,7 @@ end;
 
 implementation
 
-Uses FunSql, FunString, FunArquivos, UnSistema, FunNumeros;
+Uses FunSql, FunString, FunArquivos, UnSistema, FunNumeros, constantes;
 
 {(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
                               eventos da classe TRBLocalizaExportaRPS
@@ -123,6 +124,17 @@ begin
     VpfDNotaBlu.DesServico;
     VpaDExportaRPS.Arquivo.Add(VpfLinha);
   end;
+end;
+
+{******************************************************************************}
+function TRBFuncoesExportaRPS.AtualizaDataUltimoRPS(VpaDExportaRPS: TRBDExportacaoRPS): string;
+begin
+  AdicionaSQLAbreTabela(Notas,'Select * from CADFILIAIS ' +
+                              ' Where I_EMP_FIL = '+IntToStr(VpaDExportaRPS.CodFilial));
+  Notas.edit;
+  Notas.FieldByName('D_ULT_RPS').AsDateTime := VpaDExportaRPS.DatFim;
+  Notas.Post;
+  result := notas.AMensagemErroGravacao;
 end;
 
 {******************************************************************************}
@@ -299,6 +311,8 @@ begin
   VprBarraStatus := VpaBarraStatus;
   Sistema.CarDFilial(VpaDExportaRPS.DFilial,VpaDExportaRPS.CodFilial);
   ExportaRPSNotaBlu(VpaDExportaRPS);
+  Varia.DatUltimoRPS := VpaDExportaRPS.DatFim;
+  result := AtualizaDataUltimoRPS(VpaDExportaRPS);
 end;
 
 {******************************************************************************}

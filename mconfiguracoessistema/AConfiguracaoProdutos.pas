@@ -431,6 +431,12 @@ type
     DBCheckBox24: TDBCheckBox;
     CFGC_FIL_FAT: TWideStringField;
     CFGC_LEI_SEF: TWideStringField;
+    Label113: TLabel;
+    DBEditColor9: TDBEditColor;
+    Label114: TLabel;
+    DBEditColor10: TDBEditColor;
+    CFGC_UNI_QUI: TWideStringField;
+    CFGC_UNI_MIL: TWideStringField;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure CFGAfterPost(DataSet: TDataSet);
