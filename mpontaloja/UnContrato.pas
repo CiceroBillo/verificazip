@@ -6,7 +6,7 @@ Interface
 
 Uses Classes, DBTables, UnDados, SysUtils,ComCtrls, UnDadosProduto, UnClientes, UnCotacao, Unsistema,
      UnContasAReceber, ANovaNotaFiscalNota, Forms,stdctrls, UnNotaFiscal, UnImpressaoBoleto, UnDadosCR,
-     UnVendedor, SQLExpr, Tabela,db,IdAttachmentfile, idText, IdMessage, IdSMTP, unchamado,Graphics;
+     UnVendedor, SQLExpr, Tabela,db,IdAttachmentfile, idText, IdMessage, IdSMTP, unchamado,Graphics, dmRave;
 
 //classe localiza
 Type TRBLocalizaContrato = class
@@ -66,7 +66,9 @@ Type TRBFuncoesContrato = class(TRBLocalizaContrato)
     procedure GeraBoletoUnicoContrato(VpaDCotacaoContrato: trbdorcamento;VpaDCliente : TRBDCliente; VpaLanOrcamentoPosterior :Integer);
     function VincularReajusteContratos(VpaSeqReajuste, VpaAno, VpaMes: Integer): String;
     procedure MontaEmailLeituraLocacao(VpaTexto : TStrings; VpaDContrato : TRBDContratoCorpo ;VpaDCliente : TRBDCliente);
+    procedure MontaEmailRecibo(VpaTexto : TStrings; VpaDContrato : TRBDContratoCorpo ;VpaDCliente : TRBDCliente);
     function ArrumaFinanceiroReciboLocacao(VpaDRecibo : TRBDReciboLocacao) : string;
+    function EnviaEmail(VpaMensagem : TIdMessage;VpaSMTP : TIdSMTP) : string;
   public
     constructor cria(VpaBaseDados : TSqlConnection);
     destructor destroy;override;
@@ -102,14 +104,13 @@ Type TRBFuncoesContrato = class(TRBLocalizaContrato)
     function GeraReciboLocacao(VpaDCotacao : TRBDOrcamento; VpaDCliente : TRBDCliente; VpaDLeituraLocacao : TRBDLeituraLocacaoCorpo):string;
     function CancelaRecibo(VpaCodFilial, VpaSeqRecibo: Integer;VpaMotivo : String):string;
     function CancelaContratosVigenciaVencida(VpaDataFimVigencia : TDateTime):Integer;
-//    function EnviaEmailCliente(VpaDContrato : TRBDContratoCorpo;VpaDCliente : TRBDCliente) : string;
+    function EnviaEmailCliente(VpaDContrato : TRBDContratoCorpo;VpaDCliente : TRBDCliente) : string;
 end;
 
 
 implementation
 
-Uses FunSql,FunData, Constantes, FunObjeto, UnProdutos, constmsg, FunString, dmRave,
-     FunArquivos;
+Uses FunSql,FunData, Constantes, FunObjeto, UnProdutos, constmsg, FunString, FunArquivos;
 
 {(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
                               eventos da classe TRBLocalizaContrato
@@ -1105,6 +1106,57 @@ begin
 end;
 
 {******************************************************************************}
+procedure TRBFuncoesContrato.MontaEmailRecibo(VpaTexto: TStrings;
+  VpaDContrato: TRBDContratoCorpo; VpaDCliente: TRBDCliente);
+var
+  VpfLaco : Integer;
+  VpfDContratoItem : TRBDContratoItem;
+begin
+  VpaTexto.Clear;
+  VpaTexto.Add('<html>');
+  VpaTexto.Add('<head>');
+  VpaTexto.add('<title> Eficacia Sistemas e Consultoria Ltda');
+  VpaTexto.Add('</title>');
+  VpaTexto.add('<body>');
+  VpaTexto.Add('<center>');
+  VpaTexto.add('<table width=80%  border=1 bordercolor="black" cellspacing="0" >');
+  VpaTexto.Add('<tr>');
+  VpaTexto.add('<td>');
+  VpaTexto.Add('<table width=100%  border=0>');
+  VpaTexto.add(' <tr>');
+  VpaTexto.Add('  <td width=40%>');
+  VpaTexto.add('    <a > <img src="cid:'+IntToStr(VpaDContrato.CodFilial)+'.jpg" width='+IntToStr(varia.CRMTamanhoLogo)+' height = '+IntToStr(Varia.CRMAlturaLogo)+' boder=0>');
+  VpaTexto.Add('  </td>');
+  VpaTexto.add('  <td width=20% align="center" > <font face="Verdana" size="5"><b>Medidores Contrato ');
+  VpaTexto.Add('  <td width=40% align="right" > <font face="Verdana" size="5"><right> <a title="Sistema de Gestão Desenvolvido por Eficacia Sistemas e Consultoria" href="http://www.eficaciaconsultoria.com.br"> <img src="cid:efi.jpg" border="0"');
+  VpaTexto.add('  </td>');
+  VpaTexto.Add('  </td>');
+  VpaTexto.add('  </tr>');
+  VpaTexto.Add('</table>');
+  VpaTexto.add('<br>');
+  VpaTexto.Add('<table width=100%  border=1 cellpadding="3" cellspacing="0">');
+  VpaTexto.Add(' <tr>');
+  VpaTexto.add('	<td width="20%" bgcolor="#EEEEEE"><font face="Verdana" size="1">');
+  VpaTexto.add('&nbsp;&nbsp;&nbsp;Esta mensagem e referente a os recibos de locacao. <b>');
+  VpaTexto.add(Varia.NomeFilial + '</b>.<br>&nbsp;&nbsp;&nbsp;Por gentileza poderia responder este e-mail com os contadores atuais dos equipamentos.');
+  VpaTexto.add('<br>&nbsp;&nbsp;&nbsp;Qualquer duvida entrar em contato com o fone '+Varia.FoneFilial);
+  VpaTexto.add('	</td>');
+  VpaTexto.add(' </tr></table>');
+
+  VpaTexto.add(' </tr>');
+  VpaTexto.add('</table>');
+
+  VpaTexto.add('<hr>');
+  VpaTexto.Add('<center>');
+  if sistema.PodeDivulgarEficacia then
+    VpaTexto.add('<address>Sistema de gestao desenvolvido por <a href="http://www.eficaciaconsultoria.com.br">Eficácia Sistemas e Consultoria Ltda.</a>  </address>');
+  VpaTexto.Add('</center>');
+  VpaTexto.add('</body>');
+  VpaTexto.Add('');
+  VpaTexto.add('</html>');
+end;
+
+{******************************************************************************}
 function TRBFuncoesContrato.NumeroSerieDuplicado(VpaDContrato: TRBDContratoCorpo): string;
 var
   VpfLacoExterno, VpfLacoInterno : Integer;
@@ -1977,6 +2029,130 @@ begin
     QtdFranquiaColor:= Tabela.FieldByName('QTDFRANQUIACOLOR').AsInteger;
   end;
   CarDLeituraLocacaoItem(VpaDLeitura);
+end;
+
+{******************************************************************************}
+function TRBFuncoesContrato.EnviaEmail(VpaMensagem: TIdMessage;
+  VpaSMTP: TIdSMTP): string;
+begin
+  VpaMensagem.Priority := TIdMessagePriority(0);
+  VpaMensagem.ContentType := 'multipart/mixed';
+  if VpaMensagem.From.Address = '' then
+    VpaMensagem.From.Address := varia.UsuarioSMTP;
+  VpaMensagem.From.Name := varia.NomeFilial;
+
+  VpaSMTP.UserName := varia.UsuarioSMTP;
+  VpaSMTP.Password := Varia.SenhaEmail;
+  VpaSMTP.Host := Varia.ServidorSMTP;
+  VpaSMTP.Port := varia.PortaSMTP;
+  if config.ServidorInternetRequerAutenticacao then
+    VpaSMTP.AuthType := satDefault
+  else
+    VpaSMTP.AuthType := satNone;
+
+  if VpaMensagem.ReceiptRecipient.Address = '' then
+    VpaMensagem.ReceiptRecipient.Text  :=VpaMensagem.From.Text;
+
+  if VpaMensagem.ReceiptRecipient.Address = '' then
+    result := 'E-MAIL DA FILIAL !!!'#13'É necessário preencher o e-mail da transportadora.';
+  if VpaSMTP.UserName = '' then
+    result := 'USUARIO DO E-MAIL ORIGEM NÃO CONFIGURADO!!!'#13'É necessário preencher nas configurações o e-mail de origem.';
+  if VpaSMTP.Password = '' then
+    result := 'SENHA SMTP DO E-MAIL ORIGEM NÃO CONFIGURADO!!!'#13'É necessário preencher nas configurações a senha do e-mail de origem';
+  if VpaSMTP.Host = '' then
+    result := 'SERVIDOR DE SMTP NÃO CONFIGURADO!!!'#13'É necessário configurar qual o servidor de SMTP...';
+  if result = '' then
+  begin
+    VpaSMTP.Connect;
+    try
+      VpaSMTP.Send(VpaMensagem);
+
+    except
+      on e : exception do
+      begin
+        result := 'ERRO AO ENVIAR O E-MAIL!!!'#13+e.message;
+        VpaSMTP.Disconnect;
+      end;
+    end;
+    VpaSMTP.Disconnect;
+    VpaMensagem.Clear;
+  end;
+end;
+
+{******************************************************************************}
+function TRBFuncoesContrato.EnviaEmailCliente(VpaDContrato: TRBDContratoCorpo;
+  VpaDCliente: TRBDCliente): string;
+var
+  VpfEmailTexto, VpfEmailHTML : TIdText;
+  VpfEmailVendedor,VpfEmailCliente, VpfNomAnexo, VpfEmailUsuario : String;
+  VpfPDF, Vpfbmppart : TIdAttachmentFile;
+  VpfChar : Char;
+begin
+    result := '';
+    if VpaDContrato.DesEmail = '' then
+      result := 'E-MAIL DO CLIENTE NÃO PREENCHIDO!!!'#13'Falta preencher o e-mail do cliente.'
+    else
+      VpaDContrato.DesEmail := VpaDCliente.DesEmail;
+    if not ExisteArquivo(varia.PathVersoes+'\efi.jpg') then
+      result := 'Falta arquivo "'+varia.PathVersoes+'\efi.jpg'+'"';
+    if result = '' then
+    begin
+      Vpfbmppart := TIdAttachmentfile.Create(VprMensagem.MessageParts,varia.PathVersoes+'\'+inttoStr(VpaDContrato.CodFilial)+'.jpg');
+      Vpfbmppart.ContentType := 'image/jpg';
+      Vpfbmppart.ContentDisposition := 'inline';
+      Vpfbmppart.ExtraHeaders.Values['content-id'] := inttoStr(VpaDContrato.CodFilial)+'.jpg';
+      Vpfbmppart.FileName := '';
+      Vpfbmppart.DisplayName := '';
+    end;
+      dtRave := TdtRave.Create(nil);
+      //VpfNomAnexo := varia.PathVersoes+'\ANEXOS\COTACAO'+IntToStr(VpaDCotacao.CodEmpFil)+'_'+IntToStr(VpaDCotacao.LanOrcamento)+'.PDF';
+      dtRave.VplArquivoPDF := VpfNomAnexo ;
+     // dtRave.ImprimePedido(VpaDCotacao.CodEmpFil,VpaDCotacao.LanOrcamento,false);
+      dtRave.Free;
+      VpfPDF := TIdAttachmentFile.Create(VprMensagem.MessageParts,VpfNomAnexo);
+      VpfPDF.ContentType := 'application/pdf;Cotacao';
+      VpfPDF.ContentDisposition := 'inline';
+      VpfPDF.ExtraHeaders.Values['content-id'] := VpfNomAnexo;
+     // VpfPDF.DisplayName := RetornaNomeSemExtensao(VpfNomAnexo)+'.pdf';
+
+
+      VpfEmailHTML := TIdText.Create(VprMensagem.MessageParts);
+      VpfEmailHTML.ContentType := 'text/html';
+
+      MontaEmailRecibo(VpfEmailHTML.Body,VpaDContrato,VpaDCliente);
+
+      VpfEmailCliente := VpaDContrato.DesEmail;
+      VpfChar := ',';
+      if ExisteLetraString(';',VpfEmailCliente) then
+        VpfChar := ';';
+      while Length(VpfEmailCliente) > 0 do
+      begin
+        VprMensagem.Recipients.Add.Address := DeletaChars(CopiaAteChar(VpfEmailCliente,VpfChar),VpfChar);
+        VpfEmailCliente := DeleteAteChar(VpfEmailCliente,VpfChar);
+      end;
+      if VpaDContrato.DesEmail <> '' then
+      begin
+        VpfEmailCliente := VpaDContrato.DesEmail;
+        if ExisteLetraString(';',VpfEmailCliente) then
+          VpfChar := ';';
+        while Length(VpfEmailCliente) > 0 do
+        begin
+          VprMensagem.Recipients.Add.Address := DeletaChars(CopiaAteChar(VpfEmailCliente,VpfChar),VpfChar);
+          VpfEmailCliente := DeleteAteChar(VpfEmailCliente,VpfChar);
+        end;
+      end;
+      if Varia.EmailCopiaCotacao <> '' then
+        VprMensagem.Recipients.Add.Address := varia.EmailCopiaCotacao;
+
+
+      VprMensagem.Subject := Varia.NomeFilial+' - Recibo ' +IntToStr(VpaDContrato.SeqContrato);
+      if VpfEmailVendedor <> '' then
+      begin
+        VprMensagem.ReplyTo.EMailAddresses := VpfEmailVendedor;
+      end;
+      VprMensagem.ReceiptRecipient.Text  :='';
+
+      result := EnviaEmail(VprMensagem,VprSMTP);
 end;
 
 {******************************************************************************}

@@ -1883,6 +1883,8 @@ begin
                              ' AND '+SQLTextoRightJoin('ROM.CODCOR','COR.COD_COR')+
                              ' AND ROM.SEQPRODUTO = PRO.I_SEQ_PRO ' +
                              ' AND '+SQLTextoRightJoin('ROM.SEQPRODUTO','MOV.I_SEQ_PRO')+
+                             ' AND '+SQLTextoRightJoin('ROM.CODCOR','MOV.I_COD_COR')+
+                             ' AND '+SQLTextoRightJoin('ROM.CODTAMANHO','MOV.I_COD_TAM')+
                              ' AND '+SQLTextoRightJoin('ROM.CODFILIAL','MOV.I_EMP_FIL'));
   Sistema.CarDFilial(VprDFilial,VpaCodFilial);
   FunRave.EnviaParametrosFilial(Rave,VprDFilial);

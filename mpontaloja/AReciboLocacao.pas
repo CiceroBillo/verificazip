@@ -67,6 +67,7 @@ type
     Label10: TLabel;
     CTotal: TCheckBox;
     EValorTotal: Tnumerico;
+    BEnviarEmailCliente: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BFecharClick(Sender: TObject);
@@ -86,6 +87,7 @@ type
     procedure RECIBOLOCACAOCORPOAfterScroll(DataSet: TDataSet);
     procedure MVisualizarNotaClick(Sender: TObject);
     procedure CTotalClick(Sender: TObject);
+    procedure BEnviarEmailClienteClick(Sender: TObject);
   private
      VprCodFilial,
      VprLanOrcamento : Integer;
@@ -269,6 +271,16 @@ begin
     else
       AtualizaConsulta;
  end;
+end;
+
+{******************************************************************************}
+procedure TFReciboLocacao.BEnviarEmailClienteClick(Sender: TObject);
+var
+  VpfResultado : String;
+begin
+  //VpfResultado := FunContrato.EnviaEmailCliente(vp,VprDCliente);
+  if VpfREsultado <> '' then
+    aviso(VpfREsultado);
 end;
 
 {******************************************************************************}
