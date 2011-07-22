@@ -74,6 +74,7 @@ type
     N1: TMenuItem;
     ConsultaEstoqueChapa1: TMenuItem;
     CadNotasFiscaisForC_NOM_USU: TWideStringField;
+    BGeraNota: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BFecharClick(Sender: TObject);
@@ -92,9 +93,11 @@ type
     procedure VisualizaPedidosCompra1Click(Sender: TObject);
     procedure ConsultaEstoqueChapa1Click(Sender: TObject);
     procedure GridIndice1DblClick(Sender: TObject);
+    procedure BGeraNotaClick(Sender: TObject);
   private
     { Private declarations }
     UnNotasFiscaisFor : TFuncoesNFFor;
+    FunNotaFor : TFuncoesNFFor;
     UnCP : TFuncoesContasAPagar;
     VprDNotaFor : TRBDNotaFiscalFor;
     VprOrdem : String;
@@ -102,6 +105,7 @@ type
     procedure AtualizaConsulta(VpaGuardar : Boolean = false);
     procedure Adicionafiltros(VpaSelect : TSTrings);
     procedure PosicionaMovNota(VpaCodFilial,VpaSeqNota : String);
+    procedure GeraNotaFiscal;
   public
     { Public declarations }
   end;
@@ -111,7 +115,8 @@ var
 
 implementation
 
-uses APrincipal,funsql, FunData, ANovaNotaFiscaisFor, dmRave, APedidoCompra, AMostraEstoqueChapas;
+uses APrincipal,funsql, FunData, ANovaNotaFiscaisFor, dmRave, APedidoCompra, AMostraEstoqueChapas,
+  ANovaNotaFiscalNota, UnDados;
 
 {$R *.DFM}
 
@@ -271,6 +276,13 @@ begin
    close;
 end;
 
+{******************************************************************************}
+procedure TFExtornoEntrada.BGeraNotaClick(Sender: TObject);
+begin
+  GeraNotaFiscal;
+  AtualizaConsulta(true);
+end;
+
 {*************** posiciona o movimento de notas fiscais ***********************}
 procedure TFExtornoEntrada.CadNotasFiscaisForAfterScroll(
   DataSet: TDataSet);
@@ -292,6 +304,35 @@ end;
 {******************************************************************************}
 procedure TFExtornoEntrada.FormShow(Sender: TObject);
 begin
+end;
+
+{******************************************************************************}
+procedure TFExtornoEntrada.GeraNotaFiscal;
+var
+  VpfResultado : String;
+  VpfDNotaEntrada: TRBDNotaFiscalFor;
+begin
+  VpfResultado := '';
+  VpfDNotaEntrada := TRBDNotaFiscalFor.Cria;
+  FunNotaFor := TFuncoesNFFor.criar(self,FPrincipal.BaseDados);
+  VpfDNotaEntrada.CodFilial := CadNotasFiscaisForI_Emp_Fil.AsInteger;
+  VpfDNotaEntrada.SeqNota := CadNotasFiscaisForI_Seq_Not.AsInteger;
+  FunNotaFor.CarDNotaFor(VpfDNotaEntrada);
+  if VpfResultado = '' then
+  begin
+    PainelTempo1.execute('Gerando Nota Fiscal...');
+    FNovaNotaFiscalNota := TFNovaNotaFiscalNota.criarSDI(Application,'',FPrincipal.VerificaPermisao('FNovaNotaFiscalNota'));
+    if FNovaNotaFiscalNota.GeraNotaNotaEntrada(VpfDNotaEntrada) then
+    begin
+      AtualizaConsulta(true);
+    end;
+    FNovaNotaFiscalNota.free;
+  end;
+  if VpfResultado <> '' then
+    aviso(VpfResultado);
+  PainelTempo1.fecha;
+  VpfDNotaEntrada.free;
+  FunNotaFor.free;
 end;
 
 {******************************************************************************}

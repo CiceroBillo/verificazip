@@ -478,11 +478,14 @@ type
      procedure ValidaDadosRomaneioComOrcamento(VpaDRomaneioItem : TRBDRomaneioOrcamentoItem);
      procedure AdicionaServicoContrato(VpaDContrato : TRBDContratoCorpo);
      procedure AdicionaProdutosContratoDadosAdicionais(VpaDContrato : TRBDContratoCorpo);
+     procedure AdicionaProdutosNotaEntrada(VpaDNotaEntrada : TRBDNotaFiscalFor);
+     procedure AdicionaServicosNotaEntrada(VpaDNOtaEntrada:  TRBDNotaFiscalFor);
      procedure OrdenaCotacoesPorDataEntrega(VpaCotacoes : TList);
      procedure CarProBaixadosOrcamento;
      procedure AssociaNotaCotacoes(VpaCotacoes : TList);
      function BaixaProdutoCotacaoRomaneio : string;
      procedure CarDOrcamentoNota(VpaDOrcamento : TRBDOrcamento;VpaDNota : TRBDNotaFiscal);
+     procedure CarDNotaEntradaNotaSaida(VpaDNotaentrada: TRBDNotaFiscalFor; VpaDNota : TRBDNotaFiscal);
      procedure CarDClienteNovaNota(VpaDNota : TRBDNotaFiscal;VpaCodCliente : Integer);
      procedure AdicionaAcrescimosDescontoCotacoesNota(VpaCotacoes : TList;VpaDNota : TRBDNotaFiscal);
      procedure CarObservacoesRomaneio(VpaDRomaneio : TRBDRomaneioOrcamento; VpaDNota : TRBDNotaFiscal);
@@ -498,6 +501,7 @@ type
   public
      function NovaNotaFiscal : Boolean;
      function GeraNotaCotacoes(VpaCotacoes : TList;VpaSomenteServico : Boolean = false):Boolean;
+     function GeraNotaNotaEntrada(VpaDNotaFiscalEntrada: TRBDNotaFiscalFor):boolean;
      function GeraNotaCotacoesAutomatico(VpaCotacoes : TList;VpaDCliente : TRBDCliente;VpaBarraStatus : TStatusBar):string;
      function GeraNotaRomaneio(VpaEmpfil,VpaNumRomaneio : String) : boolean;
      function GeraNotaRomaneioGenerico(VpaCodFilial, VpaSeqRomaneio,VpaCodCliente : Integer):Boolean;
@@ -1018,6 +1022,49 @@ begin
         PerDesconto := EValDescontoAcrescimo.AValor;
       end;
   end;
+end;
+
+{******************************************************************************}
+procedure TFNovaNotaFiscalNota.CarDNotaEntradaNotaSaida(VpaDNotaentrada: TRBDNotaFiscalFor; VpaDNota: TRBDNotaFiscal);
+begin
+  //informaçoes do cliente;
+
+  VpaDNota.CodVendedor := VpaDNotaentrada.CodVendedor;
+  ECoDVendedor.Atualiza;
+
+//  CardClienteNovaNota(VpaDNota,VpaDNotaentrada.CodFornecedor);
+  VpaDNota.CodVendedor := VpaDNotaentrada.CodVendedor;
+  VpaDNota.PerComissao := VpaDNotaentrada.PerComissao;
+  VpaDNota.CodCondicaoPagamento := VpaDNotaentrada.CodCondicaoPagamento;
+  VpaDNota.CodFormaPagamento := VpaDNotaentrada.CodFormaPagamento;
+  VpaDNota.CodTransportadora := VpaDNotaentrada.CodTransportadora;
+  if VpaDNotaentrada.PerDesconto > 0  then
+    VpaDNota.PerDesconto := VpaDNotaentrada.PerDesconto;
+  if VprDCliente.IndQuarto then
+    VpaDNota.ValDesconto := VpaDNotaentrada.ValDesconto / 4
+  else
+    if VprDCliente.IndDecimo then
+      VpaDNota.ValDesconto := VpaDNotaentrada.ValDesconto / 10
+    else
+      if VpaDNotaentrada.ValDesconto > 0 then
+        VpaDNota.ValDesconto := VpaDNotaentrada.ValDesconto;
+  if VpaDNotaentrada.ValFrete <> 0 then
+    VpaDNota.ValFrete := VpaDNotaentrada.ValFrete;
+  if not config.NaoCopiarObservacaoPedidoNotaFiscal then
+  begin
+      VpaDNota.DesObservacao.text := VpaDNotaentrada.DesObservacao;
+
+    if Config.MostrarTelaObsCotacaoNaNotaFiscal then
+    begin
+      if VpaDNotaentrada.DesObservacao <> '' then
+      begin
+        FMostraObservacaoPedido := TFMostraObservacaoPedido.criarSDI(Application,'',FPrincipal.VerificaPermisao('FMostraObservacaoPedido'));
+        FMostraObservacaoPedido.MostraObservacao(VpaDNotaentrada.DesObservacao);
+        FMostraObservacaoPedido.free;
+      end;
+    end;
+  end;
+  CarDTela;
 end;
 
 {******************************************************************************}
@@ -1719,6 +1766,49 @@ begin
 end;
 
 {******************************************************************************}
+procedure TFNovaNotaFiscalNota.AdicionaProdutosNotaEntrada(VpaDNotaEntrada: TRBDNotaFiscalFor);
+var
+  VpfLaco : Integer;
+  VpfDProdutNotaEntrada : TRBDNotaFiscalForItem;
+begin
+  for VpfLaco := 0 to VpaDNotaEntrada.ItensNota.Count -1  do
+  begin
+    VpfDProdutNotaEntrada := TRBDNotaFiscalForItem(VpaDNotaEntrada.ItensNota.Items[Vpflaco]);
+    VprDProdutoNota := VprDNota.AddProduto;
+    VprDProdutoNota.CodCST :=  '000';
+    VprDProdutoNota.SeqProduto := VpfDProdutNotaEntrada.SeqProduto;
+    AdicionaItemProduto(VprDProdutoNota);
+    if VprDProdutoNota.IndReducaoICMS then
+      VprDProdutoNota.PerICMS :=  (VprDNota.ValICMSPadrao * VprDProdutoNota.PerReducaoICMSProduto)/100
+    else
+      VprDProdutoNota.PerICMS :=  VprDNota.ValICMSPadrao;
+    if VpfDProdutNotaEntrada.CodCor <> 0 then
+      VprDProdutoNota.CodCor := VpfDProdutNotaEntrada.CodCor;
+    VprDProdutoNota.CodProduto := VpfDProdutNotaEntrada.CodProduto;
+    VprDProdutoNota.DesCor := VpfDProdutNotaEntrada.DesCor;
+    if config.GerarFinanceiroCotacao or config.GerarNotaPelaQuantidadeProdutos then
+      VprDProdutoNota.QtdProduto := VpfDProdutNotaEntrada.QtdProduto;
+    if VprDCliente.IndQuarto then
+      VprDProdutoNota.ValUnitario := VpfDProdutNotaEntrada.ValUnitario / 4
+    else
+      if VprDCliente.IndMeia then
+        VprDProdutoNota.ValUnitario := VpfDProdutNotaEntrada.ValUnitario / 2
+      else
+        if VprDCliente.IndVintePorcento then
+           VprDProdutoNota.ValUnitario := VpfDProdutNotaEntrada.ValUnitario / 5
+         else
+          if VprDCliente.IndDecimo then
+             VprDProdutoNota.ValUnitario := VpfDProdutNotaEntrada.ValUnitario / 10
+           else
+             VprDProdutoNota.ValUnitario := VpfDProdutNotaEntrada.ValUnitario;
+    VprDProdutoNota.UM := VpfDProdutNotaEntrada.UM;
+    VprDProdutoNota.ValTotal := VprDProdutoNota.ValUnitario * VprDProdutoNota.QtdProduto;
+    VprDProdutoNota.ValIPI := ArredondaDecimais((VprDProdutoNota.ValTotal * VprDProdutoNota.PerIPI)/100,2);
+    FunNotaFiscal.VerificaItemNotaDuplicado(VprDNota);
+  end;
+end;
+
+{******************************************************************************}
 procedure TFNovaNotaFiscalNota.AdicionaServicoContrato(VpaDContrato: TRBDContratoCorpo);
 begin
   VprDServicoNota := VprDNota.AddServico;
@@ -1731,6 +1821,58 @@ begin
 
   CalculaValorTotal;
   GServicos.CarregaGrade;
+end;
+
+{******************************************************************************}
+procedure TFNovaNotaFiscalNota.AdicionaServicosNotaEntrada(
+  VpaDNOtaEntrada: TRBDNotaFiscalFor);
+var
+  VpfLaco : Integer;
+  VpfDServicoNotaEntrada : TRBDNotaFiscalForServico;
+begin
+  for VpfLaco := 0 to VpaDNotaEntrada.ItensServicos.Count -1  do
+  begin
+    VpfDServicoNotaEntrada := TRBDNotaFiscalForServico(VpaDNotaEntrada.ItensServicos.Items[Vpflaco]);
+    VprDServicoNota := VprDNota.AddServico;
+    VprDServicoNota.CodServico := VpfDServicoNotaEntrada.CodServico;
+    FunNotaFiscal.ExisteServico(IntToStr(VprDServicoNota.CodServico),VprDNota,VprDServicoNota);
+    VprDServicoNota.NomServico := VpfDServicoNotaEntrada.NomServico;
+    VprDServicoNota.DesAdicional := VpfDServicoNotaEntrada.DesAdicional;
+    VprDServicoNota.QtdServico := VpfDServicoNotaEntrada.QtdServico;
+    VprDServicoNota.CodClassificacao := VpfDServicoNotaEntrada.CodClassificacao;
+    VprDServicoNota.CodFiscal := VpfDServicoNotaEntrada.CodFiscal;
+
+    if VprDCliente.IndQuarto then
+    begin
+      VprDServicoNota.ValUnitario := VpfDServicoNotaEntrada.ValUnitario / 4;
+      VprDServicoNota.ValTotal := VpfDServicoNotaEntrada.ValTotal / 4;
+    end
+    else
+      if VprDCliente.IndMeia then
+      begin
+        VprDServicoNota.ValUnitario := VpfDServicoNotaEntrada.ValUnitario / 2;
+        VprDServicoNota.ValTotal := VpfDServicoNotaEntrada.ValTotal / 2;
+      end
+      else
+      if VprDCliente.IndVintePorcento then
+        begin
+          VprDServicoNota.ValUnitario := VpfDServicoNotaEntrada.ValUnitario / 5;
+          VprDServicoNota.ValTotal := VpfDServicoNotaEntrada.ValTotal / 5;
+        end
+        else
+        if VprDCliente.IndDecimo then
+          begin
+            VprDServicoNota.ValUnitario := VpfDServicoNotaEntrada.ValUnitario / 10;
+            VprDServicoNota.ValTotal := VpfDServicoNotaEntrada.ValTotal / 10;
+          end
+          else
+          begin
+            VprDServicoNota.ValUnitario := VpfDServicoNotaEntrada.ValUnitario;
+            VprDServicoNota.ValTotal := VpfDServicoNotaEntrada.ValTotal;
+          end;
+    if VprDServicoNota.PerISSQN <> 0 then
+      EPerISSQN.AValor := VprDServicoNota.PerISSQN;
+  end;
 end;
 
 {******************************************************************************}
@@ -3549,6 +3691,36 @@ begin
   BaixaFinanceiro;
   aviso('POSICIONE A NOTA!!!'#13'Posicione a nota fiscal para a impressão.');
   BImprimir.Click;
+end;
+
+{******************************************************************************}
+function TFNovaNotaFiscalNota.GeraNotaNotaEntrada(VpaDNotaFiscalEntrada: TRBDNotaFiscalFor): boolean;
+var
+  VpfResultado : String;
+begin
+  result := false;
+
+  VprDNota := TRBDNotaFiscal.cria;
+  VprOperacao := ocInsercao;
+  VpfResultado :=  VerificaVariaveis;
+  if VpfResultado = '' then
+  begin
+    VprDNota := TRBDNotaFiscal.cria;
+    VprOperacao := ocInsercao;
+    ConfiguraItemNota(Varia.NotaFiscalPadrao);
+    InicializaNota;
+    AlteraLocalizasOrcamento;
+    CarDNotaEntradaNotaSaida(VpaDNotaFiscalEntrada,VprDNota);
+    AdicionaServicosNotaEntrada(VpaDNotaFiscalEntrada);
+    CarNaturezaOperacaoNota;
+    AdicionaProdutosNotaEntrada(VpaDNotaFiscalEntrada);
+    GProdutos.CarregaGrade;
+    GServicos.CarregaGrade;
+    ShowModal;
+    result := VprAcao;
+  end
+  else
+    aviso(VpfResultado);
 end;
 
 {******************* imprime boletos bancarios **************************** }

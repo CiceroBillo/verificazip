@@ -762,7 +762,7 @@ end;
 {******************************************************************************}
 procedure TFPropostasCliente.BImprimirClick(Sender: TObject);
 begin
-  if PropostaCODFILIAL.AsInteger <> 0 then
+   if PropostaCODFILIAL.AsInteger <> 0 then
   begin
     try
       dtRave := TdtRave.Create(self);
