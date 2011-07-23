@@ -81,6 +81,10 @@ object FNovoProdutoPro: TFNovoProdutoPro
       OnChanging = PaginasChanging
       object PGerais: TTabSheet
         Caption = 'Gerais'
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object PanelColor6: TPanelColor
           Left = 0
           Top = 0
@@ -1093,6 +1097,10 @@ object FNovoProdutoPro: TFNovoProdutoPro
       object PCadarco: TTabSheet
         Caption = 'Cadar'#231'o Tran'#231'ado'
         ImageIndex = 1
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object PanelColor7: TPanelColor
           Left = 0
           Top = 0
@@ -1480,6 +1488,10 @@ object FNovoProdutoPro: TFNovoProdutoPro
       object PETiqueta: TTabSheet
         Caption = 'Etiqueta'
         ImageIndex = 2
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object PanelColor8: TPanelColor
           Left = 0
           Top = 0
@@ -2160,6 +2172,10 @@ object FNovoProdutoPro: TFNovoProdutoPro
       object PCadarcoFita: TTabSheet
         Caption = 'Cadar'#231'o'
         ImageIndex = 12
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object PanelColor13: TPanelColor
           Left = 0
           Top = 0
@@ -2432,6 +2448,10 @@ object FNovoProdutoPro: TFNovoProdutoPro
       object PCombinacao: TTabSheet
         Caption = 'Combina'#231#227'o'
         ImageIndex = 3
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object PanelColor12: TPanelColor
           Left = 0
           Top = 0
@@ -2452,31 +2472,28 @@ object FNovoProdutoPro: TFNovoProdutoPro
           object Label39: TLabel
             Left = 1
             Top = 146
-            Width = 792
+            Width = 199
             Height = 16
             Align = alTop
             Caption = '<F4> Foco Para a Pr'#243'xima Grade'
-            ExplicitWidth = 199
           end
           object Label35: TLabel
             Left = 1
             Top = 1
-            Width = 792
+            Width = 77
             Height = 16
             Align = alTop
             Caption = 'Combina'#231#227'o'
             Color = clSilver
             ParentColor = False
-            ExplicitWidth = 77
           end
           object Label37: TLabel
             Left = 1
             Top = 162
-            Width = 792
+            Width = 45
             Height = 16
             Align = alTop
             Caption = 'Figuras'
-            ExplicitWidth = 45
           end
           object GCombinacao: TRBStringGridColor
             Left = 1
@@ -2573,6 +2590,10 @@ object FNovoProdutoPro: TFNovoProdutoPro
       object PDadosAdicionais: TTabSheet
         Caption = 'Dados Adicionais'
         ImageIndex = 4
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object ScrollBox1: TScrollBox
           Left = 0
           Top = 0
@@ -3311,6 +3332,10 @@ object FNovoProdutoPro: TFNovoProdutoPro
       object PAco: TTabSheet
         Caption = 'A'#231'o'
         ImageIndex = 13
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object PanelColor14: TPanelColor
           Left = 0
           Top = 0
@@ -3393,6 +3418,10 @@ object FNovoProdutoPro: TFNovoProdutoPro
       object PCopiadoras: TTabSheet
         Caption = 'Copiadora && Impressora'
         ImageIndex = 5
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object PanelColor10: TPanelColor
           Left = 0
           Top = 0
@@ -3867,6 +3896,10 @@ object FNovoProdutoPro: TFNovoProdutoPro
       object PCartuchos: TTabSheet
         Caption = 'Cartuchos'
         ImageIndex = 6
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object PanelColor11: TPanelColor
           Left = 0
           Top = 0
@@ -4233,6 +4266,10 @@ object FNovoProdutoPro: TFNovoProdutoPro
       object PEstagios: TTabSheet
         Caption = 'Est'#225'gios'
         ImageIndex = 7
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object GEstagios: TRBStringGridColor
           Left = 0
           Top = 0
@@ -4328,6 +4365,10 @@ object FNovoProdutoPro: TFNovoProdutoPro
       object PFornecedores: TTabSheet
         Caption = 'Fornecedores'
         ImageIndex = 8
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object GFornecedores: TRBStringGridColor
           Left = 0
           Top = 0
@@ -4469,6 +4510,10 @@ object FNovoProdutoPro: TFNovoProdutoPro
       object PAcessorios: TTabSheet
         Caption = 'Acess'#243'rios'
         ImageIndex = 9
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object GAcessorios: TRBStringGridColor
           Left = 0
           Top = 0
@@ -4564,6 +4609,10 @@ object FNovoProdutoPro: TFNovoProdutoPro
       object PTabelaPreco: TTabSheet
         Caption = 'Pre'#231'os'
         ImageIndex = 10
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object GPreco: TRBStringGridColor
           Left = 0
           Top = 0
@@ -4905,6 +4954,10 @@ object FNovoProdutoPro: TFNovoProdutoPro
       object PInstalacaoTear: TTabSheet
         Caption = 'Instala'#231#227'o Tear'
         ImageIndex = 11
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Splitter1: TSplitter
           Left = 584
           Top = 121
@@ -5655,6 +5708,10 @@ object FNovoProdutoPro: TFNovoProdutoPro
       object PDetectoresMetal: TTabSheet
         Caption = 'Detectores de Metal'
         ImageIndex = 14
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object PanelColor15: TPanelColor
           Left = 0
           Top = 0
@@ -6049,6 +6106,10 @@ object FNovoProdutoPro: TFNovoProdutoPro
       object POrcamentoCadarco: TTabSheet
         Caption = 'Or'#231'amento Cadar'#231'o'
         ImageIndex = 15
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object PanelColor16: TPanelColor
           Left = 0
           Top = 0
@@ -6217,6 +6278,10 @@ object FNovoProdutoPro: TFNovoProdutoPro
       object PEmbalagemPvc: TTabSheet
         Caption = 'Embalagem PVC'
         ImageIndex = 16
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object SPVC: TScrollBox
           Left = 0
           Top = 0
@@ -7521,6 +7586,10 @@ object FNovoProdutoPro: TFNovoProdutoPro
       object PRotuladoras: TTabSheet
         Caption = 'Maquinas Rotuladoras'
         ImageIndex = 17
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object PanelColor21: TPanelColor
           Left = 0
           Top = 0
@@ -7593,6 +7662,10 @@ object FNovoProdutoPro: TFNovoProdutoPro
       object PFilial: TTabSheet
         Caption = 'Filial Faturamento'
         ImageIndex = 18
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object PanelColor18: TPanelColor
           Left = 0
           Top = 0
@@ -7851,7 +7924,7 @@ object FNovoProdutoPro: TFNovoProdutoPro
     Caption = '  Produto  '
     Font.Charset = ANSI_CHARSET
     Font.Color = clWhite
-    Font.Height = -27
+    Font.Height = -24
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
     ParentFont = False

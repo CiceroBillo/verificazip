@@ -138,6 +138,7 @@ type
     CadProdutosN_PER_MAX: TFMTBCDField;
     CadProdutosDESCONTOMAXIMOCLASSIFICACAO: TFMTBCDField;
     CadProdutosDESCONTOMAXIMOTABELAPRECO: TFMTBCDField;
+    CadProdutosN_PER_SUT: TFMTBCDField;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure CProAtiClick(Sender: TObject);
@@ -322,7 +323,7 @@ begin
                      ' Pro.N_PER_KIT, PRO.N_PES_LIQ, PRO.N_PES_BRU, PRO.N_PER_IPI, PRO.N_RED_ICM, PRO.C_IND_RET,' +
                      ' PRO.C_COD_CTB, C_CIL_NOV, C_CHI_NOV, C_CAR_TEX, C_IND_ORI, PRO.C_PRA_PRO, '+
                      ' PRO.I_QTD_PAG, PRO.I_ALT_PRO, PRO.I_IND_COV, PRO.I_MES_GAR, PRO.N_DEN_VOL, N_ESP_ACO, PRO.C_SUB_TRI, '+
-                     ' PRO.C_REC_PRE, PRO.N_PER_ICM, PRO.N_PER_MAX, '+
+                     ' PRO.C_REC_PRE, PRO.N_PER_ICM, PRO.N_PER_MAX, PRO.N_PER_SUT, '+
                      ' CLA.C_COD_CLA, CLA.C_NOM_CLA, CLA.N_PER_COM PERCOMISSAOCLASSIFICACAO, '+
                      ' CLA.N_PER_PER, CLA.N_PER_MAX DESCONTOMAXIMOCLASSIFICACAO,'+
                      ' Qtd.C_Cod_Bar, ' +
@@ -839,6 +840,8 @@ begin
       DensidadeVolumetricaAco := CadProdutosN_DEN_VOL.AsFloat;
       EspessuraAco := CadProdutosN_ESP_ACO.AsFloat;
       IndProdutoAtivo := CadProdutosC_ATI_PRO.AsString = 'S';
+      PerMVA := CadProdutosN_PER_SUT.AsFloat;
+      PerMVAAnterior := PerMVA;
       if config.EstoquePorCor then
       begin
         VpaDProNotaFor.CodCor := CadProdutosI_COD_COR.AsInteger;

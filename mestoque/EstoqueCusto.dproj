@@ -988,7 +988,7 @@
 						<Source Name="MainSource">EstoqueCusto.dpr</Source>
 					</Source>
 					<Parameters>
-						<Parameters Name="RunParams">sisCorp RAFAEL MORRO 1 11</Parameters>
+						<Parameters Name="RunParams">sisCorp RAFAEL MORRO 1 12</Parameters>
 					</Parameters>
 					<Language>
 						<Language Name="ProjectLang">$00000416</Language>

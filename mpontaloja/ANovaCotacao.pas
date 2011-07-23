@@ -546,6 +546,8 @@ begin
   ValidaUnidade.Ainfo.UnidadeUN := varia.unidadeUN;
   ValidaUnidade.AInfo.UnidadeKiT := varia.UnidadeKit;
   ValidaUnidade.AInfo.UnidadeBarra := varia.UnidadeBarra;
+  ValidaUnidade.AInfo.UnidadeQuilo := varia.UnidadeQuilo;
+  ValidaUnidade.AInfo.UnidadeMilheiro := varia.UnidadeMilheiro;
   LNomeFantasia.Caption := Varia.NomeFilial;
   CarTituloGrade;
   VprAcao := false;
@@ -2897,8 +2899,7 @@ begin
 end;
 
 {******************************************************************************}
-procedure TFNovaCotacao.GProdutosDadosValidos(Sender: TObject;
-  var VpaValidos: Boolean);
+procedure TFNovaCotacao.GProdutosDadosValidos(Sender: TObject;var VpaValidos: Boolean);
 Var
   VpfSenha : String;
   VpfSolicitarSenha : boolean;

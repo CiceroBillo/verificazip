@@ -231,7 +231,7 @@ type
       UnidadeUN,
       UnidadeKit,
       UnidadeBarra,
-      UnidadeKilo,
+      UnidadeQuilo,
       UnidadeMilheiro : string;
       ClassificacaoFiscal : string;
       DiasValidade : integer;  // dias de validade para os orcamentos
@@ -1992,7 +1992,7 @@ begin
          UnidadeUN := VpfTabela.fieldByName('C_UNI_PEC').AsString;
          UnidadeKit := VpfTabela.fieldByName('C_UNI_KIT').AsString;
          UnidadeBarra := VpfTabela.fieldByName('C_UNI_BAR').AsString;
-         UnidadeKilo := VpfTabela.fieldByName('C_UNI_QUI').AsString;
+         UnidadeQuilo := VpfTabela.fieldByName('C_UNI_QUI').AsString;
          UnidadeMilheiro := VpfTabela.fieldByName('C_UNI_MIL').AsString;
          OperacaoEstoqueInicial := VpfTabela.fieldByName('I_OPE_INI').AsInteger;
          UltimoMesEstoque := VpfTabela.fieldByName('I_MES_EST').AsInteger;

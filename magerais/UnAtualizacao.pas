@@ -5,7 +5,7 @@ interface
        SQLExpr,IniFiles, UnProgramador1, Tabela ;
 
 Const
-  CT_VersaoBanco = 2114;
+  CT_VersaoBanco = 2116;
   CT_VersaoInvalida = 'SISTEMA DESATUALIZADO!!! Este sistema já possui novas versões, essa versão pode não funcionar corretamente,  para o bom funcionamento do mesmo é necessário fazer a atualização...' ;
 
   CT_SenhaAtual = '9774';
@@ -5941,6 +5941,18 @@ begin
     result := '2114';
     ExecutaComandoSql(Aux,'alter table CADFILIAIS ADD (D_ULT_RPS DATE NULL)');
     ExecutaComandoSql(Aux,'Update CFG_GERAL set I_Ult_Alt = 2114');
+  end;
+  if VpaNumAtualizacao < 2115 then
+  begin
+    result := '2115';
+    ExecutaComandoSql(Aux,'ALTER TABLE CADPRODUTOS MODIFY I_IND_COV NUMBER(17,6)');
+    ExecutaComandoSql(Aux,'Update CFG_GERAL set I_Ult_Alt = 2115');
+  end;
+  if VpaNumAtualizacao < 2116 then
+  begin
+    result := '2116';
+//    ExecutaComandoSql(Aux,'DELETE FROM MOVTABELAPRECO WHERE I_COD_CLI <> 0');
+    ExecutaComandoSql(Aux,'Update CFG_GERAL set I_Ult_Alt = 2116');
   end;
 end;
 

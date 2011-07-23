@@ -548,6 +548,8 @@ begin
   ValidaUnidade.Ainfo.UnidadeUN := varia.unidadeUN;
   ValidaUnidade.Ainfo.UnidadeKit := varia.unidadeKit;
   ValidaUnidade.Ainfo.UnidadeBarra := varia.UnidadeBarra;
+  ValidaUnidade.Ainfo.UnidadeQuilo := varia.UnidadeQuilo;
+  ValidaUnidade.Ainfo.UnidadeMilheiro := varia.UnidadeMilheiro;
   FunOrdemProducao := TRBFuncoesOrdemProducao.cria(FPrincipal.baseDados);
 
   FundoNota.VertScrollBar.Position := 0;

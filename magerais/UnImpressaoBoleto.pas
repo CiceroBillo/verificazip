@@ -274,7 +274,7 @@ begin
   begin
     VpfTextoEmail := TStringList.create;
     MontaEmailHTML(VpaDCliente,VpfTextoEmail);
-    VpfBoleto.EnviarPorEMail(Varia.ServidorSMTP,varia.UsuarioSMTP,varia.ServidorPop,Varia.SenhaEmail, 25,Varia.NomeFilial+' - Boleto Bancario - Duplicata "'+vpfDParcela.NroDuplicata+'"',VpfTextoEmail);
+    VpfBoleto.EnviarPorEMail(Varia.ServidorSMTP,varia.UsuarioSMTP,varia.ServidorPop,Varia.SenhaEmail, varia.PortaSMTP,Varia.NomeFilial+' - Boleto Bancario - Duplicata "'+vpfDParcela.NroDuplicata+'"',VpfTextoEmail);
     VpfTextoEmail.free;
   end
   else

@@ -1731,7 +1731,7 @@ begin
   if VprOperacao in [ocEdicao,ocInsercao] then
   begin
     LQtdCaixa.Visible:= (EUnidadesVenda.Items.Strings[EUnidadesVenda.ItemIndex] = Varia.UnidadeCX) or(EUnidadesVenda.Items.Strings[EUnidadesVenda.ItemIndex] = Varia.UnidadeKit)
-                  or(EUnidadesVenda.Items.Strings[EUnidadesVenda.ItemIndex] = Varia.UnidadeBarra) or(EUnidadesVenda.Items.Strings[EUnidadesVenda.ItemIndex] = Varia.UnidadeKilo);
+                  or(EUnidadesVenda.Items.Strings[EUnidadesVenda.ItemIndex] = Varia.UnidadeBarra) or(EUnidadesVenda.Items.Strings[EUnidadesVenda.ItemIndex] = Varia.UnidadeQuilo);
     if (EUnidadesVenda.Items.Strings[EUnidadesVenda.ItemIndex] = Varia.UnidadeKit) then
       LQtdCaixa.Caption := 'Unidades por Kit : '
     else
@@ -1741,11 +1741,21 @@ begin
         if (EUnidadesVenda.Items.Strings[EUnidadesVenda.ItemIndex] = Varia.UnidadeBarra) then
           LQtdCaixa.Caption := 'Qtd Metros Barra : '
         else
-        if (EUnidadesVenda.Items.Strings[EUnidadesVenda.ItemIndex] = Varia.UnidadeKilo) then
+        if (EUnidadesVenda.Items.Strings[EUnidadesVenda.ItemIndex] = Varia.UnidadeQuilo) then
           LQtdCaixa.Caption := 'Peso Milheiro : ';
 
     EUnidadesPorCaixa.Visible:= LQtdCaixa.Visible;
     EUnidadesPorCaixa.ACampoObrigatorio:= LQtdCaixa.Visible;
+    if (EUnidadesVenda.Items.Strings[EUnidadesVenda.ItemIndex] = Varia.UnidadeQuilo) then
+    begin
+      EUnidadesPorCaixa.AMascara := ' ,0.000##;- ,0.000##';
+      EUnidadesPorCaixa.ADecimal := 6;
+    end
+    else
+    begin
+      EUnidadesPorCaixa.AMascara := '0';
+      EUnidadesPorCaixa.ADecimal := 0;
+    end;
 
     if config.ExigirQdMetrosQuandoDiferenteMT then
     begin

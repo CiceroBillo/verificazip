@@ -1,4 +1,3 @@
-
 unit UnProdutos;
 //revisado o as
 //           =*
@@ -172,7 +171,7 @@ type
     function AlteraClassificacaoProduto(VpaSeqProduto : Integer;VpaNovaClassificacao : String) : String;
     function AlteraClassificacaoProdutoFamilia(VpaSeqProduto : Integer) : String;
     function AlteraProdutoParaSubstituicaoTributaria(VpaSeqProduto : Integer; VpaCodST: string) : string;
-    function AlteraClassificacaoFiscalProduto(VpaSeqProduto : Integer;VpaCodClassificacao : string):string;
+    function AlteraClassificacaoFiscalProduto(VpaSeqProduto : Integer;VpaCodClassificacao : string;VpaPerMVA : Double):string;
     function AlteraPrateleiraProduto(VpaSeqProduto: Integer; VpaDesPrateleira:String): String;
     function AlteraValorVendaProduto(VpaSeqProduto, VpaCodTamanho : Integer;VpaNovoValor :Double):String;
     procedure OrganizaTabelaPreco(VpaCodTabela, VpaCodCliente : integer; VpaSomenteAtividade : Boolean );
@@ -251,7 +250,7 @@ type
     function AdicionarProdutosFilial: String;
     function RUMMTCMBR(VpaCodUnidade : String):string;
     function PrincipioAtivoControlado(VpaCodPrincipio : Integer) : boolean;
-    procedure AtualizaValorCusto(VpaSeqProduto,VpaCodFilial, VpaCodMoeda : Integer; VpaUniPadrao, VpaUniProduto,VpaFuncaoOperacao : String;VpaCodCor,VpaCodTamanho : Integer;VpaQtdProduto, VpaVlrCompra,VpaTotCompra,VpaVlrFrete,VpaPerIcms, VpaPerIPI, VpaValDescontoNota: Double;VpaIndFreteEmitente : Boolean);
+    procedure AtualizaValorCusto(VpaSeqProduto,VpaCodFilial, VpaCodMoeda : Integer; VpaUniPadrao, VpaUniProduto,VpaFuncaoOperacao : String;VpaCodCor,VpaCodTamanho : Integer;VpaQtdProduto, VpaVlrCompra,VpaTotCompra,VpaVlrFrete,VpaPerIcms, VpaPerIPI, VpaValDescontoNota, VpaValSubstituicaoTributaria: Double;VpaIndFreteEmitente : Boolean);
     function AtualizaCodEan(VpaSeqProduto,VpaCodCor : Integer;VpaCodBarras : String):String;
     function AtualizaValorVendaAutomatico(VpaSeqProduto : Integer;VpaValCusto : Double):string;
     function AtualizaEmbalagem(VpaSeqProduto,VpaCodEmbalagem : Integer):string;
@@ -378,6 +377,7 @@ type
     function RNumViesEmbalagemPvc(VpaViesEmbalagemPvc : TRBDViesEmbalagemPvc): integer;
     function CalculaValorVendaCadarco(VpadProduto : TRBDProduto) : Double;
     function ProdutoTributado(VpaCodCST : String) : boolean;
+    function ProdutoDestacaST(VpaCodCST : String) : boolean;
     function SalvaImagemdaAreaTransferenciaWindows(VpaDProduto : TRBDProduto) : string;
     function GravaCodigoBarraProdutos(VpaCodFilial, VpaSeqProduto, VpaCodCor, VpaCodTamanho: Integer; VpaCodBarra: String):String;
  end;
@@ -674,6 +674,8 @@ begin
   ConvUnidade.AInfo.UnidadeUN := varia.UnidadeUN;
   ConvUnidade.AInfo.UnidadeKit := varia.UnidadeKit;
   ConvUnidade.AInfo.UnidadeBarra := varia.UnidadeBarra;
+  ConvUnidade.AInfo.UnidadeQuilo := varia.UnidadeQuilo;
+  ConvUnidade.AInfo.UnidadeMilheiro := varia.UnidadeMilheiro;
 
   ValidaUnidade := TValidaUnidade.create(nil);
   ValidaUnidade.ADataBase := VpaBaseDados;
@@ -685,6 +687,8 @@ begin
   ValidaUnidade.AInfo.UnidadeUN := Varia.UnidadeUN;
   ValidaUnidade.AInfo.UnidadeKit := Varia.UnidadeKit;
   ValidaUnidade.AInfo.UnidadeBarra := Varia.UnidadeBarra;
+  ValidaUnidade.AInfo.UnidadeQuilo := Varia.UnidadeQuilo;
+  ValidaUnidade.AInfo.UnidadeMilheiro := Varia.UnidadeMilheiro;
 
   FunAmostra:= TRBFuncoesAmostra.cria(ProCadastro.ASQLConnection);
 end;
@@ -2011,6 +2015,16 @@ begin
   Aux.Close;
 end;
 
+{******************************************************************************}
+function TFuncoesProduto.ProdutoDestacaST(VpaCodCST: String): boolean;
+begin
+  result := false;
+  if (Length(VpaCodCST) = 3) then
+    if(copy(VpaCodCST,2,2) = '10') or
+      (copy(VpaCodCST,2,2) = '70') then
+      result := true;
+end;
+
 {************************* Verifica se o produto ja foi cadastrado *********** }
 function TFuncoesProduto.ProdutoExistente(CodigoPro, CodClassificacao : string) : Boolean;
 begin
@@ -2034,7 +2048,8 @@ begin
   if (Length(VpaCodCST) = 3) then
     if (copy(VpaCodCST,2,2) = '00') or
        (copy(VpaCodCST,2,2) = '10') or
-       (copy(VpaCodCST,2,2) = '20') then
+       (copy(VpaCodCST,2,2) = '20') or
+       (copy(VpaCodCST,2,2) = '70') then
       result := true;
 end;
 
@@ -3088,12 +3103,13 @@ begin
 end;
 
 {******************************************************************************}
-function TFuncoesProduto.AlteraClassificacaoFiscalProduto(VpaSeqProduto : Integer; VpaCodClassificacao: string): string;
+function TFuncoesProduto.AlteraClassificacaoFiscalProduto(VpaSeqProduto : Integer; VpaCodClassificacao: string;VpaPerMVA : Double): string;
 begin
   AdicionaSQLAbreTabela(ProCadastro,'Select * from CADPRODUTOS '+
                                     ' Where I_SEQ_PRO = '+IntToStr(VpaSeqProduto) );
   ProCadastro.Edit;
   ProCadastro.FieldByName('C_CLA_FIS').AsString := VpaCodClassificacao;
+  ProCadastro.FieldByName('N_PER_SUT').AsFloat := VpaPerMVA;
   ProCadastro.FieldByName('C_ASS_REG').AsString := Sistema.RAssinaturaRegistro(ProCadastro);
   ProCadastro.Post;
   result := ProCadastro.AMensagemErroGravacao;
@@ -4861,7 +4877,7 @@ begin
 end;
 
 {********************* atualiza o valor de compra do produto ******************}
-procedure TFuncoesProduto.AtualizaValorCusto(VpaSeqProduto,VpaCodFilial, VpaCodMoeda : Integer; VpaUniPadrao, VpaUniProduto, VpaFuncaoOperacao: String;VpaCodCor,VpaCodTamanho : Integer;VpaQtdProduto, VpaVlrCompra,VpaTotCompra,VpaVlrFrete,VpaPerIcms, VpaPerIPI,VpaValDescontoNota : Double;VpaIndFreteEmitente : Boolean);
+procedure TFuncoesProduto.AtualizaValorCusto(VpaSeqProduto,VpaCodFilial, VpaCodMoeda : Integer; VpaUniPadrao, VpaUniProduto, VpaFuncaoOperacao: String;VpaCodCor,VpaCodTamanho : Integer;VpaQtdProduto, VpaVlrCompra,VpaTotCompra,VpaVlrFrete,VpaPerIcms, VpaPerIPI,VpaValDescontoNota, VpaValSubstituicaoTributaria : Double;VpaIndFreteEmitente : Boolean);
 Var
   VpfValCusto, VpfQtdEstoque, VpfValCustoEstoque, VpfQtdCompra, VpfValFrete, VpfValDesconto, VpfValCompraUMPadrao, VpfTotCompra : Double;
   VpfMoedaProduto : Integer;
@@ -4875,6 +4891,7 @@ begin
     VpfQtdCompra := CalculaQdadePadrao( VpaUniProduto, VpaUniPadrao, VpaQtdProduto, IntToStr(VpaSeqProduto));
     if Varia.UtilizarIpi then
       VpaVlrCompra := VpaVlrCompra +((VpaVlrCompra * VpaPerIPI)/100)  ;
+    VpaVlrCompra := VpaVlrCompra + (VpaValSubstituicaoTributaria / VpaQtdProduto);
 
     if VpaIndFreteEmitente then
       VpfTotCompra := VpaTotCompra - VpaVlrFrete
@@ -4896,7 +4913,7 @@ begin
     begin
       if Varia.MetodoCustoProduto = mcPMP then
       begin
-        if VpfQtdEstoque > 0 then
+        if (VpfQtdEstoque > 0) and (VpfValCustoEstoque> 0) then
           VpfValCusto := ((VpfQtdEstoque * VpfValCustoEstoque) + (VpfQtdCompra * VpfValCusto))/(VpfQtdCompra + VpfQtdEstoque)
       end
       else

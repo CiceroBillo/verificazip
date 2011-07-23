@@ -303,6 +303,7 @@ type
     function LocalizaServico : Boolean;
     procedure InicializaDadosProdutoSpedFiscal;
     procedure AssociaNaturezaItens;
+    procedure CarICMSPadrao;
   public
     function Cadastrar : Boolean;
     function NovaNotaPedido(VpaDNota: TRBDNotaFiscalFor;VpaListaPedidos : TList): Boolean;
@@ -520,7 +521,9 @@ var
   VpfLaco : Integer;
   VpfCFOPProduto : Integer;
   VpfDProNota : TRBDNotaFiscalForItem;
+  VpfDProduto : TRBDProduto;
 begin
+
   if VprDNotaFor.DNaturezaOperacao.CFOPProdutoIndustrializacao <> 0 then
     VpfCFOPProduto := VprDNotaFor.DNaturezaOperacao.CFOPProdutoIndustrializacao
   else
@@ -532,7 +535,13 @@ begin
     begin
       VpfDProNota := TRBDNotaFiscalForItem(VprDNotaFor.ItensNota.Items[VpfLaco]);
       VpfDProNota.CodCFOP := VpfCFOPProduto;
+      VpfDProduto := TRBDProduto.Cria;
+      FunProdutos.CarDProduto(VpfDProduto,Varia.CodigoEmpresa,VprDNotaFor.CodFilial,VpfDProNota.SeqProduto);
+      VpfDProNota.CodCST := FunNotaFor.RCSTICMSProduto(VprDCliente,VpfDProduto,VprDNotaFor.DNaturezaOperacao);
+      VpfDProNota.PerICMS := VprICMSPadrao;
+      VpfDProduto.Free;
     end;
+    Grade.CarregaGrade;
   end;
 end;
 
@@ -671,6 +680,7 @@ begin
         Grade.Cells[RColunaGrade(clNomProduto),Grade.ALinha] := NomProduto;
         Grade.Cells[RColunaGrade(clClassificacaoFiscal),Grade.ALinha] := CodClassificacaoFiscal;
         Grade.Cells[RColunaGrade(clUm),Grade.ALinha] := UM;
+        Grade.Cells[RColunaGrade(clPerMva),Grade.ALinha] := FormatFloat('#,##0.00',VprDItemNota.PerMVA);
         if VprIndTroca then
           VprDItemNota.ValUnitario := VprDItemNota.ValRevenda;
         if config.EstoquePorTamanho then
@@ -744,6 +754,7 @@ begin
           Grade.Cells[RColunaGrade(clNomProduto),Grade.ALinha] := VprDItemNota.NomProduto;
           Grade.Cells[RColunaGrade(clClassificacaoFiscal),Grade.ALinha] := VprDItemNota.CodClassificacaoFiscal;
           Grade.Cells[RColunaGrade(clUm),Grade.ALinha] := VprDItemNota.UM;
+          Grade.Cells[RColunaGrade(clPerMva),Grade.ALinha] := FormatFloat('#,##0.00',VprDItemNota.PerMVA);
           if VprIndTroca then
             VprDItemNota.ValUnitario := VprDItemNota.ValRevenda;
 
@@ -1120,7 +1131,7 @@ begin
   grade.Cells[RColunaGrade(clPerMva),0] := '%MVA';
   grade.Cells[RColunaGrade(clBaseSt),0] := 'Base ST';
   grade.Cells[RColunaGrade(clValST),0] := 'Valor ST';
-  grade.Cells[RColunaGrade(clPerAcumulado),0] := '% Acumulado';
+  grade.Cells[RColunaGrade(clPerAcumulado),0] := '% Acr. ST';
   grade.Cells[RColunaGrade(clValorVenda),0] := 'Valor Venda';
   grade.Cells[RColunaGrade(clNumSerie),0] := 'Número Série';
   if config.Farmacia then
@@ -1244,6 +1255,8 @@ begin
     FunNotaFor.CalculaNota(VprDNotaFor);
     EBaseICms.AValor := VprDNotaFor.ValBaseICMS;
     EValIcms.AValor := VprDNotaFor.ValICMS;
+    EBaseIcmsSubs.AValor := VprDNotaFor.ValBaseICMSSubstituicao;
+    EValICMSSubs.AValor := VprDNotaFor.ValICMSSubstituicao;
     EValTotalProdutos.AValor := VprDNotaFor.ValTotalProdutos;
     EValTotal.AValor := VprDNotaFor.ValTotal;
     EValTotIpi.AValor := VprDNotaFor.ValIPI;
@@ -1299,6 +1312,18 @@ begin
   VprDNotaFor.CodFornecedor := 0;
   ECodFornecedor.Atualiza;
   Grade.CarregaGrade;
+end;
+
+{******************************************************************************}
+procedure TFNovaNotaFiscaisFor.CarICMSPadrao;
+begin
+  if VprDCliente.CodCliente <> 0 then
+  begin
+    if (Config.SimplesFederal) or not(VprDNotaFor.DNaturezaOperacao.IndCalcularICMS) then
+      VprICMSPadrao := 0
+    else
+      VprICMSPadrao := FunNotaFor.RValICMSFornecedor(VprDCliente.DesUF);
+  end;
 end;
 
 {******************************************************************************}
@@ -1451,10 +1476,10 @@ begin
   VprDItemNota.PerIPI := StrToFloat(DeletaChars(Grade.Cells[RColunaGrade(clPerIpi),Grade.ALinha],'.'));
   VprDItemNota.ValBaseIcms:= StrToFloat(DeletaChars(Grade.Cells[RColunaGrade(clBaseIcms),Grade.ALinha],'.'));
   VprDItemNota.ValICMS:= StrToFloat(DeletaChars(Grade.Cells[RColunaGrade(clValIcms),Grade.ALinha],'.'));
-  VprDItemNota.ValMva:= StrToFloat(DeletaChars(Grade.Cells[RColunaGrade(clPerMva),Grade.ALinha],'.'));
+  VprDItemNota.PerMVA:= StrToFloat(DeletaChars(Grade.Cells[RColunaGrade(clPerMva),Grade.ALinha],'.'));
   VprDItemNota.ValBaseST := StrToFloat(DeletaChars(Grade.Cells[RColunaGrade(clBaseSt),Grade.ALinha],'.'));
   VprDItemNota.ValST:= StrToFloat(DeletaChars(Grade.Cells[RColunaGrade(clValST),Grade.ALinha],'.'));
-  VprDItemNota.PerAcumulado := StrToFloat(DeletaChars(Grade.Cells[RColunaGrade(clPerAcumulado),Grade.ALinha],'.'));
+  VprDItemNota.PerAcrescimoST := StrToFloat(DeletaChars(Grade.Cells[RColunaGrade(clPerAcumulado),Grade.ALinha],'.'));
   VprDItemNota.ValNovoVenda := StrToFloat(DeletaChars(Grade.Cells[RColunaGrade(clValorVenda),Grade.ALinha],'.'));
   VprDItemNota.DesNumSerie := Grade.Cells[RColunaGrade(clNumSerie),Grade.ALinha];
   VprDItemNota.DesReferenciaFornecedor := Grade.Cells[RColunaGrade(clRefFornecedor),Grade.ALinha];
@@ -1507,10 +1532,7 @@ begin
         begin
           CSimplesNacional.Checked := VprDCliente.IndSimplesNacional;
           VprDNotaFor.CGC_CPFFornecedor := VprDCliente.CGC_CPF;
-          if (Config.SimplesFederal) or not(VprDNotaFor.DNaturezaOperacao.IndCalcularICMS) then
-            VprICMSPadrao := 0
-          else
-            VprICMSPadrao := FunNotaFor.RValICMSFornecedor(VprDCliente.DesUF);
+          CarICMSPadrao;
         end;
       end;
     end;
@@ -1627,8 +1649,11 @@ begin
       VprDNotaFor.CodNatureza := Retorno1;
       FunNotaFor.CarDNaturezaOperacao(VprDNotaFor);
       EPlano.Text := VprDNotaFor.DNaturezaOperacao.CodPlanoContas;
+      CarICMSPadrao;
       EPlanoExit(EPlano);
       LNatureza.Caption := VprDNotaFor.DNaturezaOperacao.NomOperacaoEstoque;
+      AssociaNaturezaItens;
+      CalculaNota;
    end;
 end;
 
@@ -1734,10 +1759,10 @@ begin
 
   CalculaValorTotalProduto;
 
-  Grade.Cells[RColunaGrade(clPerMva),VpaLinha] := FormatFloat(Varia.MascaraValor,VprDItemNota.ValMva);
+  Grade.Cells[RColunaGrade(clPerMva),VpaLinha] := FormatFloat('#,##0.00',VprDItemNota.PerMVA);
   Grade.Cells[RColunaGrade(clBaseSt),VpaLinha] := FormatFloat(Varia.MascaraValor,VprDItemNota.ValBaseST);
   Grade.Cells[RColunaGrade(clValST),VpaLinha] := FormatFloat(Varia.MascaraValor,VprDItemNota.ValST);
-  Grade.Cells[RColunaGrade(clPerAcumulado),VpaLinha] := FormatFloat('0.00',VprDItemNota.PerAcumulado);
+  Grade.Cells[RColunaGrade(clPerAcumulado),VpaLinha] := FormatFloat('0.00',VprDItemNota.PerAcrescimoST);
 
   Grade.Cells[RColunaGrade(clNumSerie),VpaLinha] := VprDItemNota.DesNumSerie;
   Grade.Cells[RColunaGrade(clRefFornecedor),VpaLinha] := VprDItemNota.DesReferenciaFornecedor;

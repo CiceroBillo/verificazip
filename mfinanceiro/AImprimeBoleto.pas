@@ -549,6 +549,7 @@ begin
   end;
 end;
 
+{******************************************************************************}
 procedure TFImprimeBoleto.ImprimeFolhaBranca(VpaCodCliente: integer; Dados: TDadosBoleto;
   VpaPreview,VpaEnviarEmail: boolean);
 var
