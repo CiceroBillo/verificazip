@@ -278,7 +278,7 @@ procedure TFReciboLocacao.BEnviarEmailClienteClick(Sender: TObject);
 var
   VpfResultado : String;
 begin
-  //VpfResultado := FunContrato.EnviaEmailCliente(vp,VprDCliente);
+//  VpfResultado := FunContrato.EnviaEmailCliente(vp,VprDCliente);
   if VpfREsultado <> '' then
     aviso(VpfREsultado);
 end;

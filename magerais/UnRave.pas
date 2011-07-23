@@ -101,6 +101,7 @@ type
       procedure DefineTabelaAnaliseRenovacaoContrato(VpaObjeto : TObject);
       procedure DefineTabelaContratoAssinados(VpaObjeto : TObject);
       procedure DefineTabelaCreditoCliente(VpaObjeto : TObject);
+      procedure DefineTabelaConsumoProdutoProducao(VpaObjeto: TObject);
       procedure ImprimeProdutoPorClassificacao(VpaObjeto : TObject);
       procedure ImprimeProdutosFaturadoPorPeriodo(VpaObjeto : TObject);
       procedure SalvaTabelaProdutosPorCoreTamanho(VpaDProduto :TRBDProdutoRave);
@@ -159,6 +160,7 @@ type
       procedure ImprimeCabecalhoAnaliseRenovacaoContrato;
       procedure ImprimeCabecalhoCreditoCliente;
       procedure ImprimeCabecalhoPrazoEntregaRealProdutos;
+      procedure ImprimeCabecalhoConsumoProdutoProducao;
       procedure ImprimeTituloUF(VpaCodUf : String);
       procedure ImprimeTituloClassificacao(VpaNiveis : TList;VpaTudo : boolean);
       procedure ImprimetituloPlanoContas(VpaNiveis : TList;VpaTudo : boolean);
@@ -267,6 +269,7 @@ type
       procedure ImprimeRelResultadoFinanceiroOrcadoPorCentroCusto(VpaObjeto : TObject);
       procedure ImprimeRelAnaliseRenovacaoContrato(VpaObjeto : TObject);
       procedure ImprimeRelCreditoCliente(VpaObjeto : TObject);
+      procedure ImprimeRelConsumoProdutoProducao(VpaObjeto : TObject);
       procedure ImprimeRelContratosAssinados(VpaObjeto : TObject);
       procedure ImprimeRelClientesXCobrancaPorBairro(VpaObjeto : TObject);
       procedure ImprimeCabecalho(VpaObjeto : TObject);
@@ -325,6 +328,7 @@ type
       procedure ImprimeAnaliseRenovacaoContrato(VpaCodVendedor : Integer;VpaDatInicio,VpaDatFim : TDateTime;VpaNomVendedor,VpaCaminho : string);
       procedure ImprimeContratosAssinados(VpaCodVendedor : Integer;VpaDatInicio,VpaDatFim : TDateTime;VpaNomVendedor,VpaCaminho : string);
       procedure ImprimeCreditoCliente(VpaCaminho : string);
+      procedure ImprimeConsumoProdutoProducao(VpaSeqProduto: Integer; VpaCodProduto, VpaNomProduto, VpaCodClassificacao, VpaNomClassificacao, VpaCaminhoRelatorio:String;VpaDatInicio,VpaDatFim : TDateTime);
   end;
 
 
@@ -1120,6 +1124,29 @@ begin
      SetTab(NA,pjCenter,2.5,0.5,Boxlineall,0); // DatCadatro
      SetTab(NA,pjCenter,2.5,0.5,Boxlineall,0); // Dat entrega
      SaveTabs(3);
+   end;
+end;
+
+procedure TRBFunRave.DefineTabelaConsumoProdutoProducao(VpaObjeto: TObject);
+begin
+  with RVSystem.BaseReport do begin
+     clearTabs;
+     SetTab(1.0,pjLeft,15,0.5,BOXLINENONE,0);//Data
+     SaveTabs(1);
+
+     clearTabs;
+     SetTab(1.0,pjRight,2.5,0.5,BOXLINENONE,0);//Cod Produto
+     SetTab(NA,pjLeft,8,0.5,BOXLINENONE,0);//Nom Produto
+     SetTab(NA,pjLeft,3,0.5,BOXLINENONE,0); //Cor
+     SetTab(NA,pjRight,1,0.5,BOXLINENONE,0); //UN
+     SetTab(NA,pjRight,3,0.5,BOXLINENONE,0); //Quantidade
+     SaveTabs(2);
+
+     clearTabs;
+     SetTab(5.0,pjRight,3,0.5,BOXLINENONE,0);//Total
+     SetTab(NA,pjRight,3,0.5,BOXLINENONE,0);// Val Total
+     SaveTabs(3);
+
    end;
 end;
 
@@ -2740,6 +2767,25 @@ begin
     Bold := false;
   end;
 
+end;
+
+procedure TRBFunRave.ImprimeCabecalhoConsumoProdutoProducao;
+begin
+  with RVSystem.BaseReport do
+  begin
+    RestoreTabs(2);
+    bold := true;
+    PrintTab('Código ');
+    PrintTab(' Produto');
+    PrintTab(' Cor');
+    PrintTab(' UM');
+    PrintTab(' Quantidade');
+    bold := false;
+    Newline;
+    If LinesLeft<=1 Then
+      NewPage;
+
+  end;
 end;
 
 {******************************************************************************}
@@ -8223,6 +8269,74 @@ begin
 end;
 
 {******************************************************************************}
+procedure TRBFunRave.ImprimeRelConsumoProdutoProducao(VpaObjeto: TObject);
+var
+  VpfDatAtual: TDateTime;
+  VpfOperacaoAtual: Integer;
+  VpfQtdConsumoTotal: Double;
+begin
+  VpfDatAtual:= 0;
+  VpfOperacaoAtual:= 0;
+  VpfQtdConsumoTotal:= 0;
+  with RVSystem.BaseReport do
+  begin
+    while not Tabela.Eof  do
+    begin
+      if VpfDatAtual <> tabela.FieldByName('D_DAT_MOV').AsDateTime then
+      begin
+        restoretabs(1);
+        bold:= true;
+        prinTtab(FormatDateTime('DD/MM/YYYY', tabela.FieldByName('D_DAT_MOV').AsDateTime));
+        newline;
+        bold:= false;
+        If LinesLeft<=1 Then
+          NewPage;
+        VpfDatAtual := tabela.FieldByName('D_DAT_MOV').AsDateTime;
+        VpfOperacaoAtual:= 0;
+      end;
+      if VpfOperacaoAtual <> Tabela.FieldByName('I_COD_OPE').AsInteger then
+      begin
+        restoretabs(1);
+        bold:= true;
+        printtab(Tabela.FieldByName('I_COD_OPE').AsString + ' - ' + Tabela.FieldByName('C_NOM_OPE').AsString);
+        newline;
+        If LinesLeft<=1 Then
+          NewPage;
+        ImprimeCabecalhoConsumoProdutoProducao;
+        VpfOperacaoAtual:= Tabela.FieldByName('I_COD_OPE').AsInteger;
+      end;
+      printtab(Tabela.FieldByName('C_COD_PRO').AsString + ' ');
+      printtab(' ' + Tabela.FieldByName('C_NOM_PRO').AsString);
+      if Tabela.FieldByName('I_COD_COR').AsInteger  <> 0 then
+        printtab(Tabela.FieldByName('I_COD_COR').AsString)
+      else
+        printtab(' ');
+      printtab(Tabela.FieldByName('C_COD_UNI').AsString);
+      printtab(FormatFloat('#,###,###,##0.00',Tabela.FieldByName('N_QTD_MOV').AsFloat));
+      NewLine;
+      If LinesLeft<=1 Then
+        NewPage;
+      if Tabela.FieldByName('C_TIP_OPE').AsString = 'S' then
+        VpfQtdConsumoTotal:= VpfQtdConsumoTotal + FunProdutos.CalculaQdadePadrao(Tabela.FieldByName('C_COD_UNI').AsString, tABELA.FieldByName('UNORIGINAL').AsString, Tabela.FieldByName('N_QTD_MOV').AsFloat, Tabela.FieldByName('I_SEQ_PRO').AsString)
+      else
+        VpfQtdConsumoTotal:= VpfQtdConsumoTotal - FunProdutos.CalculaQdadePadrao(Tabela.FieldByName('C_COD_UNI').AsString, tABELA.FieldByName('UNORIGINAL').AsString, Tabela.FieldByName('N_QTD_MOV').AsFloat, Tabela.FieldByName('I_SEQ_PRO').AsString);
+      Tabela.next;
+    end;
+    restoretabs(3);
+    newline;
+    newline;
+    If LinesLeft<=1 Then
+        NewPage;
+    bold:= true;
+    printtab('Total Consumido : ');
+    printtab(FormatFloat('#,###,###,##0.00',VpfQtdConsumoTotal));
+  end;
+
+
+
+end;
+
+{******************************************************************************}
 procedure TRBFunRave.ImprimeRelContratosAssinados(VpaObjeto: TObject);
 Var
   VpfDatInicioNovoContrato, VpfDatFimNovoContrato, VpfDatAssinatura : TDateTime;
@@ -11719,6 +11833,52 @@ begin
 
   ConfiguraRelatorioPDF;
   RvSystem.execute;
+end;
+
+{******************************************************************************}
+procedure TRBFunRave.ImprimeConsumoProdutoProducao(VpaSeqProduto: Integer; VpaCodProduto, VpaNomProduto, VpaCodClassificacao, VpaNomClassificacao, VpaCaminhoRelatorio: String;
+  VpaDatInicio, VpaDatFim: TDateTime);
+begin
+  Rvsystem.Tag:= 47;
+  LimpaSQLTabela(Tabela);
+  VprCabecalhoEsquerdo.Clear;
+  VprCabecalhoDireito.Clear;
+  AdicionaSqlTabela(Tabela, 'SELECT OPE.I_COD_OPE, OPE.C_NOM_OPE, OPE.C_TIP_OPE, ' +
+                            ' MOV.D_DAT_MOV, MOV.I_SEQ_PRO, MOV.N_QTD_MOV, MOV.C_COD_UNI, MOV.I_COD_COR, ' +
+                            ' PRO.C_COD_PRO, PRO.C_NOM_PRO, PRO.C_COD_UNI UNORIGINAL ' +
+                            ' FROM MOVESTOQUEPRODUTOS MOV, CADOPERACAOESTOQUE OPE, CADPRODUTOS PRO ' +
+                            ' WHERE MOV.I_COD_OPE = OPE.I_COD_OPE ' +
+                            ' AND MOV.I_SEQ_PRO = PRO.I_SEQ_PRO '+
+                            ' AND (C_FUN_OPE = ''SP'' OR C_FUN_OPE = ''EP'')' +
+                            SQLTextoDataEntreAAAAMMDD('MOV.D_DAT_MOV', VpaDatInicio, VpaDatFim, true));
+  VprCabecalhoEsquerdo.Add('Período : ' + FormatDateTime('DD/MM/YYYY', VpaDatInicio) + ' - ' + FormatDateTime('DD/MM/YYYY', VpaDatFim));
+  if VpaSeqProduto <> 0 then
+  begin
+    Tabela.SQL.Add('AND MOV.I_SEQ_PRO = ' + IntToStr(VpaSeqProduto));
+    VprCabecalhoDireito.Add('Produto : ' + VpaCodProduto + ' - ' + VpaNomProduto);
+  end;
+
+  if VpaCodClassificacao <> '' then
+  begin
+    Tabela.SQL.Add('AND PRO.C_COD_CLA LIKE ''' + VpaCodClassificacao + '%''');
+    VprCabecalhoDireito.Add('Classificação : ' + VpaCodClassificacao + ' - ' + VpaNomClassificacao);
+  end;
+  Tabela.SQL.Add('ORDER BY MOV.D_DAT_MOV, MOV.I_COD_OPE, MOV.I_SEQ_PRO');
+  Tabela.Open;
+
+  RvSystem.SystemPrinter.Orientation := poPortrait;
+  rvSystem.onBeforePrint := DefineTabelaConsumoProdutoProducao;
+  rvSystem.onNewPage := ImprimeCabecalho;
+  rvSystem.onPrintFooter := Imprimerodape;
+  rvSystem.onPrint := ImprimeRelConsumoProdutoProducao;
+
+  VprCaminhoRelatorio := VpaCaminhoRelatorio;
+  VprNomeRelatorio := 'Consumo Produto Produção';
+
+
+  ConfiguraRelatorioPDF;
+  RvSystem.execute;
+
 end;
 
 end.

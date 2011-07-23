@@ -156,7 +156,7 @@ procedure TFOperacoesEstoques.DBRadioGroup2Change(Sender: TObject);
 begin
   if CadOperacoesEstoques.State in [ dsInsert, dsEdit ] then
   begin
-    if DBRadioGroup2.ItemIndex in [ 0,3,4,6 ] then
+    if DBRadioGroup2.ItemIndex in [ 0,3,4,6, 8 ] then
       CadOperacoesEstoquesC_TIP_OPE.AsString := 'S'
     else
       CadOperacoesEstoquesC_TIP_OPE.AsString := 'E'

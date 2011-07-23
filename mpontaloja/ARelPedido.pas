@@ -778,7 +778,10 @@ begin
                   AlterarVisibleDet([PFilial,PTransportadora,PPeriodo],true)
                 else
                 if (VpaNomRelatorio = 'CONHECIMENTO DE TRANSPORTE SAIDA') then
-                  AlterarVisibleDet([PFilial,PTransportadora,PPeriodo],true);
+                  AlterarVisibleDet([PFilial,PTransportadora,PPeriodo],true)
+                else
+                if (VpaNomRelatorio = 'CONSUMO PRODUTO PRODUCAO') then
+                  AlterarVisibleDet([PProduto,PClassificacaoProduto,PPeriodo],true);
 end;
 
 
@@ -1157,7 +1160,10 @@ begin
                 dtRave.ImprimeConhecimentoTransporteEntrada(CDataIni.Date,CdataFim.Date,EFilial.AInteiro,ETransportadora.AInteiro,VprCaminhoRelatorio,LFilial.Caption,LCliente.caption)
             else
               if (VprNomRelatorio = 'CONHECIMENTO DE TRANSPORTE SAIDA') then
-                dtRave.ImprimeConhecimentoTransporteSaida(CDataIni.Date,CdataFim.Date,EFilial.AInteiro,ETransportadora.AInteiro,VprCaminhoRelatorio,LFilial.Caption,LCliente.caption);
+                dtRave.ImprimeConhecimentoTransporteSaida(CDataIni.Date,CdataFim.Date,EFilial.AInteiro,ETransportadora.AInteiro,VprCaminhoRelatorio,LFilial.Caption,LCliente.caption)
+            else
+              if (VprNomRelatorio = 'CONSUMO PRODUTO PRODUCAO') then
+                FunRave.ImprimeConsumoProdutoProducao(VprSeqProduto,EProduto.Text,LProduto.Caption, ECodClassifcacao.Text, LNomClassificacao.Caption, VprCaminhoRelatorio,CDataIni.Date,CdataFim.Date);
 
   dtRave.free;
 end;
