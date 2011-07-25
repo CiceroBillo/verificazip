@@ -1147,6 +1147,15 @@ begin
      SetTab(NA,pjRight,3,0.5,BOXLINENONE,0);// Val Total
      SaveTabs(3);
 
+     ClearTabs;
+     SetTab(5.0,pjRight,3,0.5,BOXLINENONE,0);//Total
+     SetTab(NA,pjRight,3,0.5,BOXLINENONE,0);// Val Total dia
+     SaveTabs(4);
+
+     ClearTabs;
+     SetTab(1.0,pjRight,3,0.5,BOXLINENONE,0);//cod classificacao
+     SetTab(NA,pjRight,8,0.5,BOXLINENONE,0);// Nom Classificacao
+     SaveTabs(5);
    end;
 end;
 
@@ -8272,18 +8281,43 @@ end;
 procedure TRBFunRave.ImprimeRelConsumoProdutoProducao(VpaObjeto: TObject);
 var
   VpfDatAtual: TDateTime;
-  VpfOperacaoAtual: Integer;
-  VpfQtdConsumoTotal: Double;
+  VpfOperacaoAtual, VpfCodClassificacaoAtual: Integer;
+  VpfQtdConsumoTotal, VpfQtdConsumoTotalDia: Double;
 begin
   VpfDatAtual:= 0;
   VpfOperacaoAtual:= 0;
   VpfQtdConsumoTotal:= 0;
+  VpfQtdConsumoTotalDia:= 0;
   with RVSystem.BaseReport do
   begin
     while not Tabela.Eof  do
     begin
       if VpfDatAtual <> tabela.FieldByName('D_DAT_MOV').AsDateTime then
       begin
+        if VpfDatAtual <> 0 then
+        begin
+          RestoreTabs(4);
+          bold:= true;
+          newline;
+          If LinesLeft<=1 Then
+            NewPage;
+          printtab('Total Consumido : ');
+          printtab(FormatFloat('#,###,###,##0.00',VpfQtdConsumoTotalDia));
+          VpfQtdConsumoTotalDia:= 0;
+          newline;
+          If LinesLeft<=1 Then
+            NewPage;
+
+          restoretabs(3);
+          If LinesLeft<=1 Then
+            NewPage;
+          bold:= true;
+          printtab('Total Acumulado : ');
+          printtab(FormatFloat('#,###,###,##0.00',VpfQtdConsumoTotal));
+          newline;
+          If LinesLeft<=1 Then
+            NewPage;
+        end;
         restoretabs(1);
         bold:= true;
         prinTtab(FormatDateTime('DD/MM/YYYY', tabela.FieldByName('D_DAT_MOV').AsDateTime));
@@ -8317,11 +8351,29 @@ begin
       If LinesLeft<=1 Then
         NewPage;
       if Tabela.FieldByName('C_TIP_OPE').AsString = 'S' then
-        VpfQtdConsumoTotal:= VpfQtdConsumoTotal + FunProdutos.CalculaQdadePadrao(Tabela.FieldByName('C_COD_UNI').AsString, tABELA.FieldByName('UNORIGINAL').AsString, Tabela.FieldByName('N_QTD_MOV').AsFloat, Tabela.FieldByName('I_SEQ_PRO').AsString)
+      begin
+        VpfQtdConsumoTotal:= VpfQtdConsumoTotal + FunProdutos.CalculaQdadePadrao(Tabela.FieldByName('C_COD_UNI').AsString, tABELA.FieldByName('UNORIGINAL').AsString, Tabela.FieldByName('N_QTD_MOV').AsFloat, Tabela.FieldByName('I_SEQ_PRO').AsString);
+        VpfQtdConsumoTotalDia:= VpfQtdConsumoTotalDia + FunProdutos.CalculaQdadePadrao(Tabela.FieldByName('C_COD_UNI').AsString, tABELA.FieldByName('UNORIGINAL').AsString, Tabela.FieldByName('N_QTD_MOV').AsFloat, Tabela.FieldByName('I_SEQ_PRO').AsString);
+      end
       else
+      begin
         VpfQtdConsumoTotal:= VpfQtdConsumoTotal - FunProdutos.CalculaQdadePadrao(Tabela.FieldByName('C_COD_UNI').AsString, tABELA.FieldByName('UNORIGINAL').AsString, Tabela.FieldByName('N_QTD_MOV').AsFloat, Tabela.FieldByName('I_SEQ_PRO').AsString);
+        VpfQtdConsumoTotalDia:= VpfQtdConsumoTotalDia - FunProdutos.CalculaQdadePadrao(Tabela.FieldByName('C_COD_UNI').AsString, tABELA.FieldByName('UNORIGINAL').AsString, Tabela.FieldByName('N_QTD_MOV').AsFloat, Tabela.FieldByName('I_SEQ_PRO').AsString);
+      end;
       Tabela.next;
     end;
+    RestoreTabs(4);
+    bold:= true;
+    newline;
+    If LinesLeft<=1 Then
+      NewPage;
+    printtab('Total Consumido : ');
+    printtab(FormatFloat('#,###,###,##0.00',VpfQtdConsumoTotalDia));
+    VpfQtdConsumoTotalDia:= 0;
+    newline;
+    If LinesLeft<=1 Then
+      NewPage;
+
     restoretabs(3);
     newline;
     newline;
