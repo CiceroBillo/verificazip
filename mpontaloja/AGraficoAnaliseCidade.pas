@@ -141,17 +141,22 @@ begin
   begin
     case CAgruparpor.ItemIndex of
       0 : graficostrio.info.ComandoSQL :=  'Select Sum(Orc.N_Vlr_LIQ) Valor, Orc.D_DAT_ORC DATA1, Orc.D_DAT_ORC DATA ';
-      1 : graficostrio.info.ComandoSQL :=  'Select Sum(Orc.N_Vlr_LIQ) Valor, (YEAR(orc.d_dat_orc) *100)+month(orc.d_dat_orc) DATA1, month(Orc.D_DAT_ORC)||''/''|| year(ORC.D_DAT_ORC) DATA ';
-      3 : graficostrio.info.ComandoSQL :=  'Select Sum(Orc.N_Vlr_LIQ) Valor,  year(ORC.D_DAT_ORC) DATA1, year(ORC.D_DAT_ORC) DATA ';
+      1 : graficostrio.info.ComandoSQL :=  'Select Sum(Orc.N_Vlr_LIQ) Valor, ('+SQLTextoAno('orc.d_dat_orc')+' *100)+'+SQLTextoMes('orc.d_dat_orc')+' DATA1, '+SQLTextoMes('Orc.D_DAT_ORC')+'||''/''||'+ SQLTextoAno('ORC.D_DAT_ORC')+' DATA ';
+      2 : graficostrio.info.ComandoSQL :=  'Select Sum(Orc.N_Vlr_LIQ) Valor, '+SQLTextoAno('ORC.D_DAT_ORC')+' DATA1,'+SQLTextoAno('ORC.D_DAT_ORC')+' DATA ';
     end;
     graficostrio.info.ComandoSQL :=  graficostrio.info.ComandoSQL + ' from CadOrcamentos Orc, '+
                                     ' CadClientes Cli '+
                                     ' Where Orc.I_Emp_Fil = ' + IntToStr(Varia.CodigoEmpFil)+
                                     ' '+SQLTextoDataEntreAAAAMMDD('D_DAT_ORC', EDatInicio.Datetime,EDatFim.Datetime,true) +
                                     ' and ORC.I_COD_CLI = CLI.I_COD_CLI '+
-                                    ' AND CLI.C_CID_CLI = '''+LCidade.Caption+''''+
-                                    ' group by DATA1, DATA '  +
-                                    ' order by 2';
+                                    ' AND CLI.C_CID_CLI = '''+LCidade.Caption+'''';
+    case CAgruparpor.ItemIndex of
+      0 : graficostrio.info.ComandoSQL :=  graficostrio.info.ComandoSQL +' group by orc.d_dat_orc';
+      1 : graficostrio.info.ComandoSQL :=  graficostrio.info.ComandoSQL +' group by ('+SQLTextoAno('orc.d_dat_orc')+' *100)+'+SQLTextoMes('orc.d_dat_orc')+', '+SQLTextoMes('Orc.D_DAT_ORC')+'||''/''||'+ SQLTextoAno('ORC.D_DAT_ORC');
+      2 : graficostrio.info.ComandoSQL :=  graficostrio.info.ComandoSQL +' group by '+SQLTextoAno('orc.d_dat_orc');
+    end;
+   graficostrio.info.ComandoSQL :=  graficostrio.info.ComandoSQL +' order by 2';
+//   aviso(GraficosTrio.info.ComandoSQL);
    graficostrio.info.CampoValor := 'Valor';
    graficostrio.info.TituloY := 'Valor';
    graficostrio.info.CampoRotulo := 'DATA';

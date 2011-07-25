@@ -680,8 +680,8 @@ begin
   VpaTabela.Sql.Clear;
   case CAgruparpor.ItemIndex of
     0 : VpaTabela.Sql.Add('Select Sum(Orc.N_Vlr_LIQ) Valor, Orc.D_DAT_ORC DATA1, Orc.D_DAT_ORC DATA ');
-    1 : VpaTabela.Sql.Add('Select Sum(Orc.N_Vlr_LIQ) Valor, (YEAR(orc.d_dat_orc) *100)+month(orc.d_dat_orc) DATA1, month(Orc.D_DAT_ORC)||''/''|| year(ORC.D_DAT_ORC) DATA ');
-    2 : VpaTabela.Sql.Add('Select Sum(Orc.N_Vlr_LIQ) Valor,  year(ORC.D_DAT_ORC) DATA1, year(ORC.D_DAT_ORC) DATA ');
+    1 : VpaTabela.Sql.Add('Select Sum(Orc.N_Vlr_LIQ) Valor, ('+SQLTextoAno('orc.D_DAT_ORC')+' *100)+ '+SQLTextoMes('orc.d_dat_orc')+' DATA1, '+SQLTextoMes('Orc.D_DAT_ORC')+'||''/''|| '+SQLTextoAno('ORC.D_DAT_ORC')+' DATA ');
+    2 : VpaTabela.Sql.Add('Select Sum(Orc.N_Vlr_LIQ) Valor,  '+SQLTextoAno('ORC.D_DAT_ORC')+' DATA1, '+SQLTextoAno('ORC.D_DAT_ORC')+' DATA ');
   end;
   VpaTabela.Sql.add(' from CadOrcamentos Orc, CADVENDEDORES VEN, CADCLIENTES CLI '+
                     ' Where  '+SQLTextoDataEntreAAAAMMDD('D_DAT_ORC', EDatInicio.Datetime,EDatFim.Datetime,false) +
@@ -703,8 +703,14 @@ begin
      (EFilial.AInteiro = 0) then
     VpaTabela.sql.add(' and ORC.I_EMP_FIL <> 13');
 
-  VpaTabela.Sql.Add(' group by DATA1, DATA '  +
+  case CAgruparpor.ItemIndex of
+    0 : VpaTabela.Sql.Add(' group by orc.D_DAT_ORC '+
+                          ' order by 2');
+    1 : VpaTabela.Sql.Add(' group by ('+SQLTextoAno('orc.D_DAT_ORC')+' *100)+ '+SQLTextoMes('orc.d_dat_orc')+', '+SQLTextoMes('Orc.D_DAT_ORC')+'||''/''|| '+SQLTextoAno('ORC.D_DAT_ORC')+
+                          ' order by 2');
+    2 : VpaTabela.Sql.Add(' group by '+SQLTextoAno('ORC.D_DAT_ORC')+', '+SQLTextoAno('ORC.D_DAT_ORC')+
                     ' order by 2');
+  end;
   VpaTabela.Open;
 end;
 

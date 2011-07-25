@@ -2314,7 +2314,7 @@ begin
     ProCadastro.FieldByName('C_TIP_MOV').AsString := VpfDOperacaoEstoque.DesTipo_E_S;
     ProCadastro.FieldByName('N_VLR_MOV').AsFloat := VpaValorTotal;
     ProCadastro.FieldByName('D_DAT_CAD').AsDateTime := now;
-    ProCadastro.FieldByName('C_COD_UNI').AsString := VpaunidadeAtual;
+    ProCadastro.FieldByName('C_COD_UNI').AsString := UpperCase(VpaunidadeAtual);
     ProCadastro.FieldByName('I_COD_COR').AsInteger := VpaCodCor;
     if VpaCodTamanho <> 0 then
       ProCadastro.FieldByName('I_COD_TAM').AsInteger := VpaCodTamanho;
