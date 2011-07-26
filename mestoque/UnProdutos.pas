@@ -380,6 +380,7 @@ type
     function ProdutoDestacaST(VpaCodCST : String) : boolean;
     function SalvaImagemdaAreaTransferenciaWindows(VpaDProduto : TRBDProduto) : string;
     function GravaCodigoBarraProdutos(VpaCodFilial, VpaSeqProduto, VpaCodCor, VpaCodTamanho: Integer; VpaCodBarra: String):String;
+    function RQtdConsumidoProducao(VpaCodFilial,VpaSeqProduto,VpaCodCor,VpaCodTamanho : Integer;VpaDatInicio,VpaDatFim : TDateTime):double;
  end;
 Var
   FunProdutos : TFuncoesProduto;
@@ -6335,6 +6336,35 @@ begin
 end;
 
 {******************************************************************************}
+function TFuncoesProduto.RQtdConsumidoProducao(VpaCodFilial, VpaSeqProduto,VpaCodCor, VpaCodTamanho: Integer; VpaDatInicio,VpaDatFim: TDateTime): double;
+begin
+  result := 0;
+  LimpaSQLTabela(Tabela);
+  AdicionaSqlTabela(Tabela, 'SELECT OPE.I_COD_OPE, OPE.C_NOM_OPE, OPE.C_TIP_OPE, ' +
+                            ' MOV.D_DAT_MOV, MOV.N_QTD_MOV, MOV.C_COD_UNI, MOV.I_COD_COR, MOV.I_COD_TAM, ' +
+                            ' PRO.C_COD_PRO, PRO.I_SEQ_PRO, PRO.C_NOM_PRO, PRO.C_COD_UNI UNORIGINAL ' +
+                            ' FROM MOVESTOQUEPRODUTOS MOV, CADOPERACAOESTOQUE OPE, CADPRODUTOS PRO ' +
+                            ' WHERE MOV.I_COD_OPE = OPE.I_COD_OPE ' +
+                            ' AND MOV.I_SEQ_PRO = PRO.I_SEQ_PRO '+
+                            ' AND (C_FUN_OPE = ''SP'' OR C_FUN_OPE = ''EP'')' +
+                            SQLTextoDataEntreAAAAMMDD('MOV.D_DAT_MOV', VpaDatInicio, VpaDatFim, true)+
+                            ' AND MOV.I_SEQ_PRO = '+IntToStr(VpaSeqProduto)+
+                            ' AND MOV.I_COD_COR = ' +IntToStr(VpaCodCor)+
+                            ' AND '+SQLTextoIsNull('MOV.I_COD_TAM','0')+' = ' +IntToStr(VpaCodTamanho));
+  if VpaCodFilial <> 0 then
+    AdicionaSQLTabela(Tabela,'AND MOV.I_EMP_FIL = ' + IntToStr(VpaCodFilial));
+  Tabela.Open;
+  while not Tabela.Eof do
+  begin
+    if Tabela.FieldByName('C_TIP_OPE').AsString = 'S' then
+      result := result + FunProdutos.CalculaQdadePadrao(Tabela.FieldByName('C_COD_UNI').AsString, tABELA.FieldByName('UNORIGINAL').AsString, Tabela.FieldByName('N_QTD_MOV').AsFloat, Tabela.FieldByName('I_SEQ_PRO').AsString)
+    else
+      result := result - FunProdutos.CalculaQdadePadrao(Tabela.FieldByName('C_COD_UNI').AsString, tABELA.FieldByName('UNORIGINAL').AsString, Tabela.FieldByName('N_QTD_MOV').AsFloat, Tabela.FieldByName('I_SEQ_PRO').AsString);
+    Tabela.Next;
+  end;
+  Tabela.close;
+end;
+
 function TFuncoesProduto.RQtdEmbalagem(VpaCodEmbalagem: integer): integer;
 begin
   AdicionaSqlAbreTabela(Aux,'Select QTD_EMBALAGEM from EMBALAGEM '+
@@ -7294,8 +7324,10 @@ begin
                                      ' AND I_COD_TAM = ' + IntToStr(VpaCodTamanho));
   ProCadastro.Edit;
   ProCadastro.FieldByName('C_COD_BAR').AsString := VpaCodBarra;
+  ProCadastro.FieldByName('D_ULT_ALT').AsDateTime :=  sistema.RDataServidor;
   ProCadastro.Post;
   result := ProCadastro.AMensagemErroGravacao;
+  Sistema.MarcaTabelaParaImportar('MOVQDADEPRODUTO');
 end;
 
 {******************************************************************************}

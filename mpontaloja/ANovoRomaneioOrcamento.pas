@@ -88,6 +88,7 @@ type
     procedure CalculaValorTotal;
     procedure ConfiguraPermissaoUsuario;
     function RColunaGrade(VpaColuna : TRBDColunaGrade):Integer;
+    procedure CarCodigobarras;
   public
     { Public declarations }
     function NovoRomaneio: Boolean;
@@ -404,8 +405,7 @@ begin
     begin
       GProdutos.Cells[RColunaGrade(clCodProduto),GProdutos.ALinha] := CodProduto;
       GProdutos.Cells[RColunaGrade(clNomProduto),GProdutos.ALinha] := NomProduto;
-      VprDItem.DesCodBarra:= FunProdutos.RCodigoBarraProduto(VprDRomaneio.CodFilial, VprDItem.SeqProduto, VprDItem.CodCor, VprDItem.CodTamanho);
-      GProdutos.Cells[RColunaGrade(clCodBarra),GProdutos.ALinha] := VprDItem.DesCodBarra;
+      CarCodigobarras;
       VprProdutoAnterior := CodProduto;
       RecuperaDadosCotacao;
     end;
@@ -538,6 +538,14 @@ begin
   VprDItem.QtdProduto :=  StrToFloatDef(DeletaChars(GProdutos.Cells[RColunaGrade(clQtd),GProdutos.ALinha],'.'),0);
   VprDItem.ValTotal := VprDItem.QtdProduto * VprDItem.ValUnitario;
   GProdutos.Cells[RColunaGrade(clValTotal),GProdutos.ALinha] := FormatFloat(varia.MascaraValor,VprDItem.ValTotal);
+end;
+
+{******************************************************************************}
+procedure TFNovoRomaneioOrcamento.CarCodigobarras;
+begin
+  VprDItem.DesCodBarra:= FunProdutos.RCodigoBarraProduto(VprDRomaneio.CodFilial, VprDItem.SeqProduto, VprDItem.CodCor, VprDItem.CodTamanho);
+  VprDItem.DesCodBarrasAnterior:= VprDItem.DesCodBarra;
+  GProdutos.Cells[RColunaGrade(clCodBarra),GProdutos.ALinha] := VprDItem.DesCodBarra;
 end;
 
 {******************************************************************************}
@@ -674,6 +682,7 @@ begin
   begin
     VprDItem.CodCor := StrToINt(VpaColunas.items[0].AValorRetorno);
     VprDItem.NomCor := VpaColunas.items[1].AValorRetorno;
+    CarCodigobarras;
     GProdutos.Cells[RColunaGrade(clCodCor),GProdutos.ALinha] := VpaColunas.items[0].AValorRetorno;
     GProdutos.Cells[RColunaGrade(clNomCor),GProdutos.ALinha] := VpaColunas.items[1].AValorRetorno;
   end
@@ -711,6 +720,7 @@ begin
   begin
     VprDItem.CodTamanho := StrToINt(VpaColunas.items[0].AValorRetorno);
     VprDItem.NomTamanho := VpaColunas.items[1].AValorRetorno;
+    CarCodigobarras;
     GProdutos.Cells[RColunaGrade(clCodTamanho),GProdutos.ALinha] := VpaColunas.items[0].AValorRetorno;
     GProdutos.Cells[RColunaGrade(clNomTamanho),GProdutos.ALinha] := VpaColunas.items[1].AValorRetorno;
   end
@@ -734,8 +744,7 @@ begin
       if result then
       begin
         GProdutos.cells[RColunaGrade(clNomProduto),GProdutos.ALinha] := VprDItem.NomProduto;
-        VprDItem.DesCodBarra:= FunProdutos.RCodigoBarraProduto(VprDRomaneio.CodFilial, VprDItem.SeqProduto, VprDItem.CodCor, VprDItem.CodTamanho);
-        GProdutos.Cells[RColunaGrade(clCodBarra),GProdutos.ALinha] := VprDItem.DesCodBarra;
+        CarCodigobarras;
         VprProdutoAnterior := GProdutos.cells[RColunaGrade(clCodProduto),GProdutos.ALinha];
         RecuperaDadosCotacao;
       end;

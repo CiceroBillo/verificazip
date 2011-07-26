@@ -87,7 +87,6 @@ type
     procedure ImprimeProdutosPendenteaProduzir(VpaCodFilial : Integer;VpaDatInicio,VpaDatFim : TDateTime);
     procedure ImprimePedidoParcial(VpaCodFilial,VpaLanOrcamento, VpaSeqParcial : Integer);
     procedure ImprimeNotasFiscaisEmitidas(VpaDatInicio,VpaDatFim : TDateTime;VpaCodFilial,VpaCodCliente,VpaCodClienteMaster,VpaCodVendedor : Integer;VpaCaminhoRelatorio,VpaNomFilial,VpaNomCliente,VpaNomVendedor : String;VpaSituacaoNota : Integer);
-    procedure ImprimeRecibosEmitidos(VpaDatInicio,VpaDatFim : TDateTime;VpaCodFilial,VpaCodCliente : Integer;VpaCaminhoRelatorio,VpaNomFilial,VpaNomCliente: String);
     procedure ImprimePedidosPorDia(VpaDatInicio,VpaDatFim : TDateTime;VpaCodFilial,VpaCodCliente,VpaCodVendedor,VpaCodTipoCotacao, VpaSituacaoCotacao, VpaCodCondicaoPagamento, VpaSeqProduto, VpaCodRepresentada, VpaCodPresposto: Integer;VpaCaminhoRelatorio,VpaNomFilial,VpaNomCliente,VpaNomVendedor,VpaNomTipoCotacao,VpaNomSituacao, VpaNomCodicaoPagamento, VpaNomProduto, VpaNomRepresentada, VpaNomPreposto, VpaCodClassificacaoProduto, VpaNomClassificacaoProduto,VpaUF : String);
     procedure ImprimePedido(VpaCodFilial,VpaNumPedido : Integer;VpaVisualizar : Boolean; VpaProtocoloCracha: Boolean = false);
     procedure ImprimeOrcamentoRoteiroEntrega(VpaCodFilial,VpaSeqRoteiro : Integer;VpaVisualizar, VpaIncluiData : Boolean; VpaDatIni, VpaDatFim : TDateTime);
@@ -213,6 +212,7 @@ type
     procedure ImprimeNotasFiscaisdeEntrada(VpaDatInicio,VpaDatFim : TDateTime;VpaCodFilial,VpaCodCliente: Integer;VpaCaminhoRelatorio,VpaNomFilial,VpaNomCliente: String);
     procedure ImprimeConhecimentoTransporteEntrada(VpaDatInicio, VpaDatFim: TDateTime; VpaCodFilial, VpaCodTransportadora: Integer; VpaCaminhoRelatorio, VpaNomFilial, VpaNomTransportadora:String);
     procedure ImprimeConhecimentoTransporteSaida(VpaDatInicio, VpaDatFim: TDateTime; VpaCodFilial, VpaCodTransportadora: Integer; VpaCaminhoRelatorio, VpaNomFilial, VpaNomTransportadora:String);
+    procedure ImprimeRecibosEmitidos(VpaDatInicio,VpaDatFim : TDateTime;VpaCodFilial,VpaCodCliente : Integer;VpaCaminhoRelatorio,VpaNomFilial,VpaNomCliente: String);
     procedure TesteDataConection;
   end;
 
@@ -2779,8 +2779,7 @@ begin
                              ' CLI.C_NOM_CLI ' +
                              ' from RECIBOLOCACAOCORPO REC, CADCLIENTES CLI ' +
                              ' WHERE REC.CODCLIENTE = CLI.I_COD_CLI ' +
-                             ' AND REC.DATEMISSAO BETWEEN '+SQLTextoDataAAAAMMMDD(VpaDatInicio)+
-                             ' AND ' +SQLTextoDataAAAAMMMDD(VpaDatFim));
+                             SQLTextoDataEntreAAAAMMDD('REC.DATEMISSAO',VpaDatInicio,VpaDatFim,true));
   Rave.SetParam('PERIODO','Período de '+FormatDatetime('DD/MM/YYYY',VpaDatInicio)+' até '+FormatDatetime('DD/MM/YYYY',VpaDatFim));
   if vpacodfilial <> 0 then
   begin

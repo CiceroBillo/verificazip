@@ -158,6 +158,7 @@ Type
      CodTamanho : Integer;
      NomTamanho : String;
      QtdEstoque,
+     QtdProduzido,
      ValEstoque : Double;
      constructor cria;
      destructor destroy;override;
@@ -169,6 +170,7 @@ Type
       CodCor : Integer;
       NomCor : String;
       QtdEstoque,
+      QtdProduzido,
       ValEstoque  : Double;
       Tamanhos : TList;
       constructor cria;
@@ -186,6 +188,7 @@ Type
       DesCifraoMoeda : String;
       QtdEstoque,
       QtdTrocada,
+      QtdProduzido,
       ValEstoque,
       ValTroca : Double;
       Cores : TList;
@@ -201,6 +204,7 @@ Type
     NomClassificacao : String;
     QTdProduto,
     QtdTrocado,
+    QtdConsumido,
     ValTotal,
     VAlTrocado,
     QtdMesAnterior,

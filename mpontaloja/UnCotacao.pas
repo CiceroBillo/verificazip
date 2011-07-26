@@ -5056,7 +5056,7 @@ begin
     result := CotCadastro.AMensagemErroGravacao;
     if Result = '' then
     begin
-      if VpfDItem.DesCodBarra <> '' then
+      if VpfDItem.DesCodBarra <> VpfDItem.DesCodBarrasAnterior then
        Result:= FunProdutos.GravaCodigoBarraProdutos(VpfDItem.CodFilialOrcamento, VpfDItem.SeqProduto, VpfDItem.CodCor, VpfDItem.CodTamanho, VpfDItem.DesCodBarra);
     end;
     if result <> ''  then

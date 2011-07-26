@@ -419,7 +419,7 @@ procedure TFLeiturasLocacao.BEnviarEmailClienteClick(Sender: TObject);
 var
   VpfResultado : String;
 begin
-//  VpfResultado := FunContratos.EnviaEmailCliente(VprDCotacao,VprDCliente);
+  VpfResultado := FunContratos.EnviaLeituraLocacaoProcessadaEmail(LocacaoCODFILIAL.AsInteger,LocacaoSEQLEITURA.AsInteger);
   if VpfREsultado <> '' then
     aviso(VpfREsultado);
 end;

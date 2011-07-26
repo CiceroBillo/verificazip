@@ -399,6 +399,8 @@ begin
   else
     VpaSMTP.AuthType := satNone;
   try
+//    VpaSMTP.UserName := 'rafael';
+//    VpaSMTP.Password := 'rf1020';
     VpaSMTP.Connect;
   except
     on e : exception do result := 'ERRO AO CONECTAR O SERVIDOR'+e.Message;

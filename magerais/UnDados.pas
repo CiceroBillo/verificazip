@@ -24,6 +24,7 @@ Type
       DesOrdemCompra,
       DesOrdemCorte,
       DesOrdemCompraPedido,
+      DesCodBarrasAnterior,
       DesCodBarra : string;
       QtdProduto,
       QtdPedido,

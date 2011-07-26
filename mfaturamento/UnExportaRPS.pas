@@ -308,6 +308,7 @@ end;
 function TRBFuncoesExportaRPS.ExportaRPS(VpaDExportaRPS : TRBDExportacaoRPS; VpaBarraStatus: TStatusBar): string;
 begin
   result := '';
+  VpaDExportaRPS.Arquivo.Clear;
   VprBarraStatus := VpaBarraStatus;
   Sistema.CarDFilial(VpaDExportaRPS.DFilial,VpaDExportaRPS.CodFilial);
   ExportaRPSNotaBlu(VpaDExportaRPS);
@@ -350,6 +351,7 @@ begin
                                   ' AND CAD.I_SEQ_NOT = MOV.I_SEQ_NOT ' +
                                   ' AND MOV.I_COD_SER = SER.I_COD_SER '+
                                   ' AND CAD.I_COD_CLI = CLI.I_COD_CLI '+
+                                  ' AND CAD.C_NOT_CAN = ''N'''+
                                   ' ORDER BY CAD.I_SEQ_NOT, SER.I_COD_FIS');
 end;
 

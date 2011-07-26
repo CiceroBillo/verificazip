@@ -780,8 +780,17 @@ begin
                 if (VpaNomRelatorio = 'CONHECIMENTO DE TRANSPORTE SAIDA') then
                   AlterarVisibleDet([PFilial,PTransportadora,PPeriodo],true)
                 else
+                if (VpaNomRelatorio = 'HISTORICO CONSUMO PRODUTO PRODUCAO') then
+                  AlterarVisibleDet([PProduto,PClassificacaoProduto,PPeriodo],true)
+                else
                 if (VpaNomRelatorio = 'CONSUMO PRODUTO PRODUCAO') then
-                  AlterarVisibleDet([PProduto,PClassificacaoProduto,PPeriodo],true);
+                begin
+                  AlterarVisibleDet([PPeriodo,PClassificacaoProduto,PFilial,PFundoPerdido,PCheckBox1,POrdemRelatorio, PProduto],true);
+                  CFundoPerdido.Caption := 'Somente Produtos com Consumo';
+                  CFundoPerdido.Checked := true;
+                  Checkbox1.Caption := 'Somente Produtos que Possuem Qtd em Estoque';
+                  CheckBox1.Checked := false;
+                end;
 end;
 
 
@@ -1162,8 +1171,11 @@ begin
               if (VprNomRelatorio = 'CONHECIMENTO DE TRANSPORTE SAIDA') then
                 dtRave.ImprimeConhecimentoTransporteSaida(CDataIni.Date,CdataFim.Date,EFilial.AInteiro,ETransportadora.AInteiro,VprCaminhoRelatorio,LFilial.Caption,LCliente.caption)
             else
+              if (VprNomRelatorio = 'HISTORICO CONSUMO PRODUTO PRODUCAO') then
+                FunRave.ImprimeHistoricoConsumoProdutoProducao(VprSeqProduto,EProduto.Text,LProduto.Caption, ECodClassifcacao.Text, LNomClassificacao.Caption, VprCaminhoRelatorio,CDataIni.Date,CdataFim.Date)
+            else
               if (VprNomRelatorio = 'CONSUMO PRODUTO PRODUCAO') then
-                FunRave.ImprimeConsumoProdutoProducao(VprSeqProduto,EProduto.Text,LProduto.Caption, ECodClassifcacao.Text, LNomClassificacao.Caption, VprCaminhoRelatorio,CDataIni.Date,CdataFim.Date);
+                FunRave.ImprimeConsumoProdutoProducao(EFilial.AInteiro,VprSeqProduto,EProduto.Text,LProduto.Caption, ECodClassifcacao.Text, LNomClassificacao.Caption,LFilial.Caption, VprCaminhoRelatorio,CDataIni.Date,CdataFim.Date,CheckBox1.Checked,EOrdemRelatorio.ItemIndex,CFundoPerdido.Checked);
 
   dtRave.free;
 end;

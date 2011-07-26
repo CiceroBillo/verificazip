@@ -69,6 +69,7 @@ Type TRBFuncoesContrato = class(TRBLocalizaContrato)
     procedure MontaEmailRecibo(VpaTexto : TStrings; VpaDContrato : TRBDContratoCorpo ;VpaDCliente : TRBDCliente);
     function ArrumaFinanceiroReciboLocacao(VpaDRecibo : TRBDReciboLocacao) : string;
     function EnviaEmail(VpaMensagem : TIdMessage;VpaSMTP : TIdSMTP) : string;
+    function AnexaArquivoEmail(VpaNomArquivo : String;VpaMensagem : TIdMessage):string;
   public
     constructor cria(VpaBaseDados : TSqlConnection);
     destructor destroy;override;
@@ -921,6 +922,19 @@ begin
       VpfDItemServico.ValTotal := VpfDItemServico.QtdServico * VpfDItemServico.ValUnitario;
     end;
   end;
+end;
+
+{******************************************************************************}
+function TRBFuncoesContrato.AnexaArquivoEmail(VpaNomArquivo: String;VpaMensagem: TIdMessage): string;
+var
+  VpfAnexo : TIdAttachmentfile;
+begin
+  VpfAnexo := TIdAttachmentfile.Create(VpaMensagem.MessageParts,VpaNomArquivo);
+  VpfAnexo.ContentType := 'application/pdf';
+  VpfAnexo.ContentDisposition := 'inline';
+  VpfAnexo.DisplayName:=RetornaNomArquivoSemDiretorio(VpaNomArquivo);
+  VpfAnexo.ExtraHeaders.Values['content-id'] := RetornaNomArquivoSemDiretorio(VpaNomArquivo);;
+  VpfAnexo.DisplayName := RetornaNomArquivoSemDiretorio(VpaNomArquivo);;
 end;
 
 {******************************************************************************}
@@ -2159,19 +2173,34 @@ end;
 function TRBFuncoesContrato.EnviaLeituraLocacaoProcessadaEmail(VpaCodFilial, VpaSeqLeitura: Integer): string;
 var
   VpfDLeitura : TRBDLeituraLocacaoCorpo;
+  VpfNomArquivo : string;
 begin
   result := '';
-  VprMensagem.Clear;
-  VpfDLeitura := TRBDLeituraLocacaoCorpo.cria;
-  CarDLeituraLocacao(VpfDLeitura,VpaCodFilial,VpaSeqLeitura);
   if not ExisteArquivo(varia.PathVersoes+'\efi.jpg') then
     result := 'Falta arquivo "'+varia.PathVersoes+'\efi.jpg'+'"';
   if result = '' then
   begin
+    VprMensagem.Clear;
+    VpfDLeitura := TRBDLeituraLocacaoCorpo.cria;
+    CarDLeituraLocacao(VpfDLeitura,VpaCodFilial,VpaSeqLeitura);
+    try
+      dtRave := TdtRave.Create(nil);
+      VpfNomArquivo := Varia.PathVersoes+'\ANEXOS\Contrato\LL'+IntToStr(VpaCodFilial)+'_'+IntToStr(VpaSeqLeitura)+'.pdf';
+      dtRave.VplArquivoPDF := VpfNomArquivo;
+      dtRave.ImprimeExtratoLocacao(VpaCodFilial,VpaSeqLeitura,false);
+    finally
+      dtRave.Free;
+    end;
+    AnexaArquivoEmail(VpfNomArquivo,VprMensagem);
 
 
+    if result = '' then
+    begin
+
+
+    end;
+    VpfDLeitura.Free;
   end;
-  VpfDLeitura.Free;
 end;
 
 {******************************************************************************}
