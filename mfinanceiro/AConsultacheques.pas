@@ -334,9 +334,10 @@ begin
 
           Case ESituacao.ItemIndex of
             0 : VpaSelect.Add(' and CHE.DATCOMPENSACAO IS NULL AND CHE.DATDEVOLUCAO IS NULL AND CHE.TIPCHEQUE = ''C''');
-            1 : VpaSelect.add(' and CHE.DATVENCIMENTO < '+SQLTextoDataAAAAMMMDD(DATE)+ '  and DATCOMPENSACAO IS NULL');
-            2 : VpaSelect.add(' and CHE.DATVENCIMENTO = '+SQLTextoDataAAAAMMMDD(DATE)+ '  and DATCOMPENSACAO IS NULL');
-            3 : VpaSelect.add(' and CHE.DATVENCIMENTO >= '+SQLTextoDataAAAAMMMDD(DATE)+ '  and DATCOMPENSACAO IS NULL');
+            1 : VpaSelect.Add(' and CHE.DATCOMPENSACAO IS NULL AND CHE.DATDEVOLUCAO IS NULL AND CHE.TIPCHEQUE = ''D''');
+            2 : VpaSelect.add(' and CHE.DATVENCIMENTO < '+SQLTextoDataAAAAMMMDD(DATE)+ '  and DATCOMPENSACAO IS NULL');
+            3 : VpaSelect.add(' and CHE.DATVENCIMENTO = '+SQLTextoDataAAAAMMMDD(DATE)+ '  and DATCOMPENSACAO IS NULL');
+            4 : VpaSelect.add(' and CHE.DATVENCIMENTO >= '+SQLTextoDataAAAAMMMDD(DATE)+ '  and DATCOMPENSACAO IS NULL');
           end;
           if EContaCorrente.Text <> '' then
             VpaSelect.Add(' and CHE.NUMCONTACAIXA = '''+EContaCorrente.Text+'''');

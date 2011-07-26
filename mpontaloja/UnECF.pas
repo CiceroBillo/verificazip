@@ -6,7 +6,7 @@ interface
 
 Uses Classes, DbTables, SysUtils, ComCtrls,db, UnDaruma, forms, StdCtrls,controls, Dialogs,
      SQLExpr, Tabela, UnDadosProduto,ACBrECF, ACBrDevice, UnDados, ACBrECFClass, SHDocVw, Windows,
-     ActiveX, MSHTML, ACBrPAF, ACBRSintegra, unSistema, IniFiles, ACBrTEFD, ACBrTEFDClass, UnDadosCR;
+     ActiveX, MSHTML, ACBrPAF, ACBRSintegra, unSistema, IniFiles, ACBrTEFD, ACBrTEFDClass, UnDadosCR,Constantes;
 
 type
   TRBLocalizaECF = class
@@ -144,12 +144,14 @@ Type
       function NumeroSerieAutorizado : Boolean;
       procedure AtualizaGrandeTotalCriptografado;
       procedure AssinaArquivo(VpaNomArquivo : String);
+      function ModoImpressaoDAVNaoFiscal : TRBDImpressaoDAV;
+      function ImprimeDAVFiscal(VpaDCotacao : TRBDOrcamento;VpaDCliente : TRBDCliente):string;
 end;
 
 
 implementation
 
-Uses FunSql, Constantes, UnClientes, FunString, ConstMsg, UnContasAReceber, UnProdutos,FunData, FunValida, UnCotacao, FunArquivos;
+Uses FunSql,  UnClientes, FunString, ConstMsg, UnContasAReceber, UnProdutos,FunData, FunValida, UnCotacao, FunArquivos;
 
 {******************************************************************************}
 procedure TRBLocalizaECF.LocalizaECF(VpaTabela : TDataSet;VpaCodFilial,VpaSeqNota : Integer);
@@ -2133,6 +2135,7 @@ end;
 procedure TRBFuncoesECF.CancelaCupomAberto;
 begin
   ACBRECF.CancelaCupom;
+  AtualizaGrandeTotalCriptografado;
 end;
 
 {******************************************************************************}
@@ -2142,6 +2145,7 @@ begin
   begin
     VerificaECF;
     ACBRECF.CancelaCupom;
+    AtualizaGrandeTotalCriptografado;
     ExtornaEstoqueUltimoCupom;
     ACBRECF.Desativar;
     aviso('CUPOM FISCAL CANCELADO COM SUCESSO!!!'#13'O cupom fiscal foi cancelado com sucesso.');
@@ -2305,6 +2309,24 @@ begin
 end;
 
 {******************************************************************************}
+function TRBFuncoesECF.ModoImpressaoDAVNaoFiscal: TRBDImpressaoDAV;
+var
+  VpfArquivo : TStringList;
+  VpfLaco : Integer;
+begin
+  result := idFiscal;
+  VpfArquivo := TStringList.Create;
+  VpfArquivo.LoadFromFile(varia.DiretorioSistema+'\INFOPAF.INI');
+  VpfArquivo.Text := Descriptografa(VpfArquivo.Text);
+
+  if RetornaValorCampo(VpfArquivo,'MODOOPERACAO') = 'DAV FISCAL' then
+    result := idFiscal
+  else
+    result := idNaoFiscal;
+  VpfArquivo.Free;
+end;
+
+{******************************************************************************}
 function TRBFuncoesECF.ImpressoraAtiva: Boolean;
 begin
   try
@@ -2331,6 +2353,53 @@ begin
   end;
   VpaTabela.Close;
   ACBrECF.FechaRelatorio;
+end;
+
+{******************************************************************************}
+function TRBFuncoesECF.ImprimeDAVFiscal(VpaDCotacao: TRBDOrcamento;VpaDCliente : TRBDCliente): string;
+var
+  VpfClienteCriado : Boolean;
+  VpfLaco : Integer;
+  VpfDProOrcamento : TRBDOrcProduto;
+begin
+  VpfClienteCriado := false;
+  if VpaDCliente = nil then
+  begin
+    VpfClienteCriado := true;
+    VpaDCliente := TRBDCliente.cria;
+    VpaDCliente.CodCliente := VpaDCotacao.CodCliente;
+    FunClientes.CarDCliente(VpaDCliente);
+  end;
+  if not ACBRECF.Ativo then
+    ACBRECF.Ativar;
+  AbreRelatorioGerencial;
+  ACBrECF.LinhaRelatorioGerencial('Documento Auxiliar de Venda - '+FunCotacao.RNomeTipoOrcamento(VpaDCotacao.CodTipoOrcamento));
+  ACBrECF.LinhaRelatorioGerencial('');
+  ACBrECF.LinhaRelatorioGerencial('Identificacao do Estabelecimento Emitente');
+  ACBrECF.LinhaRelatorioGerencial('');
+  ACBrECF.LinhaRelatorioGerencial('Denominacao : '+Varia.NomeFilial);
+  ACBrECF.LinhaRelatorioGerencial('CNPJ : '+Varia.CNPJFilial);
+  ACBrECF.LinhaRelatorioGerencial('');
+  ACBrECF.LinhaRelatorioGerencial('Identificacao do Destinatario');
+  ACBrECF.LinhaRelatorioGerencial('');
+  ACBrECF.LinhaRelatorioGerencial('Nome : '+VpaDCliente.NomCliente);
+  ACBrECF.LinhaRelatorioGerencial('CNPJ / CPF : '+VpaDCliente.CGC_CPF);
+  ACBrECF.LinhaRelatorioGerencial('');
+  ACBrECF.LinhaRelatorioGerencial('Nro do Documento : '+IntToStr(VpaDCotacao.LanOrcamento));
+  ACBrECF.LinhaRelatorioGerencial('');
+  ACBrECF.LinhaRelatorioGerencial(AdicionaCharD(' ','ITEM',20)+'  '+AdicionaCharD(' ','VALOR',10)+ '  '+AdicionaCharD(' ','TOTAL',10) );
+  ACBrECF.LinhaRelatorioGerencial('');
+  for VpfLaco := 0 to VpaDCotacao.Produtos.Count - 1 do
+  begin
+    VpfDProOrcamento := TRBDOrcProduto(VpaDCotacao.Produtos.Items[VpfLaco]);
+    ACBrECF.LinhaRelatorioGerencial(AdicionaCharD(' ',copy(VpfDProOrcamento.NomProduto,1,20),20)+ '  '+AdicionaCharE(' ',FormatFloat('#,###,###,##0.00',VpfDProOrcamento.ValUnitario),10)+ '  '+AdicionaCharE(' ',FormatFloat('#,###,###,##0.00',VpfDProOrcamento.ValTotal),10) );
+  end;
+  ACBrECF.LinhaRelatorioGerencial('');
+  ACBrECF.LinhaRelatorioGerencial(AdicionaCharD(' ','',30)+' '+FormatFloat('#,###,###,##0.00',VpaDCotacao.ValTotal));
+
+  ACBRECF.FechaRelatorio;
+  if VpfClienteCriado  then
+    VpaDCliente.Free;
 end;
 
 {******************************************************************************}
@@ -2686,6 +2755,7 @@ begin
       if Mes(ACBrECF.DataMovimento) <> Mes(VpfDatUltimaReducaoZ) then
         ACBRECF.LeituraMemoriaFiscal(PrimeiroDiaMes(VpfDatUltimaReducaoZ),UltimoDiaMes(VpfDatUltimaReducaoZ));
       DAVOSEmitidos;
+      ACBRECF.Desativar;
     end;
   end;
   if VpfResultado <> '' then

@@ -102,6 +102,7 @@ type
   TRBDEstagioCotacaoAposGerarNota = (ecAlmoxarifado,ecAguardandoEntrega);
   TRBDPeriodicidadeEnvioBackup = (peDiario,peSemanal,peQuinzenal,peMensal);
   TRBDModeloRelatorioFaccionista = (mrModelo1Kairos,mrModelo2Rafthel);
+  TRBDImpressaoDAV = (idFiscal,idNaoFiscal);
 
 
   TVariaveis = class
@@ -217,6 +218,7 @@ type
       CodCondicaoPagamentoECF,
       CodOperacaoEstoqueECF : Integer;
       CodPlanoContasECF : String;
+      ModoImpressaoDAV : TRBDImpressaoDAV;
 
 
       // produto/estoque

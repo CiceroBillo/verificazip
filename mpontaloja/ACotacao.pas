@@ -15,7 +15,7 @@ uses
   Graficos, UnDados, UnContasAReceber, UnCotacao, UnProdutos, UnDadosProduto, UnNotaFiscal,
   Menus, Mask, UnDadosCR, UnChamado, UnClassificacao, FMTBcd, SqlExpr, DBClient,
   RpCon, RpConDS, RpBase, RpSystem, RpDefine, RpRave, unRave, UnSistema,RpDevice,UnContrato,
-  numericos;
+  numericos, UnECF;
 
 Const
   CT_EXTORNAR = 'Tem certeza que deseja extornar o orçamento ?';
@@ -2151,27 +2151,39 @@ end;
 procedure TFCotacao.BRomaneioClick(Sender: TObject);
 var
   VpfDFilial :TRBDFilial;
+  VpfFunECF : TRBFuncoesECF;
 begin
-  if not Config.ImprimirPedEmPreImp then
-  begin
-    try
-      dtRave := TdtRave.create(self);
-      dtRave.ImprimePedido(CadOrcamentoI_EMP_FIL.AsInteger,CadOrcamentoI_Lan_Orc.AsInteger,true);
-    finally
-      dtRave.free;
-    end;
-  end
-  else
+  if (varia.NomeModulo = 'PDV') and (varia.ModoImpressaoDAV = idFiscal) then
   begin
     VprDOrcamento.CodEmpFil := CadOrcamentoI_EMP_FIL.AsInteger;
     VprDOrcamento.LanOrcamento := CadOrcamentoI_Lan_Orc.AsInteger;
     FunCotacao.CarDOrcamento(VprDOrcamento);
-    FunCotacao.CarDParcelaOrcamento(VprDOrcamento);
-    FunImpressao.ImprimirPedido(VprDOrcamento);
-  end;
+    VpfFunECF := TRBFuncoesECF.cria(nil,FPrincipal.BaseDados);
+    VpfFunECF.ImprimeDAVFiscal(VprDOrcamento,nil);
+    VpfFunECF.Free;
+  end
+  else
+    if not Config.ImprimirPedEmPreImp then
+    begin
+      try
+        dtRave := TdtRave.create(self);
+        dtRave.ImprimePedido(CadOrcamentoI_EMP_FIL.AsInteger,CadOrcamentoI_Lan_Orc.AsInteger,true);
+      finally
+        dtRave.free;
+      end;
+    end
+    else
+    begin
+      VprDOrcamento.CodEmpFil := CadOrcamentoI_EMP_FIL.AsInteger;
+      VprDOrcamento.LanOrcamento := CadOrcamentoI_Lan_Orc.AsInteger;
+      FunCotacao.CarDOrcamento(VprDOrcamento);
+      FunCotacao.CarDParcelaOrcamento(VprDOrcamento);
+      FunImpressao.ImprimirPedido(VprDOrcamento);
+    end;
+
   FunCotacao.SetaOrcamentoImpresso1(CadOrcamentoI_EMP_FIL.AsInteger,CadOrcamentoI_lan_orc.AsInteger);
   if Varia.EstagioImpressao <> 0 then
-   FunCotacao.GravaLogEstagio(CadOrcamentoI_EMP_FIL.AsInteger,CadOrcamentoI_lan_orc.AsInteger,varia.EstagioImpressao,varia.CodigoUsuario,'');
+    FunCotacao.GravaLogEstagio(CadOrcamentoI_EMP_FIL.AsInteger,CadOrcamentoI_lan_orc.AsInteger,varia.EstagioImpressao,varia.CodigoUsuario,'');
 
   AtualizaConsulta(True);
 end;

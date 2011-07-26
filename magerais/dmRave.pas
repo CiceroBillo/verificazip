@@ -59,6 +59,9 @@ type
     RTF: TRvRenderRTF;
     Item7: TSQL;
     rvItem7: TRvDataSetConnection;
+    ClientDataSet1: TClientDataSet;
+    ClientDataSet1Codigo: TIntegerField;
+    ClientDataSet1Nome: TStringField;
     procedure f(Sender: TObject);
     procedure RaveBeforeOpen(Sender: TObject);
     procedure RvSystem2AfterPreviewPrint(Sender: TObject);
@@ -116,7 +119,7 @@ type
     procedure ImprimeConsumoFracionada(VpaCodFilial, VpaSeqOrdemProduccao : Integer;VpaSomenteAReservar : Boolean);
     procedure ImprimeConsumoSubmontagem(VpaCodFilial, VpaSeqOrdemProduccao, VpaSeqFracao : Integer;VpaSomenteAReservar, VpaConsumoExcluir : Boolean);
     procedure ImprimeRecibo(VpaCodFilial : Integer;VpaDCliente : TRBDCliente;VpaDesDuplicata, VpaValDuplicata,VpaValExtenso,VpaLocaleData : String);
-    procedure ImprimePromissoria(VpaDFilial: TRBDFilial; VpaDCliente : TRBDCliente; VpaDesDuplicata, VpaValDuplicata,VpaValExtenso,VpaLocaleData, VpaDiaVencimento,VpaDiaVencExtenso,VpaAnoVencimento,VpaDesMesVencimento : String);
+    procedure ImprimePromissoria(VpaDFilial: TRBDFilial; VpaDCliente : TRBDCliente; VpaDesDuplicata, VpaValDuplicata,VpaValExtenso,VpaLocaleData, VpaDiaVencimento,VpaDiaVencExtenso,VpaAnoVencimento,VpaDesMesVencimento : String;VpaVisualizar : Boolean);
     procedure ImprimeDevolucoesPendente(VpaCodFilial,VpaCodCliente,VpaCodTransportadora,VpaCodEstagio,VpaCodVendedor, VpaCodProduto : Integer; VpaData : TDatetime;VpaCaminhoRelatorio,VpaNomFilial,VpaNomCliente,VpaNomTranportadora,VpaNomEstagio, VpaNomVendedor, VpaNomProduto : String);
     procedure ImprimeEstoqueFiscal(VpaCodFilial,VpaSeqProduto : integer;VpaCaminhoRelatorio,VpaNomFilial, VpaNomProduto : String);
     procedure ImprimeNotaFiscalEntrada(VpaCodFilial,VpaSeqNota : integer;VpaVisualizar : Boolean);
@@ -210,6 +213,7 @@ type
     procedure ImprimeNotasFiscaisdeEntrada(VpaDatInicio,VpaDatFim : TDateTime;VpaCodFilial,VpaCodCliente: Integer;VpaCaminhoRelatorio,VpaNomFilial,VpaNomCliente: String);
     procedure ImprimeConhecimentoTransporteEntrada(VpaDatInicio, VpaDatFim: TDateTime; VpaCodFilial, VpaCodTransportadora: Integer; VpaCaminhoRelatorio, VpaNomFilial, VpaNomTransportadora:String);
     procedure ImprimeConhecimentoTransporteSaida(VpaDatInicio, VpaDatFim: TDateTime; VpaCodFilial, VpaCodTransportadora: Integer; VpaCaminhoRelatorio, VpaNomFilial, VpaNomTransportadora:String);
+    procedure TesteDataConection;
   end;
 
 
@@ -805,7 +809,7 @@ begin
 end;
 
 {******************************************************************************}
-procedure TdtRave.ImprimePromissoria(VpaDFilial: TRBDFilial; VpaDCliente : TRBDCliente; VpaDesDuplicata, VpaValDuplicata,VpaValExtenso,VpaLocaleData, VpaDiaVencimento,VpaDiaVencExtenso,VpaAnoVencimento,VpaDesMesVencimento : String);
+procedure TdtRave.ImprimePromissoria(VpaDFilial: TRBDFilial; VpaDCliente : TRBDCliente; VpaDesDuplicata, VpaValDuplicata,VpaValExtenso,VpaLocaleData, VpaDiaVencimento,VpaDiaVencExtenso,VpaAnoVencimento,VpaDesMesVencimento : String;VpaVisualizar : Boolean);
 var
    VpfComplemento: String;
 begin
@@ -813,7 +817,10 @@ begin
   RvSystem1.SystemPrinter.Title := 'Eficácia - Promissória';
   Rave.projectfile := varia.PathRelatorios+'\Financeiro\XX_Promissoria.rav';
   Rave.clearParams;
-  RvSystem1.defaultDest := rdPreview;
+  if VpaVisualizar then
+    RvSystem1.defaultDest := rdPreview
+  else
+    RvSystem1.defaultDest := rdPrinter;
 
   Sistema.CarDFilial(VprDFilial,VpaDFilial.CodFilial);
   FunRave.EnviaParametrosFilial(Rave,VprDFilial);
@@ -3362,6 +3369,12 @@ begin
   Item4.SQL.SaveToFile('item4.sql');
   Item5.SQL.SaveToFile('item5.sql');
   Item6.SQL.SaveToFile('item6.sql');
+end;
+
+{******************************************************************************}
+procedure TdtRave.TesteDataConection;
+begin
+
 end;
 
 {******************************************************************************}

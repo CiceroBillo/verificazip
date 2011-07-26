@@ -2582,7 +2582,7 @@ object FPrincipal: TFPrincipal
   object BRegeraComissao: TBitBtn
     Left = 304
     Top = 208
-    Width = 123
+    Width = 129
     Height = 25
     Caption = 'Regera Comissao'
     DoubleBuffered = True

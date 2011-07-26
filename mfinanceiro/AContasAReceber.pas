@@ -1521,7 +1521,7 @@ begin
         FormatFloat('#,###,##0.00',MovParcelasN_VLR_PAR.AsFloat),
             Extenso(MovParcelasN_VLR_PAR.AsFloat,'real','reais'),
             varia.CidadeFilial+' '+ IntTostr(dia(date))+', de ' + TextoMes(date,false)+ ' de '+Inttostr(ano(date)),
-            IntToStr(VpfDia),Extenso(VpfDia,'dia','dias'), IntToStr(VpfAno),TextoMes(MovParcelasD_DAT_VEN.AsDateTime,false));
+            IntToStr(VpfDia),Extenso(VpfDia,'dia','dias'), IntToStr(VpfAno),TextoMes(MovParcelasD_DAT_VEN.AsDateTime,false),true);
   VpfDFilial.Free;
   dtRave.free;
   VpfDCliente.free;

@@ -475,6 +475,7 @@ begin
 
   if not(FunEcf.ImpressoraAtiva) or not(FunEcf.NumeroSerieAutorizado) then
     AlterarEnabledDet([MNovoECF, MExportacaoDados,MImportacao,MNovoPedido,MConsultaPedidos,MConsultaCodigo,MTabelasImportacao,MReducaoZ,MCancelarUltimoCupom,MSurpimentoCaixa,MRetiradaCaixa],false);
+  varia.ModoImpressaoDAV := FunEcf.ModoImpressaoDAVNaoFiscal;
   Reg := TRegistro.create;
   VersaoSistema := reg.VersaoMaquina;
   reg.Free;

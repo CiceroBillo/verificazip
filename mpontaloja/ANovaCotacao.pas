@@ -8,7 +8,7 @@ uses
   Mask, DBCtrls, Tabela, Grids, DBGrids, DBKeyViolation, UnCotacao, UnDadosProduto,UnImpressao,
   ConvUnidade, Parcela,UnProdutos, UnClientes, UnDados, CGrades, numericos, UnContasAReceber,
   PainelGradiente, Menus, ComCtrls, UnDadosCR, FMTBcd, DBClient, SqlExpr, CBancoDados, UnArgox,
-  UnDadosLocaliza, UnProposta, EditorImagem;
+  UnDadosLocaliza, UnProposta, EditorImagem, UnECF;
 
 type
   TRBDColunaGradeProduto =(clProCodProduto,clProNomProduto,clProCodCor, clProNomCor, clProCodTamanho, clProNomTamanho, clProAltura, clProUM, clProQtdproduto,
@@ -294,6 +294,8 @@ type
     ELocalEmbarque: TEditColor;
     SpeedButton41: TSpeedButton;
     EUfEmbarque: TRBEditLocaliza;
+    N8: TMenuItem;
+    Promissria1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure EClienteRetorno(Retorno1, Retorno2: String);
@@ -402,6 +404,7 @@ type
     procedure ETransportadoraRetorno(VpaColunas: TRBColunasLocaliza);
     procedure FotoDblClick(Sender: TObject);
     procedure EClienteExit(Sender: TObject);
+    procedure Promissria1Click(Sender: TObject);
   private
     { Private declarations }
     VprOperacao,
@@ -1842,6 +1845,12 @@ begin
 end;
 
 {******************************************************************************}
+procedure TFNovaCotacao.Promissria1Click(Sender: TObject);
+begin
+  FunContasAReceber.ImprimePromissoria(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento,VprDCliente);
+end;
+
+{******************************************************************************}
 procedure TFNovaCotacao.ProximoProduto;
 begin
   if config.CodigoBarras then
@@ -1913,109 +1922,75 @@ end;
 
 {******************* grava a cotacao e depois imprime *************************}
 procedure TFNovaCotacao.BImprimirClick(Sender: TObject);
+var
+  VpfFunECF : TRBFuncoesECF;
 begin
   if ChamaRotinasGravacao then
   begin
-    if not Config.ImprimirPedEmPreImp then
+    if (varia.NomeModulo = 'PDV') and (varia.ModoImpressaoDAV = idFiscal) then
     begin
-      if (puPLNaoImprimeCotacaoJaImpressa in varia.PermissoesUsuario) then
+      VpfFunECF := TRBFuncoesECF.cria(nil,FPrincipal.BaseDados);
+      VpfFunECF.ImprimeDAVFiscal(VprDCotacao,VprDCliente);
+      VpfFunECF.Free;
+    end
+    else
+      if not Config.ImprimirPedEmPreImp then
       begin
-        if FunCotacao.RSePedidoFoiImpresso(varia.CodigoEmpFil, VprDCotacao.LanOrcamento) then
-          aviso('JA IMPRESSO!!!' + #13 + 'Impossivel reimpressão.')
-        else
+        if (puPLNaoImprimeCotacaoJaImpressa in varia.PermissoesUsuario) then
         begin
-          if ((varia.ImpressoraAlmoxarifado <> '') and (VprDCotacao.CodTransportadora = varia.CodTransportadoraVazio)) or
-              not(config.ImprimeCotacaocomEntregadorSomenteAlmoxarifado)  then
+          if FunCotacao.RSePedidoFoiImpresso(varia.CodigoEmpFil, VprDCotacao.LanOrcamento) then
           begin
-            try
-              dtRave := TdtRave.create(self);
-              dtRave.ImprimePedido(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento,false);
-            finally
-              dtRave.free;
-            end;
+            aviso('JA IMPRESSO!!!' + #13 + 'Impossivel reimpressão.');
+            exit;
+          end
+        end;
+        if ((varia.ImpressoraAlmoxarifado <> '') and (VprDCotacao.CodTransportadora = varia.CodTransportadoraVazio)) or
+            not(config.ImprimeCotacaocomEntregadorSomenteAlmoxarifado)  then
+        begin
+          try
+            dtRave := TdtRave.create(self);
+            dtRave.ImprimePedido(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento,false);
+          finally
+            dtRave.free;
           end;
-          if (varia.ImpressoraAlmoxarifado <> '') and (VprDCotacao.CodTransportadora <> varia.CodTransportadoraVazio)  then
-          begin
-            try
-              dtRave := TdtRave.create(self);
-              dtRave.ImprimePedido(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento,false);
-            finally
-              dtRave.free;
-            end;
+        end;
+        if (varia.ImpressoraAlmoxarifado <> '') and (VprDCotacao.CodTransportadora <> varia.CodTransportadoraVazio)  then
+        begin
+          try
+            dtRave := TdtRave.create(self);
+            dtRave.ImprimePedido(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento,false);
+          finally
+            dtRave.free;
           end;
-          if (varia.CNPJFilial = CNPJ_COPYLINE) or
-             (varia.CNPJFilial = CNPJ_IMPOX) then
+        end;
+        if (varia.CNPJFilial = CNPJ_COPYLINE) or
+           (varia.CNPJFilial = CNPJ_IMPOX) then
+        begin
+          if (VprDCotacao.CodTransportadora = varia.CodTransportadoraVazio) then
           begin
-            if (VprDCotacao.CodTransportadora = varia.CodTransportadoraVazio) then
-            begin
-              FunCotacao.AdicionaFinanceiroArqRemessa(VprDCotacao);
-              FunCotacao.ImprimirBoletos(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento,VprDCliente,Varia.ImpressoraRelatorio)
-            end
-            else
-              FunCotacao.ImprimirBoletos(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento,VprDCliente,varia.ImpressoraAlmoxarifado);
+            FunCotacao.AdicionaFinanceiroArqRemessa(VprDCotacao);
+            FunCotacao.ImprimirBoletos(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento,VprDCliente,Varia.ImpressoraRelatorio)
+          end
+          else
+            FunCotacao.ImprimirBoletos(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento,VprDCliente,varia.ImpressoraAlmoxarifado);
 
-            if VprDCotacao.CodTipoOrcamento = 2 then
-            begin
-              try
-                dtRave := TdtRave.create(self);
-                dtRave.ImprimeGarantia(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento,false);
-              finally
-                dtRave.free;
-              end;
+          if VprDCotacao.CodTipoOrcamento = 2 then
+          begin
+            try
+              dtRave := TdtRave.create(self);
+              dtRave.ImprimeGarantia(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento,false);
+            finally
+              dtRave.free;
             end;
           end;
-        end
+        end;
       end
       else
       begin
-        if ((varia.ImpressoraAlmoxarifado <> '') and (VprDCotacao.CodTransportadora = varia.CodTransportadoraVazio)) or
-              not(config.ImprimeCotacaocomEntregadorSomenteAlmoxarifado)  then
-          begin
-            try
-              dtRave := TdtRave.create(self);
-              dtRave.ImprimePedido(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento,false);
-            finally
-              dtRave.free;
-            end;
-          end;
-          if (varia.ImpressoraAlmoxarifado <> '') and (VprDCotacao.CodTransportadora <> varia.CodTransportadoraVazio)  then
-          begin
-            try
-              dtRave := TdtRave.create(self);
-              dtRave.ImprimePedido(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento,false);
-            finally
-              dtRave.free;
-            end;
-          end;
-          if (varia.CNPJFilial = CNPJ_COPYLINE) or
-             (varia.CNPJFilial = CNPJ_IMPOX) then
-          begin
-            if (VprDCotacao.CodTransportadora = varia.CodTransportadoraVazio) then
-            begin
-              FunCotacao.AdicionaFinanceiroArqRemessa(VprDCotacao);
-              FunCotacao.ImprimirBoletos(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento,VprDCliente,Varia.ImpressoraRelatorio)
-            end
-            else
-              FunCotacao.ImprimirBoletos(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento,VprDCliente,varia.ImpressoraAlmoxarifado);
-
-            if VprDCotacao.CodTipoOrcamento = 2 then
-            begin
-              try
-                dtRave := TdtRave.create(self);
-                dtRave.ImprimeGarantia(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento,false);
-              finally
-                dtRave.free;
-              end;
-            end;
-          end;
-      end
-    end
-    else
-    begin
-      FunCotacao.CarDParcelaOrcamento(VprDCotacao);
-      FunImpressao.ImprimirPedido(VprDCotacao);
-    end;
-   end;
+        FunCotacao.CarDParcelaOrcamento(VprDCotacao);
+        FunImpressao.ImprimirPedido(VprDCotacao);
+      end;
+     end;
     FunCotacao.SetaOrcamentoImpresso1(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento);
     if Varia.EstagioImpressao <> 0 then
       FunCotacao.GravaLogEstagio(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento,varia.EstagioImpressao,Varia.CodigoUsuario,'');

@@ -266,6 +266,7 @@ type
     function DuplicaParcelaemAberto(VpaCodFilial, VpaLanReceber : Integer) : string;
     function DivideValoresParcelasEmAberto(VpaValor : Double; VpaCodFilial, VpaLanReceber : Integer) : string;
     function ExportaPagamentosSCI(VpaDatInicio, VpaDatFim : TDateTime):string;
+    procedure ImprimePromissoria(VpaCodFilial,VpaLanOrcamento : Integer;VpaDCliente : TRBDCliente);
   end;
 
 Var
@@ -275,7 +276,7 @@ implementation
 
 uses constMsg, constantes, funSql, funstring, fundata, funnumeros, FunObjeto,
      AMostraParReceberOO, ABaixaContasAReceberOO, ABaixaContasaPagarOO,Uncotacao, APrincipal, AChequesOO,
-     UnContasaPagar, unClientes, AChequesCP;
+     UnContasaPagar, unClientes, AChequesCP, dmrave;
 
 
 {#############################################################################
@@ -1322,6 +1323,36 @@ begin
                             ' AND D_DAT_PAG IS NULL');
   result := Aux.FieldByName('ULTIMA').AsInteger;
   Aux.Close;
+end;
+
+{******************************************************************************}
+procedure TFuncoesContasAReceber.ImprimePromissoria(VpaCodFilial,VpaLanOrcamento: Integer;VpaDCliente : TRBDCliente);
+Var
+  VpfDFilial : TRBDFilial;
+begin
+  AdicionaSQLAbreTabela(Tabela,'Select MOV.C_NRO_DUP, MOV.N_VLR_PAR, MOV.D_DAT_VEN '+
+                               ' from MOVCONTASARECEBER MOV, CADCONTASARECEBER CAD  ' +
+                               ' Where CAD.I_EMP_FIL = MOV.I_EMP_FIL ' +
+                               ' AND CAD.I_LAN_REC = MOV.I_LAN_REC ' +
+                               ' AND CAD.I_EMP_FIL = ' +IntToStr(VpaCodFilial)+
+                               ' AND CAD.I_LAN_ORC = ' + IntToStr(VpaLanOrcamento));
+  VpfDFilial := TRBDFilial.cria;
+  Sistema.CarDFilial(VpfDFilial,VpaCodFilial);
+  while not Tabela.Eof do
+  begin
+    try
+      dtRave := TdtRave.create(nil);
+      dtRave.ImprimePromissoria(VpfDFilial,VpaDCliente,Tabela.FieldByName('C_NRO_DUP').AsString,
+          FormatFloat('#,###,##0.00',Tabela.FieldByName('N_VLR_PAR').AsFloat),
+            Extenso(Tabela.FieldByName('N_VLR_PAR').AsFloat,'real','reais'),
+            varia.CidadeFilial+' '+ IntTostr(dia(date))+', de ' + TextoMes(date,false)+ ' de '+Inttostr(ano(date)),
+            IntToStr(dia(Tabela.FieldByName('D_DAT_VEN').AsDateTime)),Extenso(dia(Tabela.FieldByName('D_DAT_VEN').AsDateTime),'dia','dias'), IntToStr(Ano(Tabela.FieldByName('D_DAT_VEN').AsDateTime)),TextoMes(Tabela.FieldByName('D_DAT_VEN').AsDateTime,false),false);
+    finally
+      dtRave.Free;
+    end;
+    Tabela.Next;
+  end;
+  Tabela.Close;
 end;
 
 {******************************************************************************}

@@ -588,10 +588,6 @@ begin
   if EFilial.AInteiro <> 0 then
     VpaTabela.sql.add(' and I_EMP_FIL = '+EFilial.Text);
 
-  if ((varia.CNPJFilial = CNPJ_Kairos) or
-     (varia.CNPJFilial = CNPJ_AviamentosJaragua))and
-     (EFilial.AInteiro = 0) then
-    VpaTabela.sql.add(' and I_EMP_FIL <> 13');
 
   VpaTabela.Sql.add(' group by D_DAT_EMI '  +
                     ' order by 2');
@@ -611,10 +607,6 @@ begin
                     ' Where  '+SQLTextoDataEntreAAAAMMDD('D_DAT_ORC', EDatInicio.Datetime,EDatFim.Datetime,false));
   if EFilial.AInteiro <> 0 then
     VpaTabela.sql.add(' and ORC.I_EMP_FIL = '+EFilial.Text);
-  if ((varia.CNPJFilial = CNPJ_Kairos) or
-     (varia.CNPJFilial = CNPJ_AviamentosJaragua))and
-     (EFilial.AInteiro = 0) then
-    VpaTabela.sql.add(' and ORC.I_EMP_FIL <> 13');
 
   VpaTabela.sql.add(' group by DATA1, DATA '  +
                     ' order by 2');
@@ -634,11 +626,6 @@ begin
                     ' Where '+SQLTextoDataEntreAAAAMMDD('D_DAT_ORC', EDatInicio.Datetime,EDatFim.Datetime,false));
   if EFilial.AInteiro <> 0 then
     VpaTabela.sql.add(' and ORC.I_EMP_FIL = '+EFilial.Text);
-  if ((varia.CNPJFilial = CNPJ_Kairos) or
-     (varia.CNPJFilial = CNPJ_AviamentosJaragua))and
-     (EFilial.AInteiro = 0) then
-    VpaTabela.sql.add(' and ORC.I_EMP_FIL <> 13');
-
   VpaTabela.sql.add(' group by DATA1, DATA '  +
                     ' order by 2');
 
@@ -659,10 +646,6 @@ begin
                     ' AND CAD.I_LAN_REC = MOV.I_LAN_REC '+SQLTextoDataEntreAAAAMMDD('CAD.D_DAT_EMI', EDatInicio.Datetime,EDatFim.Datetime,true));
   if EFilial.AInteiro <> 0 then
     VpaTabela.sql.add(' and CAD.I_EMP_FIL = '+EFilial.Text);
-  if ((varia.CNPJFilial = CNPJ_Kairos) or
-     (varia.CNPJFilial = CNPJ_AviamentosJaragua))and
-     (EFilial.AInteiro = 0) then
-    VpaTabela.sql.add(' and CAD.I_EMP_FIL <> 13');
   if not VprMostrarContas then
     VpaTabela.sql.add(' and MOV.C_IND_CAD = ''N''');
   case CAgruparpor.ItemIndex of
@@ -677,6 +660,7 @@ end;
 {******************************************************************************}
 procedure TFGraficoAnaliseFaturamento.PosMetasVendedor(VpaTabela : TSQLQUERY);
 begin
+  VpaTabela.close;
   VpaTabela.Sql.Clear;
   case CAgruparpor.ItemIndex of
     0 : VpaTabela.Sql.Add('Select Sum(Orc.N_Vlr_LIQ) Valor, Orc.D_DAT_ORC DATA1, Orc.D_DAT_ORC DATA ');
@@ -698,10 +682,6 @@ begin
 
   if EFilial.AInteiro <> 0 then
     VpaTabela.sql.add(' and ORC.I_EMP_FIL = '+EFilial.Text);
-  if ((varia.CNPJFilial = CNPJ_Kairos) or
-     (varia.CNPJFilial = CNPJ_AviamentosJaragua))and
-     (EFilial.AInteiro = 0) then
-    VpaTabela.sql.add(' and ORC.I_EMP_FIL <> 13');
 
   case CAgruparpor.ItemIndex of
     0 : VpaTabela.Sql.Add(' group by orc.D_DAT_ORC '+
@@ -712,6 +692,7 @@ begin
                     ' order by 2');
   end;
   VpaTabela.Open;
+//  VpaTabela.SQL.SaveToFile('metas.sql');
 end;
 
 {******************************************************************************}
@@ -728,10 +709,6 @@ begin
                     ' AND CAD.I_LAN_REC = MOV.I_LAN_REC '+SQLTextoDataEntreAAAAMMDD('MOV.D_DAT_VEN', EDatInicio.Datetime,EDatFim.Datetime,true));
   if EFilial.AInteiro <> 0 then
     VpaTabela.sql.add(' and CAD.I_EMP_FIL = '+EFilial.Text);
-  if ((varia.CNPJFilial = CNPJ_Kairos) or
-     (varia.CNPJFilial = CNPJ_AviamentosJaragua))and
-     (EFilial.AInteiro = 0) then
-    VpaTabela.sql.add(' and CAD.I_EMP_FIL <> 13');
 
   if not VprMostrarContas then
     VpaTabela.sql.add(' and MOV.C_IND_CAD = ''N''');
@@ -769,10 +746,6 @@ begin
 
   if EFilial.AInteiro <> 0 then
     VpaTabela.sql.add(' and ORC.I_EMP_FIL = '+EFilial.Text);
-  if ((varia.CNPJFilial = CNPJ_Kairos) or
-     (varia.CNPJFilial = CNPJ_AviamentosJaragua))and
-     (EFilial.AInteiro = 0) then
-    VpaTabela.sql.add(' and ORC.I_EMP_FIL <> 13');
 
   // DATA1 , DATA
   case CAgruparpor.ItemIndex of
@@ -805,10 +778,6 @@ begin
   end;
   if EFilial.AInteiro <> 0 then
     Aux.sql.add(' and I_EMP_FIL = '+EFilial.Text);
-  if ((varia.CNPJFilial = CNPJ_Kairos) or
-     (varia.CNPJFilial = CNPJ_AviamentosJaragua))and
-     (EFilial.AInteiro = 0) then
-    Aux.sql.add(' and I_EMP_FIL <> 13');
   Aux.Open;
   result := Aux.FieldByName('VALOR').AsFloat;
   Aux.Close;
@@ -833,10 +802,6 @@ begin
   end;
   if EFilial.AInteiro <> 0 then
     Aux.sql.add(' and CAD.I_EMP_FIL = '+EFilial.Text);
-  if ((varia.CNPJFilial = CNPJ_Kairos) or
-     (varia.CNPJFilial = CNPJ_AviamentosJaragua))and
-     (EFilial.AInteiro = 0) then
-    Aux.sql.add(' and CAD.I_EMP_FIL <> 13');
   if not VprMostrarContas then
     Aux.sql.add(' and MOV.C_IND_CAD = ''N''');
   Aux.Open;

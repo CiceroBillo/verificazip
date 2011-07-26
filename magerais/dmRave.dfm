@@ -571,4 +571,17 @@ object dtRave: TdtRave
     Left = 496
     Top = 64
   end
+  object ClientDataSet1: TClientDataSet
+    Aggregates = <>
+    Params = <>
+    Left = 104
+    Top = 208
+    object ClientDataSet1Codigo: TIntegerField
+      FieldName = 'Codigo'
+    end
+    object ClientDataSet1Nome: TStringField
+      FieldName = 'Nome'
+      Size = 50
+    end
+  end
 end

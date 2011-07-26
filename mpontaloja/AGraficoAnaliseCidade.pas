@@ -21,7 +21,6 @@ type
     Localiza: TConsultaPadrao;
     CAgruparpor: TRadioGroup;
     Label4: TLabel;
-    GraficosTrio: TGraficosTrio;
     PCidade: TPanelColor;
     Label3: TLabel;
     ECidade: TEditLocaliza;
@@ -36,6 +35,7 @@ type
     SpeedButton5: TSpeedButton;
     LFilial: TLabel;
     EFilial: TEditLocaliza;
+    GraficosTrio: TGraficosTrio;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BFecharClick(Sender: TObject);
@@ -178,7 +178,7 @@ begin
     case CAgruparpor.ItemIndex of
       0 : graficostrio.info.ComandoSQL :=  'Select Sum(Orc.N_Vlr_LIQ) Valor, Orc.D_DAT_ORC DATA1, Orc.D_DAT_ORC DATA ';
       1 : graficostrio.info.ComandoSQL :=  'Select Sum(Orc.N_Vlr_LIQ) Valor, ('+SQLTextoAno('orc.d_dat_orc')+' *100)+ '+SQLTextoMes('orc.d_dat_orc')+' DATA1, '+SQLTextoMes('Orc.D_DAT_ORC')+' ||''/''|| '+SQLTextoAno('ORC.D_DAT_ORC')+' DATA ';
-      3 : graficostrio.info.ComandoSQL :=  'Select Sum(Orc.N_Vlr_LIQ) Valor,'+SQLTextoAno('ORC.D_DAT_ORC')+' DATA1, '+SQLTextoAno('ORC.D_DAT_ORC')+' DATA ';
+      2 : graficostrio.info.ComandoSQL :=  'Select Sum(Orc.N_Vlr_LIQ) Valor,'+SQLTextoAno('ORC.D_DAT_ORC')+' DATA1, '+SQLTextoAno('ORC.D_DAT_ORC')+' DATA ';
     end;
     graficostrio.info.ComandoSQL :=  graficostrio.info.ComandoSQL + ' from CadOrcamentos Orc '+
                                     ' Where ORC.I_COD_VEN = '+ EVendedor.Text +
@@ -186,15 +186,11 @@ begin
 
    if EFilial.AInteiro <> 0 then
      graficostrio.info.ComandoSQL :=  graficostrio.info.ComandoSQL + 'and Orc.I_Emp_Fil = ' + EFilial.Text;
-   if ((varia.CNPJFilial = CNPJ_Kairos) or
-      (varia.CNPJFilial = CNPJ_AviamentosJaragua))and
-      (EFilial.AInteiro = 0) then
-     graficostrio.info.ComandoSQL :=  graficostrio.info.ComandoSQL + 'and Orc.I_Emp_Fil <> 13';
 
     case CAgruparpor.ItemIndex of
       0 : graficostrio.info.ComandoSQL := graficostrio.info.ComandoSQL+ 'group by  Orc.D_DAT_ORC DATA1, Orc.D_DAT_ORC DATA ';
       1 : graficostrio.info.ComandoSQL := graficostrio.info.ComandoSQL+ 'group by ('+SQLTextoAno('orc.d_dat_orc')+' *100)+ '+SQLTextoMes('orc.d_dat_orc')+', '+SQLTextoMes('Orc.D_DAT_ORC')+' ||''/''|| '+SQLTextoAno('ORC.D_DAT_ORC');
-      3 : graficostrio.info.ComandoSQL := graficostrio.info.ComandoSQL+ 'group by '+SQLTextoAno('ORC.D_DAT_ORC')+', '+SQLTextoAno('ORC.D_DAT_ORC');
+      2 : graficostrio.info.ComandoSQL := graficostrio.info.ComandoSQL+ 'group by '+SQLTextoAno('ORC.D_DAT_ORC')+', '+SQLTextoAno('ORC.D_DAT_ORC');
     end;
    graficostrio.info.ComandoSQL :=  graficostrio.info.ComandoSQL +
                                     ' order by 2';
