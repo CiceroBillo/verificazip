@@ -8,7 +8,7 @@ Const
   VersaoFinanceiro = '2.852';
   VersaoConfiguracaoSistema = '2.426';
   VersaoPontoLoja = '4.005';
-  VersaoFaturamento = '2.786';
+  VersaoFaturamento = '2.788';
   VersaoChamadoTecnico = '2.574';
   VersaoAgenda = '1.06';
   VersaoCRM = '3.040';

@@ -316,6 +316,7 @@ begin
     NotCadastro.FieldByName('C_COD_PRO').AsString := VpfDItemNota.CodProduto;
     NotCadastro.FieldByName('C_NUM_SER').AsString := VpfDItemNota.DesNumSerie;
     NotCadastro.FieldByName('N_VLR_MVA').AsFloat := VpfDItemNota.PerMVA;
+    NotCadastro.FieldByName('N_MVA_AJU').AsFloat := VpfDItemNota.PerMVAAjustado;
     NotCadastro.FieldByName('N_VLR_BST').AsFloat := VpfDItemNota.ValBaseST;
     NotCadastro.FieldByName('N_VLR_TST').AsFloat := VpfDItemNota.ValST;
     NotCadastro.FieldByName('N_PER_ACU').AsFloat := VpfDItemNota.PerAcrescimoST;
@@ -448,7 +449,7 @@ begin
                                ' MOV.N_PER_ICM,MOV.C_CLA_FIS, MOV.C_COD_CST, MOV.C_NOM_COR, MOV.C_REF_FOR, '+
                                ' MOV.C_NOM_PRO NOMPRODUTONOTA, MOV.I_COD_TAM, MOV.N_QTD_CHA, MOV.N_LAR_CHA, MOV.N_COM_CHA,'+
                                ' MOV.N_VLR_MVA, MOV.N_VLR_BST, MOV.N_VLR_TST, MOV.N_PER_ACU, MOV.N_VLR_BIC, MOV.N_VLR_ICM, ' +
-                               ' MOV.N_VLR_DES, MOV.N_OUT_DES, MOV.N_VLR_FRE, MOV.N_RED_BAS,'+
+                               ' MOV.N_VLR_DES, MOV.N_OUT_DES, MOV.N_VLR_FRE, MOV.N_RED_BAS, N_MVA_AJU, '+
                                ' PRO.C_COD_PRO, PRO.C_NOM_PRO, PRO.C_COD_UNI UNIORIGINAL, PRO.N_DEN_VOL, PRO.N_ESP_ACO, PRO.C_ATI_PRO, '+
                                ' TAM.NOMTAMANHO '+
                                ' from MOVNOTASFISCAISFOR MOV, CADPRODUTOS PRO, TAMANHO TAM'+
@@ -488,6 +489,7 @@ begin
     VpfDItemNota.ValICMS:= Tabela.FieldByName('N_VLR_ICM').AsFloat;
     VpfDItemNota.PerICMS := Tabela.FieldByName('N_PER_ICM').AsFloat;
     VpfDItemNota.PerMVA := Tabela.FieldByName('N_VLR_MVA').AsFloat;
+    VpfDItemNota.PerMVAAjustado := Tabela.FieldByName('N_MVA_AJU').AsFloat;
     VpfDItemNota.ValBaseST := Tabela.FieldByName('N_VLR_BST').AsFloat;
     VpfDItemNota.ValST := Tabela.FieldByName('N_VLR_TST').AsFloat;
     VpfDItemNota.ValDesconto := Tabela.FieldByName('N_VLR_DES').AsFloat;

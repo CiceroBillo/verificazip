@@ -2213,6 +2213,8 @@ end;
 {************************ no exit da condicao de pagamento ****************** }
 procedure TFNovaNotaFiscalNota.ECondicoesExit(Sender: TObject);
 begin
+  VprDNota.PesBruto:= EPesoBruto.AValor;
+  VprDNota.PesLiquido:= EPesoLiquido.AValor;
   if (VprOperacao in [ocInsercao,ocEdicao]) then
     if not ExisteCondicaoPagamento then
     begin

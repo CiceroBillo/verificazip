@@ -3,7 +3,7 @@ unit UnProgramador1;
 interface
 Uses SQLExpr, Classes, SysUtils;
 Const
-  CT_VersaoBancoProgramador1 = 197;
+  CT_VersaoBancoProgramador1 = 198;
 
 Type
   TRBFunProgramador1 = class
@@ -1653,6 +1653,12 @@ begin
     result := '197';
     ExecutaComandoSql(Aux,' ALTER TABLE CHEQUE ADD(CODFORNECEDORRESERVA NUMBER(10))');
     ExecutaComandoSql(Aux,'Update CFG_GERAL set I_Ult_PR1 = 197');
+  end;
+  if VpaNumAtualizacao < 198 then
+  begin
+    result := '198';
+    ExecutaComandoSql(Aux,' ALTER TABLE MOVNOTASFISCAISFOR ADD(N_MVA_AJU NUMBER(17,2))');
+    ExecutaComandoSql(Aux,'Update CFG_GERAL set I_Ult_PR1 = 198');
   end;
 end;
 end.

@@ -16,7 +16,7 @@ Const
   CT_DATAMENORULTIMOFECHAMENTO='DATA NÃO PODE SER MENOR QUE A DO ULTIMO FECHAMENTO!!!A data de digitação do produto não ser menor que a data do ultimo fechamento...';
 
 type
-  TRBDColunaGrade =(clCodProduto,clNomProduto,clCodCor,clNomCor,clCodTamanho,clNomTamanho,clCFOP,clClassificacaoFiscal,clCST,clQtdChapas,clLargura,clComprimento,clUm,clQtdPro,ClValUnitarioPro,clValTotalPro,clPerIcms,clPerIpi,clPerMva,clBaseSt,clValST,clPerAcumulado,clValorVenda,clNumSerie,clNumLote,clRefFornecedor,clEtiquetas,clBaseIcms,clValIcms,clPerReducaoICMS);
+  TRBDColunaGrade =(clCodProduto,clNomProduto,clCodCor,clNomCor,clCodTamanho,clNomTamanho,clCFOP,clClassificacaoFiscal,clCST,clQtdChapas,clLargura,clComprimento,clUm,clQtdPro,ClValUnitarioPro,clValTotalPro,clPerIcms,clPerIpi,clPerMva,clPerMvaAjustado,clBaseSt,clValST,clPerAcumulado,clValorVenda,clNumSerie,clNumLote,clRefFornecedor,clEtiquetas,clBaseIcms,clValIcms,clPerReducaoICMS);
   TRBDColunaGradeServicos =(clCodServico,clDescServico,clDescAdicional,clQtd,clValUnitario, clValTotal,clserCodCFOP);
 
   TFNovaNotaFiscaisFor = class(TFormularioPermissao)
@@ -456,15 +456,16 @@ begin
     clBaseIcms: result:=19;
     clValIcms: result:=20;
     clPerMva: result:=21;
-    clBaseSt: result:=22;
-    clValST: result:=23;
-    clPerAcumulado: result:=24;
-    clValorVenda: result:=25;
-    clNumSerie: result:=26;
-    clNumLote: result:=27;
-    clRefFornecedor: result:=28;
-    clPerReducaoICMS : result := 29;
-    clEtiquetas: result:=30;
+    clPerMvaAjustado: result:=22;
+    clBaseSt: result:=23;
+    clValST: result:=24;
+    clPerAcumulado: result:=25;
+    clValorVenda: result:=26;
+    clNumSerie: result:=27;
+    clNumLote: result:=28;
+    clRefFornecedor: result:=29;
+    clPerReducaoICMS : result := 30;
+    clEtiquetas: result:=31;
   end;
 end;
 
@@ -681,6 +682,7 @@ begin
         Grade.Cells[RColunaGrade(clClassificacaoFiscal),Grade.ALinha] := CodClassificacaoFiscal;
         Grade.Cells[RColunaGrade(clUm),Grade.ALinha] := UM;
         Grade.Cells[RColunaGrade(clPerMva),Grade.ALinha] := FormatFloat('#,##0.00',VprDItemNota.PerMVA);
+        Grade.Cells[RColunaGrade(clPerMvaAjustado),Grade.ALinha] := FormatFloat('#,##0.00',VprDItemNota.PerMVAAjustado);
         if VprIndTroca then
           VprDItemNota.ValUnitario := VprDItemNota.ValRevenda;
         if config.EstoquePorTamanho then
@@ -755,6 +757,7 @@ begin
           Grade.Cells[RColunaGrade(clClassificacaoFiscal),Grade.ALinha] := VprDItemNota.CodClassificacaoFiscal;
           Grade.Cells[RColunaGrade(clUm),Grade.ALinha] := VprDItemNota.UM;
           Grade.Cells[RColunaGrade(clPerMva),Grade.ALinha] := FormatFloat('#,##0.00',VprDItemNota.PerMVA);
+          Grade.Cells[RColunaGrade(clPerMvaAjustado),Grade.ALinha] := FormatFloat('#,##0.00',VprDItemNota.PerMVAAjustado);
           if VprIndTroca then
             VprDItemNota.ValUnitario := VprDItemNota.ValRevenda;
 
@@ -1129,6 +1132,7 @@ begin
   grade.Cells[RColunaGrade(clBaseIcms),0] := 'Base Icms';
   grade.Cells[RColunaGrade(clValIcms),0] := 'Valor Icms';
   grade.Cells[RColunaGrade(clPerMva),0] := '%MVA';
+  grade.Cells[RColunaGrade(clPerMvaAjustado),0] := '%MVA Ajustado';
   grade.Cells[RColunaGrade(clBaseSt),0] := 'Base ST';
   grade.Cells[RColunaGrade(clValST),0] := 'Valor ST';
   grade.Cells[RColunaGrade(clPerAcumulado),0] := '% Acr. ST';
@@ -1477,6 +1481,7 @@ begin
   VprDItemNota.ValBaseIcms:= StrToFloat(DeletaChars(Grade.Cells[RColunaGrade(clBaseIcms),Grade.ALinha],'.'));
   VprDItemNota.ValICMS:= StrToFloat(DeletaChars(Grade.Cells[RColunaGrade(clValIcms),Grade.ALinha],'.'));
   VprDItemNota.PerMVA:= StrToFloat(DeletaChars(Grade.Cells[RColunaGrade(clPerMva),Grade.ALinha],'.'));
+  VprDItemNota.PerMVAAjustado:= StrToFloat(DeletaChars(Grade.Cells[RColunaGrade(clPerMvaAjustado),Grade.ALinha],'.'));
   VprDItemNota.ValBaseST := StrToFloat(DeletaChars(Grade.Cells[RColunaGrade(clBaseSt),Grade.ALinha],'.'));
   VprDItemNota.ValST:= StrToFloat(DeletaChars(Grade.Cells[RColunaGrade(clValST),Grade.ALinha],'.'));
   VprDItemNota.PerAcrescimoST := StrToFloat(DeletaChars(Grade.Cells[RColunaGrade(clPerAcumulado),Grade.ALinha],'.'));
@@ -1760,6 +1765,7 @@ begin
   CalculaValorTotalProduto;
 
   Grade.Cells[RColunaGrade(clPerMva),VpaLinha] := FormatFloat('#,##0.00',VprDItemNota.PerMVA);
+  Grade.Cells[RColunaGrade(clPerMvaAjustado),VpaLinha] := FormatFloat('#,##0.00',VprDItemNota.PerMVAAjustado);
   Grade.Cells[RColunaGrade(clBaseSt),VpaLinha] := FormatFloat(Varia.MascaraValor,VprDItemNota.ValBaseST);
   Grade.Cells[RColunaGrade(clValST),VpaLinha] := FormatFloat(Varia.MascaraValor,VprDItemNota.ValST);
   Grade.Cells[RColunaGrade(clPerAcumulado),VpaLinha] := FormatFloat('0.00',VprDItemNota.PerAcrescimoST);

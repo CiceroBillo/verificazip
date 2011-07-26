@@ -2260,6 +2260,7 @@ Type
       PerReducaoBaseICMS,
       PerMVAAnterior,
       PerMVA,
+      PerMVAAjustado,
       EspessuraAco,
       DensidadeVolumetricaAco : Double;
       IndMedicamentoControlado,

@@ -2991,7 +2991,6 @@ begin
                                SQLTextoDataEntreAAAAMMDD('CAD.D_DAT_REC',VpaDSped.DatInicio,VpaDSped.DatFinal,true)+
                                ' AND '+SQLTextoRightJoin('CAD.I_COD_PAG','PAG.I_COD_PAG')+
                                ' AND '+SQLTextoRightJoin('CAD.I_COD_TRA','TRA.I_COD_CLI'));
- Tabela.SQL.SaveToFile('c:\notasentrada.sql');
 end;
 
 {********************************************************************************}
@@ -3125,7 +3124,6 @@ begin
                                ' AND MOF.I_SEQ_PRO = PRO.I_SEQ_PRO'+
                                ' )');
   end;
-  VpaTabela.SQL.SaveToFile('C:\PRODUTOS.sql');
   VpaTabela.Open;
 end;
 
