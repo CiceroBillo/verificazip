@@ -2390,7 +2390,7 @@ procedure TFNovaNotaFiscaisFor.BEtiquetaClick(Sender: TObject);
 begin
   case varia.ModeloEtiquetaNotaEntrada of
     0, 5 : PEtiqueta.Visible := true;
-    2,3,4,6,7 :  FunNotaFor.ImprimeEtiquetaNota(VprDNotaFor);
+    2,3,4,6,7,10 :  FunNotaFor.ImprimeEtiquetaNota(VprDNotaFor);
   end;
 end;
 

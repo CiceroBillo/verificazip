@@ -572,10 +572,15 @@ object dtRave: TdtRave
     Top = 64
   end
   object ClientDataSet1: TClientDataSet
+    Active = True
     Aggregates = <>
     Params = <>
     Left = 104
-    Top = 208
+    Top = 216
+    Data = {
+      420000009619E0BD010000001800000002000000000003000000420006436F64
+      69676F0400010000000000044E6F6D6501004900000001000557494454480200
+      020032000000}
     object ClientDataSet1Codigo: TIntegerField
       FieldName = 'Codigo'
     end
@@ -583,5 +588,11 @@ object dtRave: TdtRave
       FieldName = 'Nome'
       Size = 50
     end
+  end
+  object RvDataSetConnection1: TRvDataSetConnection
+    RuntimeVisibility = rtDeveloper
+    DataSet = ClientDataSet1
+    Left = 96
+    Top = 288
   end
 end

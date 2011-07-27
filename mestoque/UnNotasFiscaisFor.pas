@@ -1603,6 +1603,7 @@ begin
       4: VpfFunArgox.ImprimeEtiquetaProduto54X28(VpfEtiquetas);
       6: VpfFunZebra.ImprimeEtiquetaProduto33X22(VpfEtiquetas);
       7: VpfFunZebra.ImprimeEtiquetaProduto33X57(VpfEtiquetas);
+      10: VpfFunArgox.ImprimeEtiquetaProduto33X14(VpfEtiquetas);
     end;
     if VpfFunArgox <> nil then
       VpfFunArgox.free;

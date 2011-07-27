@@ -1175,7 +1175,10 @@ begin
                 FunRave.ImprimeHistoricoConsumoProdutoProducao(VprSeqProduto,EProduto.Text,LProduto.Caption, ECodClassifcacao.Text, LNomClassificacao.Caption, VprCaminhoRelatorio,CDataIni.Date,CdataFim.Date)
             else
               if (VprNomRelatorio = 'CONSUMO PRODUTO PRODUCAO') then
-                FunRave.ImprimeConsumoProdutoProducao(EFilial.AInteiro,VprSeqProduto,EProduto.Text,LProduto.Caption, ECodClassifcacao.Text, LNomClassificacao.Caption,LFilial.Caption, VprCaminhoRelatorio,CDataIni.Date,CdataFim.Date,CheckBox1.Checked,EOrdemRelatorio.ItemIndex,CFundoPerdido.Checked);
+                FunRave.ImprimeConsumoProdutoProducao(EFilial.AInteiro,VprSeqProduto,EProduto.Text,LProduto.Caption, ECodClassifcacao.Text, LNomClassificacao.Caption,LFilial.Caption, VprCaminhoRelatorio,CDataIni.Date,CdataFim.Date,CheckBox1.Checked,EOrdemRelatorio.ItemIndex,CFundoPerdido.Checked)
+            else
+              if (VprNomRelatorio = 'TESTE') then
+                dtRave.TesteDataConection;
 
   dtRave.free;
 end;

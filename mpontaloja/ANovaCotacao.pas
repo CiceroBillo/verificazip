@@ -1944,18 +1944,6 @@ begin
             exit;
           end
         end;
-        if ((varia.ImpressoraAlmoxarifado <> '') and (VprDCotacao.CodTransportadora = varia.CodTransportadoraVazio)) or
-            not(config.ImprimeCotacaocomEntregadorSomenteAlmoxarifado)  then
-        begin
-          try
-            dtRave := TdtRave.create(self);
-            dtRave.ImprimePedido(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento,false);
-          finally
-            dtRave.free;
-          end;
-        end;
-        if (varia.ImpressoraAlmoxarifado <> '') and (VprDCotacao.CodTransportadora <> varia.CodTransportadoraVazio)  then
-        begin
           try
             dtRave := TdtRave.create(self);
             dtRave.ImprimePedido(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento,false);
@@ -1990,7 +1978,7 @@ begin
         FunCotacao.CarDParcelaOrcamento(VprDCotacao);
         FunImpressao.ImprimirPedido(VprDCotacao);
       end;
-     end;
+
     FunCotacao.SetaOrcamentoImpresso1(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento);
     if Varia.EstagioImpressao <> 0 then
       FunCotacao.GravaLogEstagio(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento,varia.EstagioImpressao,Varia.CodigoUsuario,'');

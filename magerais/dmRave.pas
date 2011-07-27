@@ -62,6 +62,7 @@ type
     ClientDataSet1: TClientDataSet;
     ClientDataSet1Codigo: TIntegerField;
     ClientDataSet1Nome: TStringField;
+    RvDataSetConnection1: TRvDataSetConnection;
     procedure f(Sender: TObject);
     procedure RaveBeforeOpen(Sender: TObject);
     procedure RvSystem2AfterPreviewPrint(Sender: TObject);
@@ -3373,6 +3374,19 @@ end;
 {******************************************************************************}
 procedure TdtRave.TesteDataConection;
 begin
+  ClientDataSet1.Open;
+  ClientDataSet1.Insert;
+  ClientDataSet1Codigo.AsInteger := 1;
+  ClientDataSet1Nome.AsString := 'teste';
+  ClientDataSet1.Post;
+  ClientDataSet1.Insert;
+  ClientDataSet1Codigo.AsInteger := 2;
+  ClientDataSet1Nome.AsString := 'teste 2';
+  ClientDataSet1.Post;
+  ClientDataSet1.Insert;
+  ClientDataSet1Codigo.AsInteger := 3;
+  ClientDataSet1Nome.AsString := 'teste 3';
+  ClientDataSet1.Post;
 
 end;
 

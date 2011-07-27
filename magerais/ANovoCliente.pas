@@ -1588,6 +1588,7 @@ begin
  FTelefoneCliente.free;
 end;
 
+{******************************************************************************}
 procedure TFNovoCliente.SpeedButton6Click(Sender: TObject);
 var
   VpfCodCidade,

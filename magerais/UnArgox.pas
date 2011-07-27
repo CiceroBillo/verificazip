@@ -40,6 +40,7 @@ Type
       function ImprimeEtiquetaProduto54X28(VpaEtiquetas : TList) : Integer;
       function ImprimeEtiquetaProduto35X89(VpaEtiquetas : TList) : Integer;
       function ImprimeEtiquetaProduto34X23(VpaEtiquetas : TList) : Integer;
+      function ImprimeEtiquetaProduto33X14(VpaEtiquetas : TList) : Integer;
       function ImprimeEtiquetaProduto100X38(VpaEtiquetas : TList) : Integer;
       function ImprimeEtiquetaSeparacao(VpaBaixas : TList):integer;
       function ImprimeEtiquetaConsumoTecido(VpaBaixas : TList): Integer;
@@ -900,6 +901,56 @@ begin
 end;
 
 {******************************************************************************}
+function TRBFuncoesArgox.ImprimeEtiquetaProduto33X14(VpaEtiquetas: TList): Integer;
+var
+  VpfPosicaoX : Integer;
+  VpfLacoEtiquetas, VpfLacoQtd, VpfColuna, VpfQtdEtiquetasImpressas : Integer;
+  VpfDEtiqueta : TRBDEtiquetaProduto;
+  VpfTexto  : AnsiString;
+begin
+  Result := 0;
+  VpfColuna := -1;
+  for VpfLacoEtiquetas := 0 to VpaEtiquetas.Count - 1 do
+  begin
+    VpfDEtiqueta := TRBDEtiquetaProduto(VpaEtiquetas.Items[VpfLacoEtiquetas]);
+    while (VpfDEtiqueta.QtdEtiquetas > 0)  do
+    begin
+      VpfQtdEtiquetasImpressas := 0;
+      for VpfLacoQtd := 1 to VpfDEtiqueta.QtdEtiquetas do
+      begin
+        inc(VpfColuna);
+        if VpfColuna > 2 then
+           break;
+        inc(VpfQtdEtiquetasImpressas);
+        VpfPosicaoX := VpfColuna * 143;
+        VpfTExto := Copy(RetiraAcentuacao(VpfDEtiqueta.Produto.NomProduto),1,24);
+        A_Prn_Text(VpfPosicaoX+20,32,1,9,1,1,1,PAnsiChar('N'),0,PAnsiChar(VpfTexto));
+        if Length(VpfDEtiqueta.Produto.NomProduto) > 24 then
+        begin
+          VpfTExto := Copy(RetiraAcentuacao(VpfDEtiqueta.Produto.NomProduto),25,25);
+          A_Prn_Text(VpfPosicaoX+20,22,1,9,1,1,1,PAnsiChar('N'),0,PAnsiChar(VpfTexto));
+        end;
+        VpfTExto := 'NF:' + IntToStr(VpfDEtiqueta.NumPedido);
+        A_Prn_Text(VpfPosicaoX+95,5,1,9,1,1,1,PAnsiChar('N'),0,PAnsiChar(VpfTExto));
+        VpfTExto := 'COD: '+ VpfDEtiqueta.Produto.CodProduto;
+        A_Prn_Text(VpfPosicaoX+20,5,1,9,3,1,1,PAnsiChar('N'),0,PAnsiChar(VpfTExto));
+//        VpfTExto := IntToStr(VpfDEtiqueta.Produto.SeqProduto);
+//        A_Prn_Barcode(VpfPosicaoX+18,0,1,PAnsiChar('D'),2,5,10,PAnsiChar('N'),2,PAnsiChar(VpfTexto));
+      end;
+      if VpfColuna >= 2 then
+      begin
+        result := A_Print_Out(1,1,1,1);
+        VpfColuna := -1;
+      end;
+      VpfDEtiqueta.QtdEtiquetas := VpfDEtiqueta.QtdEtiquetas - VpfQtdEtiquetasImpressas;
+    end;
+  end;
+  if VpfColuna > -1 then
+  begin
+    result := A_Print_Out(1,1,1,1);
+  end;
+end;
+
 function TRBFuncoesArgox.ImprimeEtiquetaProduto34X23(VpaEtiquetas: TList): Integer;
 var
   VpfPosicaoX : Integer;

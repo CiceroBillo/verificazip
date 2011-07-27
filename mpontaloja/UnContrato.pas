@@ -879,7 +879,7 @@ var
   VpfDItem, VpfDItemMes : TRBDOrcProduto;
   VpfDItemServico, VpfDItemServicoMes : TRBDOrcServico;
 begin
-  VpadCotacao.DesObservacaoFiscal := VpadCotacao.DesObservacaoFiscal + IntToStr(VpaDCotacaodoMes.LanOrcamento)+',';
+  VpadCotacao.DesObservacaoFiscal := VpadCotacao.DesObservacaoFiscal+ '('+IntToStr(VpaDCotacaodoMes.LanOrcamento)+' - '+FormatDateTime('DD/MM/YYYY',VpaDCotacaodoMes.DatOrcamento) +'),' +VpaDCotacaodoMes.DesObservacaoFiscal;
   VpadCotacao.ValTaxaEntrega := VpadCotacao.ValTaxaEntrega + VpaDCotacaodoMes.ValTaxaEntrega;
   for VpfLaco := 0 to VpaDCotacaodoMes.Produtos.Count - 1 do
   begin

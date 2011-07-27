@@ -191,7 +191,7 @@ begin
 
   end
   else
-    if VpfModeloEtiqueta in [1,2,3,4,8,9] then
+    if VpfModeloEtiqueta in [1,2,3,4,8,9,10] then
     begin
       FunArgox := TRBFuncoesArgox.cria(varia.PortaComunicacaoImpTermica);
       case VpfModeloEtiqueta of
@@ -201,6 +201,7 @@ begin
         4 : FunArgox.ImprimeEtiquetaProduto54X28(VprEtiquetas);
         8 : FunArgox.ImprimeEtiquetaProduto35X89(VprEtiquetas);
         9 : FunArgox.ImprimeEtiquetaProduto34X23(VprEtiquetas);
+       10 : FunArgox.ImprimeEtiquetaProduto33X14(VprEtiquetas);
       end;
       FunArgox.free;
     end
