@@ -571,28 +571,59 @@ object dtRave: TdtRave
     Left = 496
     Top = 64
   end
-  object ClientDataSet1: TClientDataSet
-    Active = True
+  object Promissoria: TClientDataSet
     Aggregates = <>
     Params = <>
-    Left = 104
-    Top = 216
-    Data = {
-      420000009619E0BD010000001800000002000000000003000000420006436F64
-      69676F0400010000000000044E6F6D6501004900000001000557494454480200
-      020032000000}
-    object ClientDataSet1Codigo: TIntegerField
-      FieldName = 'Codigo'
-    end
-    object ClientDataSet1Nome: TStringField
-      FieldName = 'Nome'
+    Left = 512
+    Top = 256
+    object PromissoriaDesDuplicata: TStringField
+      FieldKind = fkCalculated
+      FieldName = 'DesDuplicata'
       Size = 50
+      Calculated = True
+    end
+    object PromissoriaValDuplicata: TFloatField
+      FieldKind = fkCalculated
+      FieldName = 'ValDuplicata'
+      Calculated = True
+    end
+    object PromissoriaDesValorExtenso: TStringField
+      FieldKind = fkCalculated
+      FieldName = 'DesValorExtenso'
+      Size = 100
+      Calculated = True
+    end
+    object PromissoriaDesLocaleData: TStringField
+      FieldKind = fkCalculated
+      FieldName = 'DesLocaleData'
+      Size = 100
+      Calculated = True
+    end
+    object PromissoriaNumDiaVencimento: TIntegerField
+      FieldKind = fkCalculated
+      FieldName = 'NumDiaVencimento'
+      Calculated = True
+    end
+    object PromissoriaDesDiaVencimento: TStringField
+      FieldKind = fkCalculated
+      FieldName = 'DesDiaVencimento'
+      Calculated = True
+    end
+    object PromissoriaNumAnoVencimento: TStringField
+      FieldKind = fkCalculated
+      FieldName = 'NumAnoVencimento'
+      Calculated = True
+    end
+    object PromissoriaDesMesVencimto: TStringField
+      FieldKind = fkCalculated
+      FieldName = 'DesMesVencimto'
+      Calculated = True
     end
   end
-  object RvDataSetConnection1: TRvDataSetConnection
+  object RvPromissoria: TRvDataSetConnection
     RuntimeVisibility = rtDeveloper
-    DataSet = ClientDataSet1
-    Left = 96
-    Top = 288
+    DataSet = Promissoria
+    Left = 512
+    Top = 320
   end
 end
