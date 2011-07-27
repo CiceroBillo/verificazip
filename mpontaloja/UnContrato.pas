@@ -29,7 +29,8 @@ Type TRBFuncoesContrato = class(TRBLocalizaContrato)
     VprBarraStatus : TStatusbar;
     FunImpFolhaBranca: TImpressaoBoleto;
     FunChamado : TRBFuncoesChamado;
-    VprSeqRecibo: Integer;
+    VprSeqRecibo, VprCodCliente, VprSeqContrato: Integer;
+    VprDCliente: TRBDCliente;
     function RProximoSeqContrato(VpaCodFilial : Integer) : Integer;
     function RSeqReajusteDisponivel: Integer;
     function RProximoSeqLeituraLocacao(VpaCodFilial : Integer):Integer;
@@ -66,10 +67,16 @@ Type TRBFuncoesContrato = class(TRBLocalizaContrato)
     procedure GeraBoletoUnicoContrato(VpaDCotacaoContrato: trbdorcamento;VpaDCliente : TRBDCliente; VpaLanOrcamentoPosterior :Integer);
     function VincularReajusteContratos(VpaSeqReajuste, VpaAno, VpaMes: Integer): String;
     procedure MontaEmailLeituraLocacao(VpaTexto : TStrings; VpaDContrato : TRBDContratoCorpo ;VpaDCliente : TRBDCliente);
-    procedure MontaEmailRecibo(VpaTexto : TStrings; VpaDContrato : TRBDContratoCorpo ;VpaDCliente : TRBDCliente);
+    procedure MontaEmailRecibo(VpaTexto : TStrings; VpaCodFilial: Integer;VpaDCliente : TRBDCliente);
     function ArrumaFinanceiroReciboLocacao(VpaDRecibo : TRBDReciboLocacao) : string;
     function EnviaEmail(VpaMensagem : TIdMessage;VpaSMTP : TIdSMTP) : string;
     function AnexaArquivoEmail(VpaNomArquivo : String;VpaMensagem : TIdMessage):string;
+    procedure GeraAnexosEmailLeituraLocacao(VpaCodFilial, VpaSeqLeitura: integer);
+    function RSeqReciboLocacao(VpaSeqLeitura, VpaCodFilial: Integer):Integer;
+    function RNroPedidoReciboLocacao(VpaCodFilial, VpaSeqReciboLocacao: Integer): Integer;
+    function RNroDuplicata(VpaCodFilial, VpaNroPedido: Integer): Integer;
+    function RCodClienteLeituraLocacao(VpaCodFilial, VpaSeqLeituraLocacao: Integer): Integer;
+    function VerificaSemNotaContrato(VpaCodFilial, VpaSeqContrato: Integer): Boolean;
   public
     constructor cria(VpaBaseDados : TSqlConnection);
     destructor destroy;override;
@@ -852,6 +859,20 @@ begin
 end;
 
 {******************************************************************************}
+function TRBFuncoesContrato.VerificaSemNotaContrato(VpaCodFilial,
+  VpaSeqContrato: Integer): Boolean;
+begin
+  AdicionaSqlAbreTabela(Aux,'SELECT DESNOTACUPOM FROM CONTRATOCORPO' +
+                            ' where CODFILIAL = ' + IntToStr(VpaCodFilial)+
+                            ' AND SEQCONTRATO = ' + IntToStr(VpaSeqContrato));
+  if Aux.FieldByName('DESNOTACUPOM').AsString = 'N' then
+    Result:= True
+  else
+    Result:= False;  
+  Aux.Close;
+end;
+
+{******************************************************************************}
 procedure TRBFuncoesContrato.AdicionaVendasCotacaoFaturamentoPost(VpadCotacao : TRBDOrcamento;VpaDCotacaodoMes : TRBDOrcamento);
 var
   VpfLaco : Integer;
@@ -1121,7 +1142,7 @@ end;
 
 {******************************************************************************}
 procedure TRBFuncoesContrato.MontaEmailRecibo(VpaTexto: TStrings;
-  VpaDContrato: TRBDContratoCorpo; VpaDCliente: TRBDCliente);
+  VpaCodFilial: Integer; VpaDCliente: TRBDCliente);
 var
   VpfLaco : Integer;
   VpfDContratoItem : TRBDContratoItem;
@@ -1139,20 +1160,42 @@ begin
   VpaTexto.Add('<table width=100%  border=0>');
   VpaTexto.add(' <tr>');
   VpaTexto.Add('  <td width=40%>');
-  VpaTexto.add('    <a > <img src="cid:'+IntToStr(VpaDContrato.CodFilial)+'.jpg" width='+IntToStr(varia.CRMTamanhoLogo)+' height = '+IntToStr(Varia.CRMAlturaLogo)+' boder=0>');
+  VpaTexto.add('    <a > <img src="cid:'+IntToStr(VpaCodFilial)+'.jpg" width='+IntToStr(varia.CRMTamanhoLogo)+' height = '+IntToStr(Varia.CRMAlturaLogo)+' boder=0>');
   VpaTexto.Add('  </td>');
-  VpaTexto.add('  <td width=20% align="center" > <font face="Verdana" size="5"><b>Medidores Contrato ');
-  VpaTexto.Add('  <td width=40% align="right" > <font face="Verdana" size="5"><right> <a title="Sistema de Gestão Desenvolvido por Eficacia Sistemas e Consultoria" href="http://www.eficaciaconsultoria.com.br"> <img src="cid:efi.jpg" border="0"');
+  VpaTexto.add('  <td width=20% align="center" > <font face="Verdana" size="5"><b>Fatura Locacao');
+  VpaTexto.Add('  <td width=40% align="right" > <font face="Verdana" size="3"><right> <a title="Sistema de Gestão Desenvolvido por Eficacia Sistemas e Consultoria" href="http://www.eficaciaconsultoria.com.br"> <img src="cid:efi.jpg" border="0"');
   VpaTexto.add('  </td>');
   VpaTexto.Add('  </td>');
   VpaTexto.add('  </tr>');
   VpaTexto.Add('</table>');
+
+  VpaTexto.add('<br>');
+  VpaTexto.Add('<br>');
+  VpaTexto.add('<table width=100%  border=0 cellpadding="0" cellspacing="0" >');
+  VpaTexto.Add(' <tr>');
+  VpaTexto.add('  <td width=100% bgcolor=#6699FF ><font face="Verdana" size="3">');
+  VpaTexto.Add('   <br> <center>');
+  VpaTexto.add('   <br>Esta mensagem refere-se a Fatura de Locacao.');
+  VpaTexto.Add('   <br></center>');
+  VpaTexto.add('   <br>');
+  VpaTexto.Add('   <br>');
+  VpaTexto.add(' </tr><tr>');
+  VpaTexto.Add('  <td width=100% bgcolor="silver" ><font face="Verdana" size="3">');
+  VpaTexto.add('   <br><center>');
+  VpaTexto.Add('   <br>Cliente : '+RetiraAcentuacao(VpaDCliente.NomCliente) );
+  VpaTexto.add('   <br>CNPJ :'+VpaDCliente.CGC_CPF);
+  VpaTexto.Add('   <br>');
+  VpaTexto.add('   <br>');
+  VpaTexto.Add('   <br>');
+  VpaTexto.add(' </tr><tr>');
+  VpaTexto.Add('  <td width=100% bgcolor=#6699FF ><font face="Verdana" size="3">');
+  VpaTexto.add('   <br><center>');
+
   VpaTexto.add('<br>');
   VpaTexto.Add('<table width=100%  border=1 cellpadding="3" cellspacing="0">');
   VpaTexto.Add(' <tr>');
   VpaTexto.add('	<td width="20%" bgcolor="#EEEEEE"><font face="Verdana" size="1">');
-  VpaTexto.add('&nbsp;&nbsp;&nbsp;Esta mensagem e referente a os recibos de locacao. <b>');
-  VpaTexto.add(Varia.NomeFilial + '</b>.<br>&nbsp;&nbsp;&nbsp;Por gentileza poderia responder este e-mail com os contadores atuais dos equipamentos.');
+  VpaTexto.add('&nbsp;&nbsp;&nbsp;Esta mensagem e referente ao faturamento do contrato de locacao. <b>');
   VpaTexto.add('<br>&nbsp;&nbsp;&nbsp;Qualquer duvida entrar em contato com o fone '+Varia.FoneFilial);
   VpaTexto.add('	</td>');
   VpaTexto.add(' </tr></table>');
@@ -1163,7 +1206,7 @@ begin
   VpaTexto.add('<hr>');
   VpaTexto.Add('<center>');
   if sistema.PodeDivulgarEficacia then
-    VpaTexto.add('<address>Sistema de gestao desenvolvido por <a href="http://www.eficaciaconsultoria.com.br">Eficácia Sistemas e Consultoria Ltda.</a>  </address>');
+    VpaTexto.add('<address>Sistema de gestao desenvolvido por <a href="http://www.eficaciaconsultoria.com.br">Eficacia Sistemas e Consultoria Ltda.</a>  </address>');
   VpaTexto.Add('</center>');
   VpaTexto.add('</body>');
   VpaTexto.Add('');
@@ -1616,6 +1659,71 @@ begin
   begin
     FunCotacao.ExcluiFinanceiroOrcamento(VpaDCotacao.CodEmpFil, VpaDCotacao.LanOrcamento,0,false);
   end;
+end;
+
+{******************************************************************************}
+procedure TRBFuncoesContrato.GeraAnexosEmailLeituraLocacao(VpaCodFilial, VpaSeqLeitura: integer);
+var
+  VpfNomArquivo : string;
+  VpfSeqReciboLocacao, VpfNroContasReceber, VpfNroPedido, VpfSeqContrato: Integer;
+begin
+   VprDCliente :=  TRBDCliente.cria;
+   VprDCliente.CodCliente := RCodClienteLeituraLocacao(VpaCodFilial, VpaSeqLeitura);
+   FunClientes.CarDCliente(VprDCliente);
+   
+    try //Extrato Locacao
+      dtRave := TdtRave.Create(nil);
+      VpfNomArquivo := Varia.PathVersoes+'\ANEXOS\Contrato\LL'+IntToStr(VpaCodFilial)+'_'+IntToStr(VpaSeqLeitura)+'.pdf';
+      dtRave.VplArquivoPDF := VpfNomArquivo;
+      dtRave.ImprimeExtratoLocacao(VpaCodFilial,VpaSeqLeitura,false);
+    finally
+      dtRave.Free;
+    end;
+    AnexaArquivoEmail(VpfNomArquivo,VprMensagem);
+    
+    if VerificaSemNotaContrato(VpaCodFilial, VprSeqContrato) then
+    begin
+      VpfNomArquivo:= '';
+      VpfSeqReciboLocacao:= RSeqReciboLocacao(VpaSeqLeitura, VpaCodFilial);
+      try //Recibo Locacao
+        dtRave := TdtRave.Create(nil);
+        VpfNomArquivo := Varia.PathVersoes+'\ANEXOS\Contrato\RL'+IntToStr(VpaCodFilial)+'_'+IntToStr(VpaSeqLeitura)+'.pdf';
+        dtRave.VplArquivoPDF := VpfNomArquivo;
+        dtRave.ImprimeReciboLocacao(VpaCodFilial,VpfSeqReciboLocacao,false,false,0,0);
+      finally
+        dtRave.Free;
+      end;
+      AnexaArquivoEmail(VpfNomArquivo,VprMensagem);
+    end
+    else
+    begin
+      VpfNomArquivo:= '';
+      VpfNroPedido:= RNroPedidoReciboLocacao(VpaCodFilial, VpfSeqReciboLocacao);
+      try //Cotacao
+        dtRave := TdtRave.Create(nil);
+        VpfNomArquivo := Varia.PathVersoes+'\ANEXOS\Contrato\CO'+IntToStr(VpaCodFilial)+'_'+IntToStr(VpaSeqLeitura)+'.pdf';
+        dtRave.VplArquivoPDF := VpfNomArquivo;
+        dtRave.ImprimePedido(VpaCodFilial,VpfNroPedido,false);
+      finally
+        dtRave.Free;
+      end;
+      AnexaArquivoEmail(VpfNomArquivo,VprMensagem);
+    end;
+
+    //Boletos
+    VpfNomArquivo:= '';
+    VpfNroContasReceber:= RNroDuplicata(VpaCodFilial, VpfNroPedido);
+    
+    AdicionaSQLAbreTabela(Aux,'Select I_NRO_PAR from MOVCONTASARECEBER '+
+                             ' Where I_EMP_FIL = '+IntToStr(VpaCodFilial)+
+                             ' and I_LAN_REC = '+IntToStr(VpfNroContasReceber));
+    while not Aux.Eof do
+    begin              
+      VpfNomArquivo:= '';           
+      VpfNomArquivo := FunImpFolhaBranca.GeraPDFBoleto(VpaCodFilial,VpfNroContasReceber,Aux.FieldByName('I_NRO_PAR').AsInteger,VprDCliente);
+      AnexaArquivoEmail(VpfNomArquivo,VprMensagem);
+      Aux.Next;
+    end;
 end;
 
 {******************************************************************************}
@@ -2133,7 +2241,7 @@ begin
       VpfEmailHTML := TIdText.Create(VprMensagem.MessageParts);
       VpfEmailHTML.ContentType := 'text/html';
 
-      MontaEmailRecibo(VpfEmailHTML.Body,VpaDContrato,VpaDCliente);
+//      MontaEmailRecibo(VpfEmailHTML.Body,VpaDContrato,VpaDCliente);
 
       VpfEmailCliente := VpaDContrato.DesEmail;
       VpfChar := ',';
@@ -2173,32 +2281,104 @@ end;
 function TRBFuncoesContrato.EnviaLeituraLocacaoProcessadaEmail(VpaCodFilial, VpaSeqLeitura: Integer): string;
 var
   VpfDLeitura : TRBDLeituraLocacaoCorpo;
-  VpfNomArquivo : string;
+  Vpfbmppart: TIdAttachmentFile;
+  VpfEmailHTML : TIdText;
+  VpfEmailCliente : String;
+  VpfChar : Char;
 begin
   result := '';
   if not ExisteArquivo(varia.PathVersoes+'\efi.jpg') then
-    result := 'Falta arquivo "'+varia.PathVersoes+'\efi.jpg'+'"';
+    result := 'Falta arquivo "'+varia.PathVersoes+'\efi.jpg'+'"'
+  else
+  begin
+    Vpfbmppart := TIdAttachmentfile.Create(VprMensagem.MessageParts,varia.PathVersoes+'\efi.jpg');
+    Vpfbmppart.ContentType := 'image/jpg';
+    Vpfbmppart.ContentDisposition := 'inline';
+    Vpfbmppart.ExtraHeaders.Values['content-id'] := 'efi.jpg';
+    Vpfbmppart.FileName := '';
+    Vpfbmppart.DisplayName := '';
+  end;
   if result = '' then
   begin
     VprMensagem.Clear;
     VpfDLeitura := TRBDLeituraLocacaoCorpo.cria;
     CarDLeituraLocacao(VpfDLeitura,VpaCodFilial,VpaSeqLeitura);
-    try
-      dtRave := TdtRave.Create(nil);
-      VpfNomArquivo := Varia.PathVersoes+'\ANEXOS\Contrato\LL'+IntToStr(VpaCodFilial)+'_'+IntToStr(VpaSeqLeitura)+'.pdf';
-      dtRave.VplArquivoPDF := VpfNomArquivo;
-      dtRave.ImprimeExtratoLocacao(VpaCodFilial,VpaSeqLeitura,false);
-    finally
-      dtRave.Free;
-    end;
-    AnexaArquivoEmail(VpfNomArquivo,VprMensagem);
+    GeraAnexosEmailLeituraLocacao(VpaCodFilial, VpaSeqLeitura);
 
-
+    result := '';
+    if VprDCliente.DesEmail = '' then
+      result := 'E-MAIL DO CLIENTE NÃO PREENCHIDO!!!'#13'Falta preencher o e-mail do cliente.'
+    else
+      VprDCliente.DesEmail := VprDCliente.DesEmail;
     if result = '' then
     begin
-
-
+      if not ExisteArquivo(varia.PathVersoes+'\'+inttoStr(VpaCodFilial)+'.jpg') then
+        result := 'Falta arquivo "'+varia.PathVersoes+'\'+inttoStr(VpaCodFilial)+'.jpg'+'"'
+      else
+      begin
+        Vpfbmppart := TIdAttachmentfile.Create(VprMensagem.MessageParts,varia.PathVersoes+'\'+inttoStr(VpaCodFilial)+'.jpg');
+        Vpfbmppart.ContentType := 'image/jpg';
+        Vpfbmppart.ContentDisposition := 'inline';
+        Vpfbmppart.ExtraHeaders.Values['content-id'] := inttoStr(VpaCodFilial)+'.jpg';
+        Vpfbmppart.FileName := '';
+        Vpfbmppart.DisplayName := '';
+      end;
     end;
+      VpfEmailHTML := TIdText.Create(VprMensagem.MessageParts);
+      VpfEmailHTML.ContentType := 'text/html';
+
+      MontaEmailRecibo(VpfEmailHTML.Body,VpaCodFilial,VprDCliente);
+
+      VpfEmailCliente := VprDCliente.DesEmail;
+      VpfChar := ',';
+      if ExisteLetraString(';',VpfEmailCliente) then
+        VpfChar := ';';
+      while Length(VpfEmailCliente) > 0 do
+      begin
+        VprMensagem.Recipients.Add.Address := DeletaChars(CopiaAteChar(VpfEmailCliente,VpfChar),VpfChar);
+        VpfEmailCliente := DeleteAteChar(VpfEmailCliente,VpfChar);
+      end;
+      if VprDCliente.DesEmail <> '' then
+      begin
+        VpfEmailCliente := VprDCliente.DesEmail;
+        if ExisteLetraString(';',VpfEmailCliente) then
+          VpfChar := ';';
+        while Length(VpfEmailCliente) > 0 do
+        begin
+          VprMensagem.Recipients.Add.Address := DeletaChars(CopiaAteChar(VpfEmailCliente,VpfChar),VpfChar);
+          VpfEmailCliente := DeleteAteChar(VpfEmailCliente,VpfChar);
+        end;
+      end;
+
+      VpfEmailCliente := VprDCliente.DesEmailNfe;
+      VpfChar := ',';
+      if ExisteLetraString(';',VpfEmailCliente) then
+        VpfChar := ';';
+      while Length(VpfEmailCliente) > 0 do
+      begin
+        VprMensagem.Recipients.Add.Address := DeletaChars(CopiaAteChar(VpfEmailCliente,VpfChar),VpfChar);
+        VpfEmailCliente := DeleteAteChar(VpfEmailCliente,VpfChar);
+      end;
+      if VprDCliente.DesEmailNfe <> '' then
+      begin
+        VpfEmailCliente := VprDCliente.DesEmailNfe;
+        if ExisteLetraString(';',VpfEmailCliente) then
+          VpfChar := ';';
+        while Length(VpfEmailCliente) > 0 do
+        begin
+          VprMensagem.Recipients.Add.Address := DeletaChars(CopiaAteChar(VpfEmailCliente,VpfChar),VpfChar);
+          VpfEmailCliente := DeleteAteChar(VpfEmailCliente,VpfChar);
+        end;
+      end;
+      
+      if Varia.EmailCopiaCotacao <> '' then
+        VprMensagem.Recipients.Add.Address := varia.EmailCopiaCotacao;
+
+
+      VprMensagem.Subject := Varia.NomeFilial+' - Fatura Locação : ' + IntToStr(VpaSeqLeitura);
+      VprMensagem.ReceiptRecipient.Text  :='';
+
+      result := EnviaEmail(VprMensagem,VprSMTP);
     VpfDLeitura.Free;
   end;
 end;
@@ -2574,6 +2754,18 @@ begin
 end;
 
 {******************************************************************************}
+function TRBFuncoesContrato.RCodClienteLeituraLocacao(VpaCodFilial,
+  VpaSeqLeituraLocacao: Integer): Integer;
+begin
+  AdicionaSqlAbreTabela(Aux,'SELECT CODCLIENTE, SEQCONTRATO FROM LEITURALOCACAOCORPO' +
+                            ' where CODFILIAL = ' + IntToStr(VpaCodFilial)+
+                            ' AND SEQLEITURA = ' + IntToStr(VpaSeqLeituraLocacao));
+  VprSeqContrato:= Aux.FieldByName('SEQCONTRATO').AsInteger;                         
+  Result:= Aux.FieldByName('CODCLIENTE').AsInteger;
+  Aux.Close;
+end;
+
+{******************************************************************************}
 function TRBFuncoesContrato.ReajustaContrato(VpaAno, VpaMes: Integer; VpaIndice: Double): String;
 begin
   Result:= '';
@@ -2609,6 +2801,28 @@ begin
 end;
 
 {******************************************************************************}
+function TRBFuncoesContrato.RNroDuplicata(VpaCodFilial,
+  VpaNroPedido: Integer): Integer;
+begin                                    
+  AdicionaSqlAbreTabela(Aux,'SELECT I_LAN_REC FROM CADCONTASARECEBER' +
+                            ' where I_EMP_FIL = ' + IntToStr(VpaCodFilial)+
+                            ' AND I_LAN_ORC = ' + IntToStr(VpaNroPedido));
+  Result:= Aux.FieldByName('I_LAN_REC').AsInteger;
+  Aux.Close;
+end;
+
+{******************************************************************************}
+function TRBFuncoesContrato.RNroPedidoReciboLocacao(VpaCodFilial,
+  VpaSeqReciboLocacao: Integer): Integer;
+begin
+  AdicionaSqlAbreTabela(Aux,'SELECT LANORCAMENTO FROM RECIBOLOCACAOCORPO' +
+                            ' WHERE CODFILIAL = ' + IntToStr(VpaCodFilial)+
+                            ' AND SEQRECIBO = ' + IntToStr(VpaSeqReciboLocacao));
+  Result:= Aux.FieldByName('LANORCAMENTO').AsInteger;
+  Aux.Close;
+end;
+
+{******************************************************************************}
 function TRBFuncoesContrato.RSeqReajusteDisponivel: Integer;
 begin
   AdicionaSqlAbreTabela(Aux,'SELECT MAX(SEQREAJUSTE) ULTIMO FROM REAJUSTECONTRATOCORPO');
@@ -2622,6 +2836,16 @@ begin
   AdicionaSQLAbreTabela(Aux,'Select max(SEQRECIBO) ULTIMO from RECIBOLOCACAOCORPO ' +
                             ' Where CODFILIAL = ' +IntToStr(VpaCodFilial));
   result := Aux.FieldByName('ULTIMO').AsInteger + 1;
+  Aux.Close;
+end;
+
+{******************************************************************************}
+function TRBFuncoesContrato.RSeqReciboLocacao(VpaSeqLeitura, VpaCodFilial: Integer): Integer;
+begin
+  AdicionaSQLAbreTabela(Aux,'Select SEQRECIBO from RECIBOLOCACAOCORPO ' +
+                            ' Where CODFILIAL = ' +IntToStr(VpaCodFilial)+
+                            ' and SEQLEITURALOCACAO = ' + IntToStr(VpaSeqLeitura));
+  result := Aux.FieldByName('SEQRECIBO').AsInteger;
   Aux.Close;
 end;
 

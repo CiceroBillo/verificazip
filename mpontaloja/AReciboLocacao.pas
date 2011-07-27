@@ -67,7 +67,6 @@ type
     Label10: TLabel;
     CTotal: TCheckBox;
     EValorTotal: Tnumerico;
-    BEnviarEmailCliente: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BFecharClick(Sender: TObject);
