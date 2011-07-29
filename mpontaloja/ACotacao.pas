@@ -2163,6 +2163,18 @@ begin
     VpfFunECF.Free;
   end
   else
+  begin
+    if (puPLNaoImprimeCotacaoJaImpressa in varia.PermissoesUsuario) then
+    begin
+      FunCotacao.CarDOrcamento(VprDOrcamento);
+      VprDOrcamento.CodEmpFil := CadOrcamentoI_EMP_FIL.AsInteger;
+      VprDOrcamento.LanOrcamento := CadOrcamentoI_Lan_Orc.AsInteger;
+      if FunCotacao.RSePedidoFoiImpresso(varia.CodigoEmpFil, VprDOrcamento.LanOrcamento) then
+      begin
+        aviso('JA IMPRESSO!!!' + #13 + 'Impossivel reimpressão.');
+        exit;
+      end
+    end;
     if not Config.ImprimirPedEmPreImp then
     begin
       try
@@ -2180,6 +2192,7 @@ begin
       FunCotacao.CarDParcelaOrcamento(VprDOrcamento);
       FunImpressao.ImprimirPedido(VprDOrcamento);
     end;
+  end;
 
   FunCotacao.SetaOrcamentoImpresso1(CadOrcamentoI_EMP_FIL.AsInteger,CadOrcamentoI_lan_orc.AsInteger);
   if Varia.EstagioImpressao <> 0 then

@@ -1934,23 +1934,23 @@ begin
       VpfFunECF.Free;
     end
     else
+    begin
+      if (puPLNaoImprimeCotacaoJaImpressa in varia.PermissoesUsuario) then
+      begin
+        if FunCotacao.RSePedidoFoiImpresso(varia.CodigoEmpFil, VprDCotacao.LanOrcamento) then
+        begin
+          aviso('JA IMPRESSO!!!' + #13 + 'Impossivel reimpressão.');
+          exit;
+        end
+      end;
       if not Config.ImprimirPedEmPreImp then
       begin
-        if (puPLNaoImprimeCotacaoJaImpressa in varia.PermissoesUsuario) then
-        begin
-          if FunCotacao.RSePedidoFoiImpresso(varia.CodigoEmpFil, VprDCotacao.LanOrcamento) then
-          begin
-            aviso('JA IMPRESSO!!!' + #13 + 'Impossivel reimpressão.');
-            exit;
-          end
-        end;
           try
             dtRave := TdtRave.create(self);
             dtRave.ImprimePedido(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento,false);
           finally
             dtRave.free;
           end;
-        end;
         if (varia.CNPJFilial = CNPJ_COPYLINE) or
            (varia.CNPJFilial = CNPJ_IMPOX) then
         begin
@@ -1978,6 +1978,8 @@ begin
         FunCotacao.CarDParcelaOrcamento(VprDCotacao);
         FunImpressao.ImprimirPedido(VprDCotacao);
       end;
+    end;
+  end;
 
     FunCotacao.SetaOrcamentoImpresso1(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento);
     if Varia.EstagioImpressao <> 0 then

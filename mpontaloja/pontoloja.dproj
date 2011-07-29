@@ -993,7 +993,7 @@
 						<Source Name="MainSource">pontoloja.dpr</Source>
 					</Source>
 					<Parameters>
-						<Parameters Name="RunParams">SisCorp RAFAEL MORRO 1 11</Parameters>
+						<Parameters Name="RunParams">Janete RAFAEL MORRO 1 11</Parameters>
 					</Parameters>
 				</Delphi.Personality>
 				<Platforms>

@@ -3262,9 +3262,12 @@ end;
 {******************************************************************************}
 function TFuncoesCotacao.RSeqNotaFiscalCotacao(VpaCodFilial,VpaLanOrcamento : Integer):Integer;
 begin
-  AdicionaSQLAbreTabela(Aux,'Select I_SEQ_NOT from MOVNOTAORCAMENTO '+
-                            ' Where I_EMP_FIL = ' +IntToStr(VpaCodFilial)+
-                            ' and I_LAN_ORC = '+IntToStr(VpaLanOrcamento));
+  AdicionaSQLAbreTabela(Aux,'Select CAD.I_SEQ_NOT from MOVNOTAORCAMENTO MOV, CADNOTAFISCAIS CAD '+
+                            ' Where MOV.I_EMP_FIL = ' +IntToStr(VpaCodFilial)+
+                            ' and MOV.I_LAN_ORC = '+IntToStr(VpaLanOrcamento)+
+                            ' AND MOV.I_EMP_FIL = CAD.I_EMP_FIL ' +
+                            ' AND MOV.I_SEQ_NOT = CAD.I_SEQ_NOT ' +
+                            ' AND CAD.C_NOT_CAN = ''N''');
   result := Aux.FieldByName('I_SEQ_NOT').AsInteger;
   aux.close;
 end;
