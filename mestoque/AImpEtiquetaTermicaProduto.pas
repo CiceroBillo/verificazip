@@ -191,7 +191,7 @@ begin
 
   end
   else
-    if VpfModeloEtiqueta in [1,2,3,4,8,9,10] then
+    if VpfModeloEtiqueta in [1,2,3,4,8,9,10,11] then
     begin
       FunArgox := TRBFuncoesArgox.cria(varia.PortaComunicacaoImpTermica);
       case VpfModeloEtiqueta of
@@ -202,6 +202,7 @@ begin
         8 : FunArgox.ImprimeEtiquetaProduto35X89(VprEtiquetas);
         9 : FunArgox.ImprimeEtiquetaProduto34X23(VprEtiquetas);
        10 : FunArgox.ImprimeEtiquetaProduto33X14(VprEtiquetas);
+       11 : FunArgox.ImprimeEtiquetaProdutoComCodigoBarra25x35(VprEtiquetas);
       end;
       FunArgox.free;
     end
@@ -264,6 +265,7 @@ begin
   VprDEtiqueta.QtdProduto := EQtdProduto.AsInteger;
   VprDEtiqueta.CodCor := ECor.AInteiro;
   VprDEtiqueta.NomCor := LNomCor.caption;
+  VprDEtiqueta.DesCodBarras := FunProdutos.RCodigoBarraProduto(Varia.CodigoEmpFil,VprDProduto.SeqProduto,ECor.AInteiro,0);
   VprEtiquetas.add(VprDEtiqueta);
   Grade.CarregaGrade;
 

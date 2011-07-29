@@ -3491,7 +3491,7 @@ begin
                                   ' AND PRO.C_COD_CLA = CLA.C_COD_CLA '+
                                   ' AND PRO.C_TIP_CLA = CLA.C_TIP_CLA '+
                                   ' and PRE.I_COD_CLI IN (0,'+IntToStr(VpaDCotacao.CodCliente)+')'+
-                                  ' order by PRE.I_COD_CLI DESC',true);
+                                  ' order by PRE.I_COD_CLI DESC, PRE.I_COD_COR',true);
 
     result := not Orcamento.Eof;
     if result then
@@ -6854,14 +6854,51 @@ begin
 end;
 
 {******************************************************************************}
-procedure TFuncoesCotacao.ImprimeEtiquetaProdutoComCodigoBarra(
-  VpaDCotacao: TRBDOrcamento);
+procedure TFuncoesCotacao.ImprimeEtiquetaProdutoComCodigoBarra(VpaDCotacao: TRBDOrcamento);
 var
-  VpfFunArgox: TRBFuncoesArgox;
+  VpfEtiquetas : TList;
+  VpfLaco : Integer;
+  VpfDProCotacao : TRBDOrcProduto;
+  VpfDEtiqueta : TRBDEtiquetaProduto;
+  VpfDProduto : TRBDProduto;
+  VpfFunArgox : TRBFuncoesArgox;
+  VpfQtdEtiquetaProduto : Integer;
 begin
-   VpfFunArgox:=  TRBFuncoesArgox.cria(Varia.PortaComunicacaoImpTermica);
-   VpfFunArgox.ImprimeEtiquetaProdutoComCodigoBarra10x3e5(VpaDCotacao);
-   VpfFunArgox.Free;
+  VpfEtiquetas := TList.Create;
+  for VpfLaco := 0 to VpaDCotacao.Produtos.Count - 1 do
+  begin
+    VpfDProCotacao := TRBDOrcProduto(VpaDCotacao.Produtos.Items[VpfLaco]);
+    VpfQtdEtiquetaProduto := FunProdutos.RQtdProdutosEmbalagem(VpfDProCotacao.SeqProduto);
+    if VpfQtdEtiquetaProduto = 0 then
+      VpfQtdEtiquetaProduto := 1;
+    VpfDProduto := TRBDProduto.Cria;
+    FunProdutos.CarDProduto(VpfDProduto,Varia.CodigoEmpresa,VpaDCotacao.CodEmpFil,VpfDProCotacao.SeqProduto);
+
+    VpfDEtiqueta := TRBDEtiquetaProduto.cria;
+    VpfEtiquetas.Add(VpfDEtiqueta);
+    VpfDEtiqueta.DesCodBarras := FunProdutos.RCodigoBarraProduto(VpaDCotacao.CodEmpFil, VpfDProCotacao.SeqProduto, 0, VpfDProCotacao.CodTamanho);
+    VpfDEtiqueta.Produto := VpfDProduto;
+    VpfDEtiqueta.CodCor := VpfDProCotacao.CodCor;
+    VpfDEtiqueta.QtdOriginalEtiquetas := RetornaInteiro(VpfDProCotacao.QtdProduto);
+    VpfDEtiqueta.QtdEtiquetas := RetornaInteiro(VpfDProCotacao.QtdProduto);
+    VpfDEtiqueta.QtdEtiquetas := VpfDEtiqueta.QtdEtiquetas + (RetornaInteiro(VpfDProCotacao.QtdProduto) div RetornaInteiro(VpfQtdEtiquetaProduto));
+    if (RetornaInteiro(VpfDProCotacao.QtdProduto) mod RetornaInteiro(VpfQtdEtiquetaProduto)) <> 0 then
+      VpfDEtiqueta.QtdEtiquetas := VpfDEtiqueta.QtdEtiquetas + 1;
+
+    {
+
+    if (copy(VpfDEtiqueta.CodProduto, 1, 4) <> '8020') or (copy(VpfDEtiqueta.CodProduto, 1, 4) <> '5520') or
+    ((copy(VpfDEtiqueta.CodProduto, 1, 3) <> '200') and (copy(VpfDEtiqueta.CodProduto, 1, 3) < '299')) or
+    ((copy(VpfDEtiqueta.CodProduto, 1, 3) <> '400') and (copy(VpfDEtiqueta.CodProduto, 1, 3) < '499')) then
+    begin
+       VpaDCotacao.QtdProduto:= ((VpaDCotacao.QtdProduto * 2));
+    end; }
+  end;
+
+  VpfFunArgox:=  TRBFuncoesArgox.cria(Varia.PortaComunicacaoImpTermica);
+  VpfFunArgox.ImprimeEtiquetaProdutoComCodigoBarra25x35(VpfEtiquetas);
+  VpfFunArgox.Free;
+  VpfEtiquetas.Free;
 end;
 
 {******************************************************************************}

@@ -49,7 +49,7 @@ Type
       function ImprimeEtiquetaVolumeCotacao5x2e5(VpaDCotacao : TRBDOrcamento): String;
       function ImprimeEtiquetaRomaneioCotacao32X18(VpaDRomaneioItem : TRBDRomaneioOrcamentoItem):string;
       function ImprimeEtiquetaRomaneioCotacaoCliente(VpaDRomaneio : TRBDRomaneioOrcamento):string;
-      function ImprimeEtiquetaProdutoComCodigoBarra10x3e5(VpaDCotacao : TRBDOrcamento): String;
+      function ImprimeEtiquetaProdutoComCodigoBarra25x35(VpaEtiquetas : TList): integer;
       procedure VoltarEtiqueta;
 end;
 
@@ -388,67 +388,58 @@ begin
 end;
 
 {******************************************************************************}
-function TRBFuncoesArgox.ImprimeEtiquetaProdutoComCodigoBarra10x3e5(
-  VpaDCotacao: TRBDOrcamento): String;
+function TRBFuncoesArgox.ImprimeEtiquetaProdutoComCodigoBarra25x35(VpaEtiquetas : TList): Integer;
 var
-  VpfPosicaoX, VpfInd : Integer;
-  VpfLacoEtiquetas, VpfLacoQtd, VpfColuna, VpfQtdEtiquetaLinha, VpfQtdProduto : Integer;
-  VpfDProdutoOrcamento : TRBDOrcProduto;
-  VpfDCodigoBarra: String;
+  VpfPosicaoX : Integer;
+  VpfLacoEtiquetas, VpfLacoQtd, VpfColuna, VpfQtdEtiquetasImpressas : Integer;
+  VpfDEtiqueta : TRBDEtiquetaProduto;
   VpfTexto  : AnsiString;
 begin
-  VpfQtdEtiquetaLinha:= 4;
-  VpfPosicaoX := 0;
-  VpfInd:= 0;
-
-  for VpfLacoEtiquetas := 0 to VpaDCotacao.Produtos.Count - 1 do
+  Result := 0;
+  VpfColuna := -1;
+  for VpfLacoEtiquetas := 0 to VpaEtiquetas.Count - 1 do
   begin
-    VpfDProdutoOrcamento := TRBDOrcProduto(VpaDCotacao.Produtos.Items[VpfLacoEtiquetas]);
-    VpfDCodigoBarra:= FunProdutos.RCodigoBarraProduto(VpaDCotacao.CodEmpFil, VpfDProdutoOrcamento.SeqProduto, VpfDProdutoOrcamento.CodCor, VpfDProdutoOrcamento.CodTamanho);
-
-    //VpfQtdProduto:= FunProdutos.RQtdEmbalagem(VpfDEtiqueta.CodEmbalagem);
-
-    {
-
-    if (copy(VpfDEtiqueta.CodProduto, 1, 4) <> '8020') or (copy(VpfDEtiqueta.CodProduto, 1, 4) <> '5520') or
-    ((copy(VpfDEtiqueta.CodProduto, 1, 3) <> '200') and (copy(VpfDEtiqueta.CodProduto, 1, 3) < '299')) or
-    ((copy(VpfDEtiqueta.CodProduto, 1, 3) <> '400') and (copy(VpfDEtiqueta.CodProduto, 1, 3) < '499')) then
+    VpfDEtiqueta := TRBDEtiquetaProduto(VpaEtiquetas.Items[VpfLacoEtiquetas]);
+    while (VpfDEtiqueta.QtdEtiquetas > 0)  do
     begin
-       VpaDCotacao.QtdProduto:= ((VpaDCotacao.QtdProduto * 2));
-    end; }
-
-    while (VpfDProdutoOrcamento.QtdProduto > 0) do
-    begin
-       while (VpfInd < VpfQtdEtiquetaLinha) and (VpfDProdutoOrcamento.QtdProduto > 0) do
-       begin
-          VpfTexto:= VpfDProdutoOrcamento.NomProduto;
-          A_Prn_Text(VpfPosicaoX+20,8,4,9,2,1,1,PAnsiChar('N'),0,PAnsiChar(VpfTexto));
-          VpfTexto:= 'REF: ' + VpfDProdutoOrcamento.CodProduto + ' - ' + FunCotacao.RNomClassificacao(VpfDProdutoOrcamento.CodClassificacao);
-          A_Prn_Text(VpfPosicaoX+35,8,4,9,2,1,1,PAnsiChar('N'),0,PAnsiChar(VpfTexto));
-          VpfTexto:= 'BRASIL';
-          A_Prn_Text(VpfPosicaoX+50,8,4,9,2,1,1,PAnsiChar('N'),0,PAnsiChar(VpfTexto));
-          VpfTExto := VpfDCodigoBarra;
-          A_Prn_Barcode(VpfPosicaoX+95,8,4,PAnsiChar('F'),2,8,25,PAnsiChar('N'),1,PAnsiChar(VpfTexto));
-
-          VpfDProdutoOrcamento.QtdProduto:= VpfDProdutoOrcamento.QtdProduto - 1;
-
-          VpfInd:= VpfInd + 1;
-          VpfPosicaoX:=VpfPosicaoX + 100;
-       end;
-       if VpfInd = 4 then
-       begin
-         A_Print_Out(1,1,1,1);
-         VpfPosicaoX := -100;
-         VpfInd := 0;
-       end;
+      VpfQtdEtiquetasImpressas := 0;
+      for VpfLacoQtd := 1 to VpfDEtiqueta.QtdEtiquetas do
+      begin
+        inc(VpfColuna);
+        if VpfColuna > 3 then
+           break;
+        inc(VpfQtdEtiquetasImpressas);
+        VpfPosicaoX := VpfColuna * 98;
+        VpfTexto:= copy(VpfDEtiqueta.Produto.NomProduto,1,19);
+        A_Prn_Text(VpfPosicaoX+20,1,4,9,2,1,1,PAnsiChar('N'),0,PAnsiChar(VpfTexto));
+        if Length(VpfDEtiqueta.Produto.NomProduto) > 17  then
+        begin
+          VpfTexto:= copy(VpfDEtiqueta.Produto.NomProduto,20,19);
+          A_Prn_Text(VpfPosicaoX+33,1,4,9,2,1,1,PAnsiChar('N'),0,PAnsiChar(VpfTexto));
+        end;
+        VpfTexto:= 'REF: ' + VpfDEtiqueta.Produto.CodProduto + '-' + FunCotacao.RNomClassificacao(VpfDEtiqueta.Produto.CodClassificacao);
+        VpfTexto := copy(VpfTexto,1,19);
+        A_Prn_Text(VpfPosicaoX+46,1,4,9,2,1,1,PAnsiChar('N'),0,PAnsiChar(VpfTexto));
+        VpfTexto:= 'BRASIL';
+        A_Prn_Text(VpfPosicaoX+59,1,4,9,2,1,1,PAnsiChar('N'),0,PAnsiChar(VpfTexto));
+        if VpfDEtiqueta.DesCodBarras <> '' then
+        begin
+          VpfTExto := VpfDEtiqueta.DesCodBarras;
+          A_Prn_Barcode(VpfPosicaoX+100,4,4,PAnsiChar('F'),2,8,25,PAnsiChar('N'),1,PAnsiChar(VpfTexto));
+        end;
+      end;
+      if VpfColuna >= 4 then
+      begin
+        result := A_Print_Out(1,1,1,1);
+        VpfColuna := -1;
+      end;
+      VpfDEtiqueta.QtdEtiquetas := VpfDEtiqueta.QtdEtiquetas - VpfQtdEtiquetasImpressas;
     end;
   end;
-  if VpfInd > 0 then
+  if VpfColuna > -1 then
   begin
-    A_Print_Out(1,1,1,1);
-    VpfPosicaoX := -100;
+    result := A_Print_Out(1,1,1,1);
   end;
-
 end;
 
 {******************************************************************************}

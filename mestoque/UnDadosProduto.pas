@@ -2388,6 +2388,7 @@ Type
       QtdEtiquetas,
       QtdProduto,
       NumPedido : Integer;
+      DesCodBarras,
       CodBarras,
       NomCor,
       NomComposicao,

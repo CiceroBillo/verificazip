@@ -381,6 +381,7 @@ type
     function SalvaImagemdaAreaTransferenciaWindows(VpaDProduto : TRBDProduto) : string;
     function GravaCodigoBarraProdutos(VpaCodFilial, VpaSeqProduto, VpaCodCor, VpaCodTamanho: Integer; VpaCodBarra: String):String;
     function RQtdConsumidoProducao(VpaCodFilial,VpaSeqProduto,VpaCodCor,VpaCodTamanho : Integer;VpaDatInicio,VpaDatFim : TDateTime):double;
+    function RQtdProdutosEmbalagem(VpaSeqProduto : Integer):integer;
  end;
 Var
   FunProdutos : TFuncoesProduto;
@@ -4845,6 +4846,17 @@ begin
       end;
     end;
   end;
+end;
+
+{******************************************************************************}
+function TFuncoesProduto.RQtdProdutosEmbalagem(VpaSeqProduto: Integer): integer;
+begin
+  AdicionaSQLAbreTabela(AUX,'Select QTD_EMBALAGEM '+
+                            ' FROM CADPRODUTOS PRO, EMBALAGEM EMB ' +
+                            ' Where PRO.I_SEQ_PRO = ' +IntToStr(VpaSeqProduto)+
+                            ' AND PRO.I_COD_EMB = EMB.COD_EMBALAGEM ');
+  result := AUX.FieldByName('QTD_EMBALAGEM').AsInteger;
+  Aux.Close;
 end;
 
 {******************************************************************************}

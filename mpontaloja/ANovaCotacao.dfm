@@ -46,10 +46,6 @@ object FNovaCotacao: TFNovaCotacao
       Font.Name = 'MS Sans Serif'
       Font.Style = []
       ParentFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object ScrollBox1: TScrollBox
         Left = 0
         Top = 0
@@ -1466,7 +1462,7 @@ object FNovaCotacao: TFNovaCotacao
               Left = 134
               Top = 111
               Width = 109
-              Height = 19
+              Height = 22
               ACampoObrigatorio = False
               ANaoUsarCorNegativo = False
               Color = 14474718
@@ -1527,7 +1523,7 @@ object FNovaCotacao: TFNovaCotacao
               Left = 134
               Top = 136
               Width = 109
-              Height = 19
+              Height = 22
               ACampoObrigatorio = False
               ANaoUsarCorNegativo = False
               Color = 14474718
@@ -1546,7 +1542,7 @@ object FNovaCotacao: TFNovaCotacao
               Left = 333
               Top = 136
               Width = 121
-              Height = 19
+              Height = 22
               ACampoObrigatorio = False
               ANaoUsarCorNegativo = False
               Color = 14474718
@@ -1565,7 +1561,7 @@ object FNovaCotacao: TFNovaCotacao
               Left = 587
               Top = 136
               Width = 121
-              Height = 19
+              Height = 22
               ACampoObrigatorio = False
               ANaoUsarCorNegativo = False
               Color = 14474718
@@ -1584,7 +1580,7 @@ object FNovaCotacao: TFNovaCotacao
               Left = 134
               Top = 160
               Width = 28
-              Height = 19
+              Height = 22
               ACampoObrigatorio = False
               ANaoUsarCorNegativo = False
               Color = 14474718
@@ -1603,7 +1599,7 @@ object FNovaCotacao: TFNovaCotacao
               Left = 588
               Top = 160
               Width = 120
-              Height = 19
+              Height = 22
               ACampoObrigatorio = False
               ANaoUsarCorNegativo = False
               Color = 14474718
@@ -1811,7 +1807,7 @@ object FNovaCotacao: TFNovaCotacao
               Left = 129
               Top = 8
               Width = 81
-              Height = 19
+              Height = 22
               Color = 14474718
               Ctl3D = False
               EditMask = '!99/99/00;1;_'
@@ -1831,7 +1827,7 @@ object FNovaCotacao: TFNovaCotacao
               Left = 680
               Top = 10
               Width = 81
-              Height = 19
+              Height = 22
               Color = 14474718
               Ctl3D = False
               EditMask = '!99/99/00;1;_'
@@ -1852,7 +1848,7 @@ object FNovaCotacao: TFNovaCotacao
               Left = 473
               Top = 8
               Width = 48
-              Height = 19
+              Height = 22
               Color = 14474718
               Ctl3D = False
               EditMask = '!90\:00;1; '
@@ -2274,7 +2270,7 @@ object FNovaCotacao: TFNovaCotacao
               Left = 140
               Top = 85
               Width = 109
-              Height = 19
+              Height = 22
               ACampoObrigatorio = False
               ANaoUsarCorNegativo = False
               Color = 14474718
@@ -2293,7 +2289,7 @@ object FNovaCotacao: TFNovaCotacao
               Left = 660
               Top = 85
               Width = 109
-              Height = 19
+              Height = 22
               ACampoObrigatorio = False
               ANaoUsarCorNegativo = False
               Color = 14474718
@@ -2414,7 +2410,7 @@ object FNovaCotacao: TFNovaCotacao
               Left = 587
               Top = 7
               Width = 109
-              Height = 19
+              Height = 22
               ACampoObrigatorio = False
               ANaoUsarCorNegativo = False
               Color = 14474718
@@ -3246,7 +3242,7 @@ object FNovaCotacao: TFNovaCotacao
             Left = 704
             Top = 9
             Width = 49
-            Height = 19
+            Height = 22
             ACampoObrigatorio = False
             ANaoUsarCorNegativo = False
             Color = 14474718
@@ -3380,7 +3376,7 @@ object FNovaCotacao: TFNovaCotacao
             Left = 704
             Top = 34
             Width = 49
-            Height = 19
+            Height = 22
             ACampoObrigatorio = False
             ANaoUsarCorNegativo = False
             Color = 14474718
@@ -3863,7 +3859,7 @@ object FNovaCotacao: TFNovaCotacao
             Left = 648
             Top = 33
             Width = 103
-            Height = 19
+            Height = 22
             Color = 14474718
             Ctl3D = False
             EditMask = '!99/99/00;1;_'
@@ -4100,10 +4096,6 @@ object FNovaCotacao: TFNovaCotacao
     object PEstagios: TTabSheet
       Caption = 'Est'#225'gios'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Splitter1: TSplitter
         Left = 0
         Top = 317
@@ -4236,10 +4228,6 @@ object FNovaCotacao: TFNovaCotacao
     object PEmails: TTabSheet
       Caption = 'E-Mails'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GEmails: TGridIndice
         Left = 0
         Top = 0
