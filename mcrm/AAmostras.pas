@@ -157,6 +157,7 @@ begin
   ESituacao.ItemIndex := 0;
   VprOrdem := 'Order by AMO.CODAMOSTRA, COR.NOM_COR ';
   AtualizaConsulta;
+  Configurapermissaousuario;
 end;
 
 procedure TFAmostras.GradeDrawColumnCell(Sender: TObject; const Rect: TRect;
@@ -496,6 +497,8 @@ end;
 procedure TFAmostras.Configurapermissaousuario;
 begin
   AlterarVisibleDet([MConcluiAmostra],(puCRConcluirAmostra in varia.PermissoesUsuario));
+  if (puCRNaoExluiAmostra in varia.PermissoesUsuario) then
+    AlterarVisibleDet([BExcluir],false);
 end;
 
 {******************************************************************************}

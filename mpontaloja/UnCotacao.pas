@@ -1089,6 +1089,8 @@ begin
       FunProdutos.CarValVendaeRevendaProduto(VpaDCotacao.CodTabelaPreco,VpfDProCotacao.SeqProduto,VpfDProCotacao.CodCor,VpfDProCotacao.CodTamanho,
                                              VpaDCotacao.CodCliente,VpfDProCotacao.ValUnitarioOriginal,VpfDProCotacao.ValRevenda,VpfDProCotacao.ValTabelaPreco,VpfDProCotacao.PerDescontoMaximoPermitido);
 
+      DesCodBarra := FunProdutos.RCodigoBarraProduto(VpaDCotacao.CodEmpFil, SeqProduto, CodCor, CodTamanho);
+
       //ExisteProdutoTabPreco(CodProduto,0, VpfDProCotacao,VpaDCotacao);
     end;
     CarDComposeProduto(VpaDCotacao,VpfDProCotacao);
@@ -3276,7 +3278,7 @@ end;
 function TFuncoesCotacao.RSeqOrcamentoRoteiroEntrega(
   VpaCodEntregador, VpaCodRegiaoVendas: integer): integer;
 begin
-  AdicionaSQLAbreTabela(CotCadastro, 'SELECT SEQORCAMENTOROTEIRO, CODENTREGADOR, DATABERTURA, DATBLOQUEIO '+
+  AdicionaSQLAbreTabela(CotCadastro, 'SELECT SEQORCAMENTOROTEIRO, CODENTREGADOR, DATABERTURA, DATBLOQUEIO, CODREGIAOVENDAS  '+
                                      ' FROM ORCAMENTOROTEIROENTREGA ' +
                                      ' WHERE CODENTREGADOR = ' + IntToStr(VpaCodEntregador) +
                                      ' AND CODREGIAOVENDAS = ' + IntToStr(VpaCodRegiaoVendas) +
@@ -4951,6 +4953,12 @@ begin
 //Rotina colocada em comentário dia 23/05/2007 por não estar mais usando o indicador de reserva.
 //    if (VpfDProCotacao.IndReservar = 'S') then
 //      reservaProduto(IntToStr(VpfDProCotacao.SeqProduto),VpfDProCotacao.UM,VpfDProCotacao.QtdProduto);
+
+    if Result = '' then
+    begin
+      if VpfDProCotacao.DesCodBarra <> VpfDProCotacao.DesCodBarraAnterior then
+       Result:= FunProdutos.GravaCodigoBarraProdutos(VpaDCotacao.CodEmpFil, VpfDProCotacao.SeqProduto, VpfDProCotacao.CodCor, VpfDProCotacao.CodTamanho, VpfDProCotacao.DesCodBarra);
+    end;
 
     if (config.PrecoPorClienteAutomatico) and not(VpfDProCotacao.IndBrinde) then
       VerificaPrecoCliente(VpaDCotacao,VpfDProCotacao);

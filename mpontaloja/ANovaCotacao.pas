@@ -13,7 +13,7 @@ uses
 type
   TRBDColunaGradeProduto =(clProCodProduto,clProNomProduto,clProCodCor, clProNomCor, clProCodTamanho, clProNomTamanho, clProAltura, clProUM, clProQtdproduto,
                            clProValUnitario, clProValTotal, clProPerDesconto, clProNumSerie, clProOrdemCompra, clProCodEmbalagem, clProNomEmbalagem,
-                           clProImprimeFoto,clProImprDescricao,clProDesObservacoes, clProComprimentoProduto,clProQtdTotalPecas);
+                           clProImprimeFoto,clProImprDescricao,clProDesObservacoes, clProComprimentoProduto,clProQtdTotalPecas, clProCodBarras);
   TFNovaCotacao = class(TFormularioPermissao)
     PanelColor2: TPanelColor;
     Aux: TSQLQuery;
@@ -405,6 +405,8 @@ type
     procedure FotoDblClick(Sender: TObject);
     procedure EClienteExit(Sender: TObject);
     procedure Promissria1Click(Sender: TObject);
+    procedure ECorFimConsulta(Sender: TObject);
+    procedure ETamanhoFimConsulta(Sender: TObject);
   private
     { Private declarations }
     VprOperacao,
@@ -495,6 +497,7 @@ type
     procedure ValVendaTamanho;
     function ValorParcelaValido(VpaDCotacao : TRBDOrcamento):string;
     procedure AtualizaValorProdutoDuplicado;
+    procedure CarCodigobarras;
   public
     { Public declarations }
     function NovaCotacao : Integer;
@@ -642,7 +645,7 @@ begin
         GProdutos.Cells[RColunaGrade(clProCodProduto),GProdutos.ALinha] := CodProduto;
         GProdutos.Cells[RColunaGrade(clProNomProduto),GProdutos.ALinha] := NomProduto;
         GProdutos.Cells[RColunaGrade(clProUM),GProdutos.ALinha] := UM;
-
+        CarCodigobarras;
         VprDProCotacao.ValTotal := VprDProCotacao.ValUnitario * VprDProCotacao.QtdProduto;
         CalculaValorTotalProduto;
         CarFoto;
@@ -701,7 +704,7 @@ begin
           ReferenciaProduto;
           CalculaValorTotalProduto;
           CarFoto;
-
+          CarCodigobarras;
         end;
       end;
     end;
@@ -1561,6 +1564,7 @@ begin
     clProImprimeFoto: result:=19;
     clProImprDescricao: result:=20;
     clProDesObservacoes: result:=21;
+    clProCodBarras: result:=22;
   end;
 end;
 
@@ -2096,6 +2100,7 @@ begin
   GProdutos.Cells[RColunaGrade(clProDesObservacoes),0] := 'Observação';
   GProdutos.Cells[RColunaGrade(clProComprimentoProduto),0] := 'Comprimento';
   GProdutos.Cells[RColunaGrade(clProQtdTotalPecas),0] := 'Qtd Peças';
+  GProdutos.Cells[RColunaGrade(clProCodBarras),0] := 'Código de Barras';
 
   GProdutos.CarregaGrade;
 
@@ -2417,6 +2422,7 @@ begin
   VprDProCotacao.IndImpFoto := GProdutos.Cells[RColunaGrade(clProImprimeFoto),GProdutos.ALinha];
   VprDProCotacao.IndImpDescricao := GProdutos.Cells[RColunaGrade(clProImprDescricao),GProdutos.ALinha];
   VprDProCotacao.DesObservacao := GProdutos.Cells[RColunaGrade(clProDesObservacoes),GProdutos.ALinha];
+  VprDProCotacao.DesCodBarra := GProdutos.Cells[RColunaGrade(clProCodBarras),GProdutos.ALinha];
   CalculaValorTotalProduto;
   if ((VprDProCotacao.QtdEstoque - VprDProCotacao.QtdProduto) < VprDProCotacao.QtdMinima) then
   begin
@@ -2593,6 +2599,14 @@ end;
 {******************************************************************************}
 Procedure TFNovaCotacao.CarLogAlteracoes;
 begin
+end;
+
+{******************************************************************************}
+procedure TFNovaCotacao.CarCodigobarras;
+begin
+  VprDProCotacao.DesCodBarra:= FunProdutos.RCodigoBarraProduto(VprDCotacao.CodEmpFil, VprDProCotacao.SeqProduto, VprDProCotacao.CodCor, VprDProCotacao.CodTamanho);
+  VprDProCotacao.DesCodBarraAnterior:= VprDProCotacao.DesCodBarra;
+  GProdutos.Cells[RColunaGrade(clproCodBarras),GProdutos.ALinha] := VprDProCotacao.DesCodBarra;
 end;
 
 {******************************************************************************}
@@ -2859,7 +2873,7 @@ begin
   else
     GProdutos.Cells[RColunaGrade(clProQtdTotalPecas),VpaLinha] := '';
 
-
+  GProdutos.Cells[RColunaGrade(clProCodBarras),VpaLinha] := VprDProCotacao.DesCodBarra;
   CalculaValorTotalProduto;
 end;
 
@@ -3351,6 +3365,11 @@ end;
 procedure TFNovaCotacao.ECorEnter(Sender: TObject);
 begin
   ECor.clear;
+end;
+
+procedure TFNovaCotacao.ECorFimConsulta(Sender: TObject);
+begin
+  CarCodigobarras;
 end;
 
 {******************************************************************************}
@@ -4146,6 +4165,13 @@ begin
   ETamanho.Clear;
 end;
 
+{******************************************************************************}
+procedure TFNovaCotacao.ETamanhoFimConsulta(Sender: TObject);
+begin
+  CarCodigobarras;
+end;
+
+{******************************************************************************}
 procedure TFNovaCotacao.ETamanhoRetorno(Retorno1, Retorno2: String);
 begin
   if Retorno1 <> '' then

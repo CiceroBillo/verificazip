@@ -1178,11 +1178,22 @@ end;
 {******************************************************************************}
 function TFuncoesProduto.RCodigoBarraProduto(VpaCodFilial, VpaSeqProduto, VpaCodCor,VpaCodTamanho: Integer): string;
 begin
-  AdicionaSQLAbreTabela(Aux,'SELECT C_COD_BAR FROM MOVQDADEPRODUTO ' +
-                            ' WHERE I_EMP_FIL = ' + IntToStr(VpaCodFilial) +
-                            ' AND I_SEQ_PRO = ' + IntToStr(VpaSeqProduto) +
-                            ' AND I_COD_COR = ' + IntToStr(VpaCodCor) +
-                            ' AND I_COD_TAM = ' + IntToStr(VpaCodTamanho));
+  if Config.CodigodeBarraCodCorETamanhoZero then
+  begin
+    AdicionaSQLAbreTabela(Aux,'SELECT C_COD_BAR FROM MOVQDADEPRODUTO ' +
+                              ' WHERE I_EMP_FIL = ' + IntToStr(VpaCodFilial) +
+                              ' AND I_SEQ_PRO = ' + IntToStr(VpaSeqProduto) +
+                              ' AND I_COD_COR = 0' +
+                              ' AND I_COD_TAM = 0');
+  end
+  else
+  begin
+    AdicionaSQLAbreTabela(Aux,'SELECT C_COD_BAR FROM MOVQDADEPRODUTO ' +
+                              ' WHERE I_EMP_FIL = ' + IntToStr(VpaCodFilial) +
+                              ' AND I_SEQ_PRO = ' + IntToStr(VpaSeqProduto) +
+                              ' AND I_COD_COR = ' + IntToStr(VpaCodCor) +
+                              ' AND I_COD_TAM = ' + IntToStr(VpaCodTamanho));
+  end;
   result := Aux.FieldByName('C_COD_BAR').AsString;
   Aux.close;
 end;
@@ -7329,11 +7340,23 @@ var
   VpfResultado: String;
 begin
   result := '';
-  AdicionaSQLAbreTabela(ProCadastro,'Select * from MOVQDADEPRODUTO '+
-                                     ' Where I_EMP_FIL = ' + IntToStr(VpaCodFilial) +
-                                     ' AND I_SEQ_PRO = ' + IntToStr(VpaSeqProduto) +
-                                     ' AND I_COD_COR = ' + IntToStr(VpaCodCor) +
-                                     ' AND I_COD_TAM = ' + IntToStr(VpaCodTamanho));
+
+  if Config.CodigodeBarraCodCorETamanhoZero then
+  begin
+    AdicionaSQLAbreTabela(ProCadastro,'Select * from MOVQDADEPRODUTO '+
+                                   ' Where I_EMP_FIL = ' + IntToStr(VpaCodFilial) +
+                                   ' AND I_SEQ_PRO = ' + IntToStr(VpaSeqProduto) +
+                                   ' AND I_COD_COR = 0' +
+                                   ' AND I_COD_TAM = 0');
+  end
+  else
+  begin
+    AdicionaSQLAbreTabela(ProCadastro,'Select * from MOVQDADEPRODUTO '+
+                                       ' Where I_EMP_FIL = ' + IntToStr(VpaCodFilial) +
+                                       ' AND I_SEQ_PRO = ' + IntToStr(VpaSeqProduto) +
+                                       ' AND I_COD_COR = ' + IntToStr(VpaCodCor) +
+                                       ' AND I_COD_TAM = ' + IntToStr(VpaCodTamanho));
+  end;
   ProCadastro.Edit;
   ProCadastro.FieldByName('C_COD_BAR').AsString := VpaCodBarra;
   ProCadastro.FieldByName('D_ULT_ALT').AsDateTime :=  sistema.RDataServidor;

@@ -437,6 +437,8 @@ type
     DBEditColor10: TDBEditColor;
     CFGC_UNI_QUI: TWideStringField;
     CFGC_UNI_MIL: TWideStringField;
+    DBCheckBox14: TDBCheckBox;
+    CFGC_COD_BAR: TWideStringField;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure CFGAfterPost(DataSet: TDataSet);

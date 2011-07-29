@@ -76,7 +76,7 @@ type
     puAlterarLimiteCredito, puESInventario, puESMenuGerencialFichaAmostraPendente,puESMenuGerencialAmostraPendente, puESCustoPendente, puCRConcluirAmostra,
     puESCadastrarEstoqueChapas, puESSomenteSolicitacaodeComprasdeInsumos, puESPermiteAcrescimoDescontoNotaEntrada, puESCadastrarPedidoCompra, puESExcluirPedidoCompra, puESCadastrarSolicitacaoCompra,
     puAlterarValorVendaCadastroProduto,puValorMinimoParcela, puESEstornarRevisaoFaccionista, puPLVisualizarTotalCotacao, puCRPropostas,puExcluirHistoricoTelemarketing,puOcultarVendedor, puClientesInativos,
-    puCHExcluirChamado,puCHAlterarEstagioChamadoFinalizadoeCancelado,puCRAlterarPropostasFinalizadas, puCRAlterarEstagioPropostasFinalizadaseCanceladas,puCRNaoAlteraVendedorNaTelaDeDigitacaoRapida,puESMenuGerencialCortePendente,puESBaixarOrdemCorte, puESExcluiProdutoDuplicado,
+    puCHExcluirChamado,puCHAlterarEstagioChamadoFinalizadoeCancelado,puCRAlterarPropostasFinalizadas, puCRAlterarEstagioPropostasFinalizadaseCanceladas,puCRNaoAlteraVendedorNaTelaDeDigitacaoRapida,puCRNaoExluiAmostra,puESMenuGerencialCortePendente,puESBaixarOrdemCorte, puESExcluiProdutoDuplicado,
     puSomenteRelatoriosAutorizados);
 
   TRBDPermisaoUsuario = set of TRBDOpcoesPermisaoUsuario;
@@ -703,7 +703,7 @@ type
     QuandoAlteraClassificacaodoProdutoGerarNovoCodigo : Boolean;
     RepetirNomeProdutonaConsulta : Boolean;
     ManterValordeCustoMaisAlto :Boolean;
-
+    CodigodeBarraCodCorETamanhoZero: Boolean;
 
 //-------------------Financeiro
     TEF : Boolean;
@@ -1265,6 +1265,8 @@ begin
     VpaDPermissao:= VpaDPermissao + [puCRAlterarEstagioPropostasFinalizadaseCanceladas];
   if TipoCheck(VarAux.FieldByName('C_CRM_VDR').AsString) then
     VpaDPermissao:= VpaDPermissao + [puCRNaoAlteraVendedorNaTelaDeDigitacaoRapida];
+  if TipoCheck(VarAux.FieldByName('C_EXC_AMO').AsString) then
+    VpaDPermissao:= VpaDPermissao + [puCRNaoExluiAmostra];
   if TipoCheck(VarAux.FieldByName('C_EST_MUP').AsString) then
     VpaDPermissao := VpaDPermissao + [puESMenuGerencialCortePendente];
   if TipoCheck(VarAux.FieldByName('C_EST_BOC').AsString) then
@@ -2086,6 +2088,7 @@ begin
         PermiteItemNFEntradaDuplicado := TipoCheck(VpfTabela.fieldByName('C_Ent_Rep').AsString);
         CadastroEtiqueta := TipoCheck(VpfTabela.fieldByName('C_IND_ETI').AsString);
         FilialFaturamento:= TipoCheck(VpfTabela.fieldByName('C_FIL_FAT').AsString);
+        CodigodeBarraCodCorETamanhoZero:= TipoCheck(VpfTabela.fieldByName('C_COD_BAR').AsString);
         CadastroCadarco := TipoCheck(VpfTabela.fieldByName('C_IND_CAR').AsString);
         CadastroCadarcoFita :=TipoCheck(VpfTabela.fieldByName('C_IND_CAT').AsString);
         CadastroEmbalagemPvc:= TipoCheck(VpfTabela.FieldByName('C_IND_EMB').AsString);

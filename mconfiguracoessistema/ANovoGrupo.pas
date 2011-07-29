@@ -328,6 +328,8 @@ type
     CadGruposC_FAT_SPF: TWideStringField;
     DBCheckBox105: TDBCheckBox;
     CadGruposC_CRM_VDR: TWideStringField;
+    DBCheckBox106: TDBCheckBox;
+    CadGruposC_EXC_AMO: TWideStringField;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure CadGruposAfterInsert(DataSet: TDataSet);

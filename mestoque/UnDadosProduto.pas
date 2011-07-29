@@ -1959,7 +1959,9 @@ Type
       IndImpFoto,
       IndImpDescricao,
       DesRegistroMSM,
-      PathFoto :String;
+      PathFoto,
+      DesCodBarra,
+      DesCodBarraAnterior :String;
       IndFaturar,
       IndRetornavel,
       IndBrinde,

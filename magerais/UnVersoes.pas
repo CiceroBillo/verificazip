@@ -7,11 +7,11 @@ Const
   VersaoEstoque = '3.312';
   VersaoFinanceiro = '2.854';
   VersaoConfiguracaoSistema = '2.429';
-  VersaoPontoLoja = '4.014';
+  VersaoPontoLoja = '4.016';
   VersaoFaturamento = '2.788';
   VersaoChamadoTecnico = '2.576';
   VersaoAgenda = '1.06';
-  VersaoCRM = '3.042';
+  VersaoCRM = '3.043';
   VersaoCaixa = '0.509';
   VersaoSistemaPedido = '1.010';
   VersaoPDV = '2.115';
