@@ -832,6 +832,8 @@ type
     DBCheckBox96: TDBCheckBox;
     DBCheckBox97: TDBCheckBox;
     DBCheckBox98: TDBCheckBox;
+    DBCheckBox99: TDBCheckBox;
+    CFGC_EMA_PRO: TWideStringField;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure CFGAfterPost(DataSet: TDataSet);

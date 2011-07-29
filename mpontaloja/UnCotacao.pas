@@ -144,7 +144,7 @@ type TFuncoesCotacao = class(TLocalizaCotacao)
     function RQtdNumeroPedido(VpaCodFilial : Integer):integer;
     function RAliquotaICMSUF(VpaDesUF : String):Double;
     function RCotacao(VpaCotacoes : TList;VpaCodFilial, VpaLanOrcamento : Integer) :TRBDOrcamento;
-    function RSeqOrcamentoRoteiroEntrega(VpaCodEntregador:integer):integer;
+    function RSeqOrcamentoRoteiroEntrega(VpaCodEntregador, VpaCodRegiaoVendas:integer):integer;
     function RRomaneioemAbertoCliente( VpaCodFilial, VpaCodCliente : Integer) : Integer;
     function RSeqRomaneioBloqueado(VpaCodFilial, VpaCodCliente : Integer) : Integer;
     function RPrecoProdutoTabelaCliente(VpaSeqProduto, VpaCodCliente, VpaCodCor, VpaCodTamanho: Integer): Double;
@@ -3271,11 +3271,12 @@ end;
 
 {******************************************************************************}
 function TFuncoesCotacao.RSeqOrcamentoRoteiroEntrega(
-  VpaCodEntregador: integer): integer;
+  VpaCodEntregador, VpaCodRegiaoVendas: integer): integer;
 begin
   AdicionaSQLAbreTabela(CotCadastro, 'SELECT SEQORCAMENTOROTEIRO, CODENTREGADOR, DATABERTURA, DATBLOQUEIO '+
                                      ' FROM ORCAMENTOROTEIROENTREGA ' +
                                      ' WHERE CODENTREGADOR = ' + IntToStr(VpaCodEntregador) +
+                                     ' AND CODREGIAOVENDAS = ' + IntToStr(VpaCodRegiaoVendas) +
                                      ' AND DATFECHAMENTO IS NULL' +
                                      ' AND DATBLOQUEIO IS NULL ');
 
@@ -3285,6 +3286,7 @@ begin
     CotCadastro.FieldByName('SEQORCAMENTOROTEIRO').AsInteger := RProximoOrcamentoRoteiroDisponivel;
     CotCadastro.FieldByName('CODENTREGADOR').AsInteger := VpaCodEntregador;
     CotCadastro.FieldByName('DATABERTURA').AsDateTime := now;
+    CotCadastro.FieldByName('CODREGIAOVENDAS').AsInteger := VpaCodRegiaoVendas;
     CotCadastro.post;
   end;
   result:= CotCadastro.FieldByName('SEQORCAMENTOROTEIRO').AsInteger;
@@ -5276,7 +5278,7 @@ function TFuncoesCotacao.GravaRoteiroEntrega(
 var
   VpfSeqRoteiroEntrega: integer;
 begin
-  VpfSeqRoteiroEntrega:= RSeqOrcamentoRoteiroEntrega(VpaDCotacao.CodTransportadora);
+  VpfSeqRoteiroEntrega:= RSeqOrcamentoRoteiroEntrega(VpaDCotacao.CodTransportadora, VpaDCotacao.CodRegiaoVenda);
 
   AdicionaSQLAbreTabela(CotCadastro, 'SELECT * FROM ORCAMENTOROTEIROENTREGAITEM '+
                                      ' WHERE SEQORCAMENTOROTEIRO = 0 AND SEQORCAMENTO = 0 AND CODFILIALORCAMENTO = 0');

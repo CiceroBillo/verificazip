@@ -2037,7 +2037,8 @@ Type
       NumContadorOrdemOperacao,
       CodMedico,
       TipReceita,
-      QtdVolumesTransportadora: integer;
+      QtdVolumesTransportadora,
+      CodRegiaoVenda: integer;
       RGCliente,
       FlaSituacao,
       NomContato,

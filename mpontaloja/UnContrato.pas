@@ -73,7 +73,7 @@ Type TRBFuncoesContrato = class(TRBLocalizaContrato)
     function AnexaArquivoEmail(VpaNomArquivo : String;VpaMensagem : TIdMessage):string;
     procedure GeraAnexosEmailLeituraLocacao(VpaCodFilial, VpaSeqLeitura: integer);
     function RSeqReciboLocacao(VpaSeqLeitura, VpaCodFilial: Integer):Integer;
-    function RNroPedidoReciboLocacao(VpaCodFilial, VpaSeqReciboLocacao: Integer): Integer;
+    function RNroPedidoExtratoLocacao(VpaCodFilial, VpaSeqLeitura: Integer): Integer;
     function RNroDuplicata(VpaCodFilial, VpaNroPedido: Integer): Integer;
     function RCodClienteLeituraLocacao(VpaCodFilial, VpaSeqLeituraLocacao: Integer): Integer;
     function VerificaSemNotaContrato(VpaCodFilial, VpaSeqContrato: Integer): Boolean;
@@ -1680,11 +1680,13 @@ begin
       dtRave.Free;
     end;
     AnexaArquivoEmail(VpfNomArquivo,VprMensagem);
-    
+
+    VpfSeqReciboLocacao:= RSeqReciboLocacao(VpaSeqLeitura, VpaCodFilial);
+    VpfNroPedido:= RNroPedidoExtratoLocacao(VpaCodFilial, VpaSeqLeitura);
+
     if VerificaSemNotaContrato(VpaCodFilial, VprSeqContrato) then
     begin
       VpfNomArquivo:= '';
-      VpfSeqReciboLocacao:= RSeqReciboLocacao(VpaSeqLeitura, VpaCodFilial);
       try //Recibo Locacao
         dtRave := TdtRave.Create(nil);
         VpfNomArquivo := Varia.PathVersoes+'\ANEXOS\Contrato\RL'+IntToStr(VpaCodFilial)+'_'+IntToStr(VpaSeqLeitura)+'.pdf';
@@ -1698,12 +1700,11 @@ begin
     else
     begin
       VpfNomArquivo:= '';
-      VpfNroPedido:= RNroPedidoReciboLocacao(VpaCodFilial, VpfSeqReciboLocacao);
       try //Cotacao
         dtRave := TdtRave.Create(nil);
         VpfNomArquivo := Varia.PathVersoes+'\ANEXOS\Contrato\CO'+IntToStr(VpaCodFilial)+'_'+IntToStr(VpaSeqLeitura)+'.pdf';
         dtRave.VplArquivoPDF := VpfNomArquivo;
-        dtRave.ImprimePedido(VpaCodFilial,VpfNroPedido,false);
+        dtRave.ImprimePedido(VpaCodFilial,VpfNroPedido,true);
       finally
         dtRave.Free;
       end;
@@ -2291,12 +2292,12 @@ begin
     result := 'Falta arquivo "'+varia.PathVersoes+'\efi.jpg'+'"'
   else
   begin
-    Vpfbmppart := TIdAttachmentfile.Create(VprMensagem.MessageParts,varia.PathVersoes+'\efi.jpg');
-    Vpfbmppart.ContentType := 'image/jpg';
-    Vpfbmppart.ContentDisposition := 'inline';
-    Vpfbmppart.ExtraHeaders.Values['content-id'] := 'efi.jpg';
-    Vpfbmppart.FileName := '';
-    Vpfbmppart.DisplayName := '';
+      Vpfbmppart := TIdAttachmentfile.Create(VprMensagem.MessageParts,varia.PathVersoes+'\efi.jpg');
+      Vpfbmppart.ContentType := 'image/jpg';
+      Vpfbmppart.ContentDisposition := 'inline';
+      Vpfbmppart.ExtraHeaders.Values['content-id'] := 'efi.jpg';
+      Vpfbmppart.FileName := '';
+      Vpfbmppart.DisplayName := '';
   end;
   if result = '' then
   begin
@@ -2812,12 +2813,11 @@ begin
 end;
 
 {******************************************************************************}
-function TRBFuncoesContrato.RNroPedidoReciboLocacao(VpaCodFilial,
-  VpaSeqReciboLocacao: Integer): Integer;
-begin
-  AdicionaSqlAbreTabela(Aux,'SELECT LANORCAMENTO FROM RECIBOLOCACAOCORPO' +
+function TRBFuncoesContrato.RNroPedidoExtratoLocacao(VpaCodFilial, VpaSeqLeitura: Integer): Integer;
+ begin
+  AdicionaSqlAbreTabela(Aux,'SELECT LANORCAMENTO FROM LEITURALOCACAOCORPO' +
                             ' WHERE CODFILIAL = ' + IntToStr(VpaCodFilial)+
-                            ' AND SEQRECIBO = ' + IntToStr(VpaSeqReciboLocacao));
+                            ' AND SEQLEITURA = ' + IntToStr(VpaSeqLeitura));
   Result:= Aux.FieldByName('LANORCAMENTO').AsInteger;
   Aux.Close;
 end;

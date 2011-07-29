@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, formularios,
   Componentes1, ExtCtrls, PainelGradiente, Grids, CGrades, StdCtrls,
   Localizacao, Buttons, Db, DBTables, UnDadosProduto, UnCotacao,
-  DBKeyViolation, SQLEXPR, FMTBcd, Mask, numericos;
+  DBKeyViolation, SQLEXPR, FMTBcd, Mask, numericos, DBCtrls, Tabela;
 
 type
   TFCartuchoCotacao = class(TFormularioPermissao)
@@ -35,6 +35,10 @@ type
     BFechar: TBitBtn;
     BImprimeVolume: TBitBtn;
     EQtdVolume: Tnumerico;
+    SpeedButton10: TSpeedButton;
+    Label83: TLabel;
+    Label82: TLabel;
+    ERegiaoVenda: TRBEditLocaliza;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ECotacaoSelect(Sender: TObject);
@@ -338,6 +342,7 @@ begin
       begin
         if ETransportadora.AInteiro <> 0 then
         begin
+          VprDCotacao.CodRegiaoVenda:= ERegiaoVenda.AInteiro;
           FunCotacao.AlteraTransportadora(VprDCotacao,ETransportadora.AInteiro);
           VpfResultado:= FunCotacao.GravaRoteiroEntrega(VprDCotacao);
           if VpfResultado <> '' then

@@ -652,7 +652,8 @@ type
     NoFaturamentoMensalCondPagamentoCliente : Boolean;
     NumeroSerieObrigatorioNoContrato,
     FaturarLocacaoComRecibo,
-    ExcedenteFranquiaLocacaoFaturaremNotaFiscal : Boolean;
+    ExcedenteFranquiaLocacaoFaturaremNotaFiscal,
+    EnviarEmailAutomaticoQuandoProcessarLeitura : Boolean;
 
 //-------------------Produtos
     FilialFaturamento: Boolean;
@@ -1887,6 +1888,7 @@ begin
       NumeroSerieObrigatorioNoContrato := TipoCheck(VpfTabela.fieldByName('C_SER_OBR').AsString);
       FaturarLocacaoComRecibo := TipoCheck(VpfTabela.fieldByName('C_LOC_REC').AsString);
       ExcedenteFranquiaLocacaoFaturaremNotaFiscal := TipoCheck(VpfTabela.fieldByName('C_LOC_EFN').AsString);
+      EnviarEmailAutomaticoQuandoProcessarLeitura:= TipoCheck(VpfTabela.fieldByName('C_EMA_PRO').AsString);
       EmitirNotaFaturamentoMensal := TipoCheck(VpfTabela.fieldByName('C_CON_NOT').AsString);
       UtilizarTabelaPreconaCotacao := TipoCheck(VpfTabela.fieldByName('C_COT_TPC').AsString);
       DescontoNosProdutodaCotacao := TipoCheck(VpfTabela.fieldByName('C_IND_DPC').AsString);

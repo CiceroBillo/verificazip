@@ -3380,7 +3380,7 @@ end;
 {******************************************************************************}
 procedure TdtRave.TesteDataConection;
 begin
-  ClientDataSet1.Open;
+  {ClientDataSet1.Open;
   ClientDataSet1.Insert;
   ClientDataSet1Codigo.AsInteger := 1;
   ClientDataSet1Nome.AsString := 'teste';
@@ -3392,7 +3392,7 @@ begin
   ClientDataSet1.Insert;
   ClientDataSet1Codigo.AsInteger := 3;
   ClientDataSet1Nome.AsString := 'teste 3';
-  ClientDataSet1.Post;
+  ClientDataSet1.Post; }
 
 end;
 

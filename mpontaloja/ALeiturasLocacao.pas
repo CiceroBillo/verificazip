@@ -352,9 +352,14 @@ begin
   begin
     FunContratos.CarDLeituraLocacao(VprDLeitura,LocacaoCODFILIAL.AsInteger,LocacaoSEQLEITURA.AsInteger);
     FunContratos.ProcessaContratoLocacao(VprDLeitura,BarraStatus);
-    dtRave := TdtRave.create(self);
-    dtRave.ImprimeExtratoLocacao(LocacaoCODFILIAL.AsInteger,LocacaoSEQLEITURA.AsInteger,false);
-    dtRave.free;
+    if not config.EnviarEmailAutomaticoQuandoProcessarLeitura then
+    begin
+      dtRave := TdtRave.create(self);
+      dtRave.ImprimeExtratoLocacao(LocacaoCODFILIAL.AsInteger,LocacaoSEQLEITURA.AsInteger,false);
+      dtRave.free;
+    end
+    else
+      FunContratos.EnviaLeituraLocacaoProcessadaEmail(VprDLeitura.CodFilial, VprDLeitura.SeqLeitura);
     AtualizaConsulta(true);
   end;
 end;

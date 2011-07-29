@@ -55,6 +55,12 @@ type
     MenuItem1: TMenuItem;
     ORCAMENTOROTEIROENTREGADATBLOQUEIO: TSQLTimeStampField;
     BBloquear: TBitBtn;
+    Label82: TLabel;
+    ERegiaoVenda: TRBEditLocaliza;
+    SpeedButton10: TSpeedButton;
+    Label83: TLabel;
+    ORCAMENTOROTEIROENTREGACODREGIAOVENDAS: TFMTBCDField;
+    ORCAMENTOROTEIROENTREGAC_NOM_REG: TWideStringField;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BFecharClick(Sender: TObject);
@@ -80,6 +86,7 @@ type
     procedure BGeraNotaClick(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
     procedure BBloquearClick(Sender: TObject);
+    procedure ERegiaoVendaFimConsulta(Sender: TObject);
   private
      procedure PosRoteiroEntregaItem(VpaCodfilial, VpaSeqRoteiro : integer);
      function ExcluiItemRoteiroEntrega(VpaCodfilial, VpaSeqRoteiro, VpaSeqOrcamento : integer):string;
@@ -210,6 +217,11 @@ begin
     VpaSelect.Add(' AND ORC.CODENTREGADOR = ' + IntToStr(ETransportadora.AInteiro));
   end;
 
+  if ERegiaoVenda.AInteiro <> 0 then
+  begin
+    VpaSelect.Add(' AND ORC.CODREGIAOVENDAS = ' + IntToStr(ERegiaoVenda.AInteiro));
+  end;
+
   case ESituacao.ItemIndex of
     0 : VpaSelect.Add(' AND ORC.DATFECHAMENTO IS NULL ');
     1 : VpaSelect.Add(' AND ORC.DATFECHAMENTO IS NOT NULL ');
@@ -239,9 +251,12 @@ procedure TFRoteiroEntrega.AtualizaConsulta;
 begin
   ORCAMENTOROTEIROENTREGA.Close;
   LimpaSQLTabela(ORCAMENTOROTEIROENTREGA);
-  AdicionaSQLTabela(ORCAMENTOROTEIROENTREGA,' select ORC.SEQORCAMENTOROTEIRO,  TRA.C_NOM_CLI, ORC.DATABERTURA, ORC.DATFECHAMENTO, ORC.CODENTREGADOR, ORC.DATBLOQUEIO ' +
-                                  ' from ORCAMENTOROTEIROENTREGA ORC, CADCLIENTES TRA ' +
-                                  ' WHERE ORC.CODENTREGADOR = TRA.I_COD_CLI ');
+  AdicionaSQLTabela(ORCAMENTOROTEIROENTREGA,' select ORC.SEQORCAMENTOROTEIRO,  TRA.C_NOM_CLI, ORC.DATABERTURA, ' +
+                                            ' ORC.DATFECHAMENTO, ORC.CODENTREGADOR, ORC.DATBLOQUEIO, ORC.CODREGIAOVENDAS, ' +
+                                            ' REG.C_NOM_REG ' +
+                                            ' from ORCAMENTOROTEIROENTREGA ORC, CADCLIENTES TRA, CADREGIAOVENDA REG ' +
+                                            ' WHERE ORC.CODENTREGADOR = TRA.I_COD_CLI ' +
+                                            ' AND ORC.CODREGIAOVENDAS = REG.I_COD_REG');
   AdicionaFiltros(ORCAMENTOROTEIROENTREGA.SQL);
   ORCAMENTOROTEIROENTREGA.sql.add('order by ORC.SEQORCAMENTOROTEIRO');
   ORCAMENTOROTEIROENTREGA.open;
@@ -354,6 +369,12 @@ end;
 
 {******************************************************************************}
 procedure TFRoteiroEntrega.EDatInicioExit(Sender: TObject);
+begin
+  AtualizaConsulta;
+end;
+
+{******************************************************************************}
+procedure TFRoteiroEntrega.ERegiaoVendaFimConsulta(Sender: TObject);
 begin
   AtualizaConsulta;
 end;
