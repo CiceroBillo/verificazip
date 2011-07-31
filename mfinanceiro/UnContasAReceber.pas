@@ -1992,7 +1992,8 @@ end;
 function TFuncoesContasAReceber.CriaContasaReceber(VpaDNovaCR : TRBDContasCR;var VpaResultado : String;VpaGravarRegistro : Boolean ):Boolean;
 begin
   VpaResultado := '';
-  if VpaDNovaCR.ValSinal >= VpaDNovaCR.ValTotal then
+  if (VpaDNovaCR.ValSinal >= VpaDNovaCR.ValTotal) and
+    not(VpaDNovaCR.IndDevolucao) then
   begin
     VpaDNovaCR.ValSinal := VpaDNovaCR.ValTotal;
     aviso('VALOR DO SINAL MAIOR QUE O VALOR DA PARCELA!!!'#13'Não será gerado financeiro porque o valor pago como sinal é maior que o valor das parcelas');
@@ -2025,7 +2026,8 @@ function TFuncoesContasAReceber.GravaContasAReceber(VpaDNovaCR : TRBDContasCR):s
 var
   VpfCreditoCliente : TList;
 begin
-  if VpaDNovaCR.ValSinal >= VpaDNovaCR.ValTotal then
+  if (VpaDNovaCR.ValSinal >= VpaDNovaCR.ValTotal) and
+    not(VpaDNovaCR.IndDevolucao) then
   begin
     exit;
   end;
