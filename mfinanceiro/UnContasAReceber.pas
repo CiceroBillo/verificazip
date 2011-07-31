@@ -695,6 +695,7 @@ var
 begin
   VpfDFormaPagamento := TRBDFormaPagamento.cria;
   CarDFormaPagamento(VpfDFormaPagamento,VpaDNovaCR.CodFrmPagto);
+  VpaDNovaCR.ValTotal := ArredondaDecimais(VpaDNovaCR.ValTotal,2);
 
   VpfValTotal := 0;
   VpfSequencial := 0;

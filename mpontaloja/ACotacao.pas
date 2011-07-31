@@ -294,6 +294,8 @@ type
     CProdutoSolda: TCheckBox;
     Label33: TLabel;
     EImpressaoEmbalagem: TCheckBox;
+    MImprimir: TPopupMenu;
+    GeraPDF1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FlagClick(Sender: TObject);
@@ -393,6 +395,7 @@ type
     procedure BRepresentadaClick(Sender: TObject);
     procedure ConsultaFraccaoFaccionista1Click(Sender: TObject);
     procedure CProdutoSoldaClick(Sender: TObject);
+    procedure GeraPDF1Click(Sender: TObject);
   private
     TeclaPressionada,
     VprPressionadoR,
@@ -782,6 +785,18 @@ begin
   FreeTObjectsList(VprCotacoesGerarNota);
   if VpfResultado <> '' then
     aviso(VpfREsultado);
+end;
+
+{******************************************************************************}
+procedure TFCotacao.GeraPDF1Click(Sender: TObject);
+begin
+  try
+    dtRave := TdtRave.create(self);
+    dtRave.VplArquivoPDF := varia.DiretorioSistema+'\ANEXOS\COTACAO\'+CadOrcamentoC_Nom_Cli.AsString+'.PDF';
+    dtRave.ImprimePedido(CadOrcamentoI_EMP_FIL.AsInteger,CadOrcamentoI_Lan_Orc.AsInteger,false);
+  finally
+    dtRave.free;
+  end;
 end;
 
 {******************************************************************************}

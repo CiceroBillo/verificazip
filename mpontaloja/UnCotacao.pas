@@ -5394,9 +5394,9 @@ begin
   for VpfLaco := 0 to VpaDCotacao.Produtos.Count - 1 do
   begin
     VpfDProdutoOrc := TRBDOrcProduto(VpaDCotacao.Produtos.items[VpfLaco]);
-    VpaDCotacao.ValTotal := VpaDCotacao.ValTotal + VpfDProdutoOrc.ValTotal;
-    VpaDCotacao.ValTotalProdutos := VpaDCotacao.ValTotalProdutos + VpfDProdutoOrc.ValTotal;
-    VpaDCotacao.ValTotalComDesconto := VpaDCotacao.ValTotalComDesconto + (VpfDProdutoOrc.ValTotal - ((VpfDProdutoOrc.ValTotal * VpfDProdutoOrc.PerDesconto)/100));
+    VpaDCotacao.ValTotal := VpaDCotacao.ValTotal + ArredondaDecimais(VpfDProdutoOrc.ValTotal,2);
+    VpaDCotacao.ValTotalProdutos := VpaDCotacao.ValTotalProdutos + ArredondaDecimais(VpfDProdutoOrc.ValTotal,2);
+    VpaDCotacao.ValTotalComDesconto := VpaDCotacao.ValTotalComDesconto + ArredondaDecimais((VpfDProdutoOrc.ValTotal - ((VpfDProdutoOrc.ValTotal * VpfDProdutoOrc.PerDesconto)/100)),2);
     VpaDCotacao.QtdProduto := VpaDCotacao.QtdProduto + VpfDProdutoOrc.QtdProduto;
     VpfQtdBaixado := VpfQtdBaixado + VpfDProdutoOrc.QtdBaixadoNota;
     VpfDProdutoOrc.ValCustoTotal := FunProdutos.CalculaValorPadrao(VpfDProdutoOrc.UM,VpfDProdutoOrc.UMOriginal,VpfDProdutoOrc.ValCustoUnitario,IntToStr(VpfDProdutoOrc.SeqProduto)) * VpfDProdutoOrc.QtdProduto;
@@ -5406,8 +5406,8 @@ begin
 
   for VpfLaco := 0 to VpaDCotacao.Servicos.Count - 1 do
   begin
-    VpaDCotacao.ValTotal := VpaDCotacao.ValTotal + TRBDOrcServico(VpaDCotacao.Servicos.Items[VpfLaco]).ValTotal;
-    VpaDCotacao.ValTotalComDesconto := VpaDCotacao.ValTotalComDesconto + TRBDOrcServico(VpaDCotacao.Servicos.Items[VpfLaco]).ValTotal;
+    VpaDCotacao.ValTotal := VpaDCotacao.ValTotal + ArredondaDecimais(TRBDOrcServico(VpaDCotacao.Servicos.Items[VpfLaco]).ValTotal,2);
+    VpaDCotacao.ValTotalComDesconto := VpaDCotacao.ValTotalComDesconto + ArredondaDecimais(TRBDOrcServico(VpaDCotacao.Servicos.Items[VpfLaco]).ValTotal,2);
   end;
   VpaDCotacao.ValTotalLiquido := VpaDCotacao.ValTotal;
 
