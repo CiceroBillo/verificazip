@@ -103,6 +103,10 @@ type
     CadProdutosC_SIT_TRI: TWideStringField;
     CadProdutosAliquotaICMS: TFloatField;
     CadProdutosC_REC_PRE: TWideStringField;
+    Label10: TLabel;
+    SpeedButton4: TSpeedButton;
+    Label11: TLabel;
+    Ecor: TRBEditLocaliza;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure CProAtiClick(Sender: TObject);
@@ -135,7 +139,7 @@ type
     procedure GProdutosDrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
     procedure FotoDblClick(Sender: TObject);
-    procedure PanelColor8Click(Sender: TObject);
+    procedure EcorFimConsulta(Sender: TObject);
   private
     { Private declarations }
     VprTeclaPresionada : Boolean;
@@ -320,8 +324,11 @@ begin
     if (puSomenteMateriaPrima in varia.PermissoesUsuario) and (Varia.CodClassificacaoMateriaPrima <> '') then
       VpaSelect.Add('AND CLA.C_COD_CLA like '''+Varia.CodClassificacaoMateriaPrima+'%''');
 
+//  if Ecliente.AInteiro <> 0 then
+    VpaSelect.add(' and PRE.I_COD_CLI = '+ IntToStr(ECliente.Ainteiro));
 
-  VpaSelect.add(' and PRE.I_COD_CLI = '+ IntToStr(ECliente.Ainteiro));
+    if Ecor.AInteiro <> 0 then
+      VpaSelect.add(' and QTD.I_COD_COR = '+ IntToStr(ECor.Ainteiro));
 end;
 
 {(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
@@ -462,8 +469,10 @@ begin
   end;
 end;
 
-procedure TFConsultaPrecosProdutos.PanelColor8Click(Sender: TObject);
+{******************************************************************************}
+procedure TFConsultaPrecosProdutos.EcorFimConsulta(Sender: TObject);
 begin
+  AtualizaConsulta;
 end;
 
 {************** verifica se existe a condicao de pagamento ********************}

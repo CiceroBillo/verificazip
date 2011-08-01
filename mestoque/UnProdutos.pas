@@ -3000,13 +3000,25 @@ begin
   LocalizaCadTabelaPreco(Tabela, VpaCodTabela);
   if not Tabela.Eof then
   begin
-    AdicionaSQLAbreTabela(ProCadastro,'SELECT *'+
+    LimpaSQLTabela(ProCadastro);
+    AdicionaSQLTabela(ProCadastro,'SELECT *'+
                                       ' FROM MOVTABELAPRECO'+
                                       ' WHERE I_SEQ_PRO = '+IntToStr(VpaDProduto.SeqProduto)+
                                       ' AND I_COD_EMP = '+IntToStr(Varia.CodigoEmpresa)+
                                       ' AND I_COD_TAB = '+IntToStr(VpaCodTabela)+
-                                      ' AND I_COD_CLI = 0 '+
-                                      ' AND I_COD_TAM = 0');
+                                      ' AND I_COD_CLI = 0');
+   if VpaCodTamanho <> 0 then
+     ProCadastro.SQL.Add(' AND I_COD_TAM = ' + IntToStr(VpaCodTamanho))
+   else
+     ProCadastro.SQL.Add(' AND I_COD_TAM = 0 ');
+
+   if VpaCodCor <> 0 then
+     ProCadastro.SQL.Add(' AND I_COD_COR = ' + IntToStr(VpaCodCor))
+   else
+     ProCadastro.SQL.Add(' AND I_COD_COR = 0');
+
+    ProCadastro.Open;
+
     if ProCadastro.Eof then
       ProCadastro.Insert
     else
@@ -3168,11 +3180,9 @@ end;
 function TFuncoesProduto.AlteraPrateleiraProduto(VpaSeqProduto: Integer;
   VpaDesPrateleira: String): String;
 begin
-  AdicionaSQLAbreTabela(ProCadastro,'Select C_PRA_PRO from CADPRODUTOS '+
-                                    ' Where I_SEQ_PRO = '+IntToStr(VpaSeqProduto) );
-  ProCadastro.Edit;
-  ProCadastro.FieldByName('C_PRA_PRO').AsString := VpaDesPrateleira;
-  ProCadastro.Post;
+  ExecutaComandoSql(ProCadastro, 'UPDATE CADPRODUTOS SET C_PRA_PRO = '''+ VpaDesPrateleira + ''''+
+                         ' Where I_SEQ_PRO = '+IntToStr(VpaSeqProduto));
+
   result := ProCadastro.AMensagemErroGravacao;
   ProCadastro.Close;
 end;

@@ -135,6 +135,7 @@ type
     procedure EComposicaoRetorno(VpaColunas: TRBColunasLocaliza);
     procedure ETamanhoExit(Sender: TObject);
     procedure ECorExit(Sender: TObject);
+    procedure EPrateleiraExit(Sender: TObject);
   private
     VprResevaEstoque : Boolean;
     VprUnidadePadrao : string;
@@ -186,6 +187,7 @@ begin
    PCodBarrasCor.Visible := config.MostrarCodBarrasCorNoAcertoEstoque;
    CLeitorSemFio.Checked := Config.LeitorSemFioNoAcertodeEstoque;
    PTecnico.Visible := config.MostrarTecnicoNoAcertodeEstoque;
+   EPrateleira.ACampoObrigatorio:= Config.PrateleiraCampoObrigatorioAcertoEstoque;
    AjustaTamanhoTela;
    BotaoCadastrar2.Click;
 end;
@@ -438,7 +440,11 @@ end;
 procedure TFAcertoEstoque.BotaoGravar2Click(Sender: TObject);
 var
   VpfResultado : string;
+  VpfDProduto: TRBDProduto;
+  VpfCodTamanho, VpfCodCor: Integer;
 begin
+  VpfCodTamanho:= ETamanho.AInteiro;
+  VpfCodCor:= ecor.AInteiro;
   if DadosValidos then
   begin
     if ETipOperacao.Text = 'S' then
@@ -462,6 +468,17 @@ begin
       BotaoCadastrar2.Click
     else
       VprOperacao := ocConsulta;
+
+    if VpfResultado = '' then
+    begin
+      VpfDProduto :=  TRBDProduto.cria;
+      VpfDProduto.CodEmpresa := Varia.CodigoEmpresa;
+      VpfDProduto.CodEmpFil := Varia.CodigoEmpFil;
+      VpfDProduto.SeqProduto:= CadProduto.fieldByname('I_SEQ_PRO').AsInteger;
+      FunProdutos.CarDProduto(VpfDProduto);
+      VpfResultado:= FunProdutos.AdicionaProdutoNaTabelaPreco(1101, VpfDProduto, VpfCodTamanho, VpfCodCor);
+    end;
+
     if VpfResultado <> '' then
       aviso(VpfResultado);
   end;
@@ -719,6 +736,14 @@ end;
 procedure TFAcertoEstoque.ECorExit(Sender: TObject);
 begin
   EQtdReservada.AValor:= RQtdEstoqueReservada(VprSeqProduto, ECor.AInteiro, ETamanho.AInteiro);
+end;
+
+{******************************************************************************}
+procedure TFAcertoEstoque.EPrateleiraExit(Sender: TObject);
+begin
+  if EPrateleira.ACampoObrigatorio then
+    if VprOperacao = ocInsercao then
+       ValidaGravacao1.execute ;
 end;
 
 {******************************************************************************}

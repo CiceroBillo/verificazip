@@ -790,7 +790,10 @@ begin
                   CFundoPerdido.Checked := true;
                   Checkbox1.Caption := 'Somente Produtos que Possuem Qtd em Estoque';
                   CheckBox1.Checked := false;
-                end;
+                end
+                else
+                if (VpaNomRelatorio = 'VALOR FRETE NOTA X VALOR CONHECIMENTO FRETE') then
+                  AlterarVisibleDet([PFilial,PTransportadora,PPeriodo],true);
 end;
 
 
@@ -1176,6 +1179,9 @@ begin
             else
               if (VprNomRelatorio = 'CONSUMO PRODUTO PRODUCAO') then
                 FunRave.ImprimeConsumoProdutoProducao(EFilial.AInteiro,VprSeqProduto,EProduto.Text,LProduto.Caption, ECodClassifcacao.Text, LNomClassificacao.Caption,LFilial.Caption, VprCaminhoRelatorio,CDataIni.Date,CdataFim.Date,CheckBox1.Checked,EOrdemRelatorio.ItemIndex,CFundoPerdido.Checked)
+            else
+              if (VprNomRelatorio = 'VALOR FRETE NOTA X VALOR CONHECIMENTO FRETE') then
+                FunRave.ImprimeValorFreteNotaXValorConhecimento(EFilial.AInteiro, ETransportadora.AInteiro,LTransportadora.Caption,LFilial.Caption,VprCaminhoRelatorio, CDataIni.Date,CdataFim.Date)
             else
               if (VprNomRelatorio = 'TESTE') then
                 dtRave.TesteDataConection;

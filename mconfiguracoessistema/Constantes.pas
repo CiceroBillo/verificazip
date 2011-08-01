@@ -704,6 +704,7 @@ type
     RepetirNomeProdutonaConsulta : Boolean;
     ManterValordeCustoMaisAlto :Boolean;
     CodigodeBarraCodCorETamanhoZero: Boolean;
+    PrateleiraCampoObrigatorioAcertoEstoque: Boolean;
 
 //-------------------Financeiro
     TEF : Boolean;
@@ -2120,6 +2121,7 @@ begin
         QuandoAlteraClassificacaodoProdutoGerarNovoCodigo := TipoCheck( VpfTabela.fieldByName('C_ALT_GCA').AsString);
         RepetirNomeProdutonaConsulta := TipoCheck( VpfTabela.fieldByName('C_SAL_NMC').AsString);
         ManterValordeCustoMaisAlto := TipoCheck( VpfTabela.fieldByName('C_CUS_PPA').AsString);
+        PrateleiraCampoObrigatorioAcertoEstoque:= TipoCheck( VpfTabela.fieldByName('C_PRA_OBR').AsString);
       end;
     end;
     if not Config.EstoqueCentralizado then

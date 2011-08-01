@@ -366,7 +366,7 @@ begin
 
   CadProdutos.sql.add(' order by PRO.C_NOM_PRO, QTD.I_COD_COR, QTD.I_COD_TAM');
   GravaEstatisticaConsulta(nil,CadProdutos,varia.CodigoUsuario,Self.name,NomeModulo,config.UtilizarPercentualConsulta);
-//  CadProdutos.SQL.SaveToFile('produtos.sql');
+ // CadProdutos.SQL.SaveToFile('c:\produtos.sql');
   CadProdutos.Open;
   if VpaPosicionar then
   try

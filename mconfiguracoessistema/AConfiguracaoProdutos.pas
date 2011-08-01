@@ -439,6 +439,8 @@ type
     CFGC_UNI_MIL: TWideStringField;
     DBCheckBox14: TDBCheckBox;
     CFGC_COD_BAR: TWideStringField;
+    DBCheckBox16: TDBCheckBox;
+    CFGC_PRA_OBR: TWideStringField;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure CFGAfterPost(DataSet: TDataSet);

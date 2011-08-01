@@ -580,8 +580,11 @@ begin
     else
     begin
       AtualizaBarraStatus('Carregando as duplicatas a vencer do cliente "'+Titulos.FieldByName('C_NOM_CLI').AsString+'"');
-      VpaHTML.add('<P> Informamos através desta que dentro dos próximos 02 dias estarão vencendo os <br>');
-      VpaHTML.add('seguintes compromissos financeiros: ');
+{      VpaHTML.add('<P> Informamos através desta que dentro dos próximos 02 dias estarão vencendo os <br>');
+Alterado a descricao pois o sistema envia todas as duplicatas com mais de 2 dias e nossos
+clientes estavao reclamando desta mensagem}
+      VpaHTML.add('<P> Informamos através desta os próximos compromissos financeiros: <br>');
+//      VpaHTML.add('seguintes compromissos financeiros: ');
       VpaHTML.add('<br>');
       VpaHTML.add('<br>');
     end;

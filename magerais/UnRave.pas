@@ -103,6 +103,7 @@ type
       procedure DefineTabelaContratoAssinados(VpaObjeto : TObject);
       procedure DefineTabelaCreditoCliente(VpaObjeto : TObject);
       procedure DefineTabelaHistoricoConsumoProdutoProducao(VpaObjeto: TObject);
+      procedure DefineTabelaValorFreteXValorConhecimento(VpaObjeto: TObject);
       procedure ImprimeProdutoPorClassificacao(VpaObjeto : TObject);
       procedure ImprimeProdutosFaturadoPorPeriodo(VpaObjeto : TObject);
       procedure SalvaTabelaProdutosPorCoreTamanho(VpaDProduto :TRBDProdutoRave);
@@ -163,6 +164,7 @@ type
       procedure ImprimeCabecalhoCreditoCliente;
       procedure ImprimeCabecalhoPrazoEntregaRealProdutos;
       procedure ImprimeCabecalhoHistoricoConsumoProdutoProducao;
+      procedure ImprimeCabecalhoValorFreteNotaXValorConhecimento;
       procedure ImprimeTituloUF(VpaCodUf : String);
       procedure ImprimeTituloClassificacao(VpaNiveis : TList;VpaTudo : boolean);
       procedure ImprimetituloPlanoContas(VpaNiveis : TList;VpaTudo : boolean);
@@ -183,6 +185,7 @@ type
       procedure ImprimeRelProdutosComDefeito(VpaObjeto : TObject);
       procedure ImprimeRelResumoCaixas(VpaObjeto : TObject);
       procedure ImprimeRelConsumoProdutoProducao(VpaObjeto : TObject);
+      procedure ImprimeRelValorFreteNotaXValorConhecimento(VpaObjeto: TObject);
       function RProdutoRomaneio(VpaRomaneios : TList; VpaDProCotacao : TRBDOrcProduto) : TRBDOrcProduto;
       procedure PreparaRomaneioCotacoes(VpaCotacoes, VpaRomaneio : TList);
       procedure OrdenaRomaneioCotacoes(VpaRomaneio : TList);
@@ -333,6 +336,7 @@ type
       procedure ImprimeCreditoCliente(VpaCaminho : string);
       procedure ImprimeHistoricoConsumoProdutoProducao(VpaSeqProduto: Integer; VpaCodProduto, VpaNomProduto, VpaCodClassificacao, VpaNomClassificacao, VpaCaminhoRelatorio:String;VpaDatInicio,VpaDatFim : TDateTime);
       procedure ImprimeConsumoProdutoProducao(VpaCodFilial : Integer; VpaSeqProduto: Integer; VpaCodProduto, VpaNomProduto, VpaCodClassificacao, VpaNomClassificacao, VpaNomFilial,VpaCaminhoRelatorio:String;VpaDatInicio,VpaDatFim : TDateTime;VpaSomenteComQtdEstoque : Boolean;VpaOrdemRelatorio:Integer;VpaSomenteComQtdConsumida : Boolean);
+      procedure ImprimeValorFreteNotaXValorConhecimento(VpaCodFilial, VpaCodTransportadora: Integer; VpaNomTransportadora, VpaNomFilial, VpaCaminhoRelatorio: String; VpaDatInicio,VpaDatFim : TDateTime);
   end;
 
 
@@ -887,6 +891,28 @@ begin
      SetTab(NA,pjRight,2.5,0.2,BOXLINEALL,0); //Val Custo
      SetTab(NA,pjRight,1,0.2,BOXLINEALL,0); //%Produto
      SaveTabs(1);
+   end;
+end;
+
+{******************************************************************************}
+procedure TRBFunRave.DefineTabelaValorFreteXValorConhecimento(
+  VpaObjeto: TObject);
+begin
+  with RVSystem.BaseReport do begin
+     clearTabs;
+     SetTab(1,pjRight,2.0,0.1,BOXLINENONE,0); //nota
+     SetTab(NA,pjRight,2.5,0,BOXLINENONE,0); //Valor Frete
+     SetTab(6,pjCenter,3.5,0,BOXLINENONE,0); //Numero conhecimento
+     SetTab(NA,pjCenter,3.5,0.2,BOXLINENONE,0); // Valor Conhecimento
+     SetTab(NA,pjCenter,3,0.2,BOXLINENONE,0); // Diferenca
+     SetTab(NA+ 1,pjLeft,6,0.2,BOXLINENONE,0); // Transportadora
+     SaveTabs(1);
+
+     ClearTabs;
+     SetTab(NA,pjRight,2.5,0,BOXLINENONE,0); //Total Valor Frete
+     SetTab(NA,pjCenter,3.5,0.2,BOXLINENONE,0); // Total Valor Conhecimento
+     SetTab(NA,pjCenter,3,0.2,BOXLINENONE,0); // Total Diferenca
+     SaveTabs(2);
    end;
 end;
 
@@ -2640,6 +2666,24 @@ begin
 end;
 
 {******************************************************************************}
+procedure TRBFunRave.ImprimeCabecalhoValorFreteNotaXValorConhecimento;
+begin
+    with RVSystem.BaseReport do
+    begin
+      RestoreTabs(1);
+      bold := true;
+      PrintTab('Num Nota');
+      PrintTab('Valor Frete');
+      PrintTab('Num Conhecimento');
+      PrintTab('Val Conhecimento ');
+      PrintTab('Diferenca ');
+      PrintTab('Transportadora ');
+      bold := false;
+      newline;
+    end;
+end;
+
+{******************************************************************************}
 procedure TRBFunRave.ImprimeCabecalhoAmostrasPorDesenvolverdor;
 var
   Vpflaco : Integer;
@@ -2859,7 +2903,6 @@ begin
     PrintTab('Total  ');
     bold := false;
   end;
-
 end;
 
 {******************************************************************************}
@@ -8141,6 +8184,31 @@ end;
 
 
 {******************************************************************************}
+procedure TRBFunRave.ImprimeRelValorFreteNotaXValorConhecimento(VpaObjeto: TObject);
+var
+  VpfValorDiferenca: Double;
+begin
+  with RVSystem.BaseReport do
+  begin
+    while not Tabela.Eof do
+    begin
+      VpfValorDiferenca:= 0;
+      PrintTab(Tabela.FieldByName('I_NRO_NOT').AsString);
+      PrintTab(FormatFloat('#,###,###,##0.00', Tabela.FieldByName('N_VLR_FRE').AsFloat)+' ');
+      PrintTab(Tabela.FieldByName('NUMCONHECIMENTO').AsString);
+      PrintTab(FormatFloat('#,###,###,##0.00', Tabela.FieldByName('VALCONHECIMENTO').AsFloat)+' ');
+      VpfValorDiferenca:= Tabela.FieldByName('N_VLR_FRE').AsFloat - Tabela.FieldByName('VALCONHECIMENTO').AsFloat;
+      PrintTab(FormatFloat('#,###,###,##0.00', VpfValorDiferenca)+' ');
+      PrintTab(Tabela.FieldByName('C_NOM_CLI').AsString);
+      Tabela.Next;
+      NewLine;
+      if LinesLeft<=1 Then
+        NewPage;
+    end;
+  end;
+end;
+
+{******************************************************************************}
 procedure TRBFunRave.ImprimeRelCartuchosPesadosPorCelula(VpaObjeto: TObject);
 var
   VpfDCelula, VpfDCelulaT: TRBDRCelulaTrabalho;
@@ -9255,6 +9323,7 @@ begin
       40 : ImprimeCabecalhoProdutoFaturadosSTComTributacao;
       44 : ImprimeCabecalhoAnaliseRenovacaoContrato;
       46 : ImprimeCabecalhoCreditoCliente;
+      49 : ImprimeCabecalhoValorFreteNotaXValorConhecimento;
      end;
    end;
 end;
@@ -12139,5 +12208,47 @@ begin
   RvSystem.execute;
 end;
 
+{******************************************************************************}
+procedure TRBFunRave.ImprimeValorFreteNotaXValorConhecimento(VpaCodFilial,
+  VpaCodTransportadora: Integer; VpaNomTransportadora, VpaNomFilial,
+  VpaCaminhoRelatorio: String; VpaDatInicio, VpaDatFim: TDateTime);
+begin
+  RvSystem.Tag := 49;
+  LimpaSQlTabela(Tabela);
+  AdicionaSqltabela(Tabela,'SELECT CON.NUMCONHECIMENTO, CON.VALCONHECIMENTO, ' +
+                           ' CAD.I_NRO_NOT, CAD.N_VLR_FRE, TRA.C_NOM_CLI ' +
+                           ' FROM CONHECIMENTOTRANSPORTE CON, CADNOTAFISCAIS CAD, CADCLIENTES TRA ' +
+                           ' WHERE CON.SEQNOTASAIDA = CAD.I_SEQ_NOT ' +
+                           ' AND CAD.I_COD_TRA = TRA.I_COD_CLI' +
+                           ' AND CON.CODFILIALNOTA = CAD.I_EMP_FIL '+
+                           SQLTextoDataEntreAAAAMMDD('CON.DATCONHECIMENTO', VpaDatInicio, VpaDatFim, true));
+  if VpaCodfilial <> 0 then
+    AdicionaSqlTabela(Tabela,' and CON.CODFILIALNOTA = '+InttoStr(VpaCodFilial));
+
+  if VpaCodTransportadora <> 0 then
+    AdicionaSqlTabela(Tabela,'And TRA.I_COD_CLI = '+InttoStr(VpaCodTransportadora));
+
+  AdicionaSqlTabela(Tabela,' ORDER BY CON.NUMCONHECIMENTO, TRA.I_COD_CLI');
+  Tabela.open;
+
+  rvSystem.onBeforePrint := DefineTabelaValorFreteXValorConhecimento;
+  rvSystem.onNewPage := ImprimeCabecalho;
+  rvSystem.onPrintFooter := Imprimerodape;
+  rvSystem.onPrint := ImprimeRelValorFreteNotaXValorConhecimento;
+
+  VprCaminhoRelatorio := VpaCaminhoRelatorio;
+  VprNomeRelatorio := 'Valor Frete Nota X Valor Conhecimento Frete';
+  VprCabecalhoEsquerdo.Clear;
+  VprCabecalhoEsquerdo.add('Filial : ' +VpaNomFilial);
+
+  VprCabecalhoDireito.Clear;
+  if VpaCodTransportadora <> 0  then
+    VprCabecalhoEsquerdo.add('Transportadora : ' +VpaNomTransportadora);
+
+  VprCabecalhoDireito.add('Periodo : ' + DateToStr(VpaDatInicio) + ' Ate ' + DateToStr(VpaDatFim));
+
+  ConfiguraRelatorioPDF;
+  RvSystem.execute;
+end;
 
 end.
