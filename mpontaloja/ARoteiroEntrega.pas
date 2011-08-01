@@ -256,7 +256,7 @@ begin
                                             ' REG.C_NOM_REG ' +
                                             ' from ORCAMENTOROTEIROENTREGA ORC, CADCLIENTES TRA, CADREGIAOVENDA REG ' +
                                             ' WHERE ORC.CODENTREGADOR = TRA.I_COD_CLI ' +
-                                            ' AND ORC.CODREGIAOVENDAS = REG.I_COD_REG');
+                                            ' AND ' + SQLTextoRightJoin('ORC.CODREGIAOVENDAS', 'REG.I_COD_REG'));
   AdicionaFiltros(ORCAMENTOROTEIROENTREGA.SQL);
   ORCAMENTOROTEIROENTREGA.sql.add('order by ORC.SEQORCAMENTOROTEIRO');
   ORCAMENTOROTEIROENTREGA.open;

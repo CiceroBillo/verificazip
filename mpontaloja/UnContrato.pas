@@ -98,7 +98,7 @@ Type TRBFuncoesContrato = class(TRBLocalizaContrato)
     procedure ImprimirBoleto(VpaCodFilial,VpaLanOrcamento, VpaCodCliente : Integer);
     function ReajustaContrato(VpaAno, VpaMes: Integer; VpaIndice: Double): String;
     function EnviaMedidorEmail(VpaCodFilial, VpaSeqContrato : Integer) : String;
-    function EnviaLeituraLocacaoProcessadaEmail(VpaCodFilial, VpaSeqLeitura : Integer):string;
+    function EnviaLeituraLocacaoProcessadaEmail(VpaCodFilial, VpaSeqLeitura, VpaCodCliente : Integer):string;
     function RNomTipoContrato(VpaCodTipoContrato : Integer) : String;
     function CarDUltimaLeituraLocacaoCliente(VpaCodFilial, vpaCodSeQContrato,VpaCodCliente: Integer):TRBDLeituraLocacaoCorpo;
     function AtualizaMedidoresContrato(VpaDLeitura : TRBDLeituraLocacaoCorpo):string;
@@ -1696,13 +1696,15 @@ begin
     end;
 
     //Boletos
+
     VpfNomArquivo:= '';
 
     AdicionaSQLAbreTabela(Tabela,'Select MOV.I_EMP_FIL, MOV.I_LAN_REC, MOV.I_NRO_PAR from MOVCONTASARECEBER MOV, CADCONTASARECEBER CAD '+
                              ' Where CAD.I_EMP_FIL = '+IntToStr(VpaDLeitura.CodFilial)+
                              ' and CAD.I_LAN_ORC = '+IntToStr(VpaDLeitura.LanOrcamento)+
                              ' AND CAD.I_EMP_FIL = MOV.I_EMP_FIL ' +
-                             ' AND CAD.I_LAN_REC = MOV.I_LAN_REC ');
+                             ' AND CAD.I_LAN_REC = MOV.I_LAN_REC ' +
+                             ' AND MOV.I_COD_BAN IS NOT NULL');
     while not Tabela.Eof do
     begin
       VpfNomArquivo:= '';
@@ -2264,7 +2266,7 @@ begin
 end;
 
 {******************************************************************************}
-function TRBFuncoesContrato.EnviaLeituraLocacaoProcessadaEmail(VpaCodFilial, VpaSeqLeitura: Integer): string;
+function TRBFuncoesContrato.EnviaLeituraLocacaoProcessadaEmail(VpaCodFilial, VpaSeqLeitura, VpaCodCliente: Integer): string;
 var
   VpfDLeitura : TRBDLeituraLocacaoCorpo;
   Vpfbmppart: TIdAttachmentFile;
@@ -2273,10 +2275,13 @@ var
   VpfChar : Char;
 begin
   result := '';
+  VprDCliente:= TRBDCliente.cria;
+  VprDCliente.CodCliente:= VpaCodCliente;
+  FunClientes.CarDCliente(VprDCliente);
   if not ExisteArquivo(varia.PathVersoes+'\efi.jpg') then
     result := 'Falta arquivo "'+varia.PathVersoes+'\efi.jpg'+'"'
   else
-    if VprDCliente.DesEmail = '' then
+    if (VprDCliente.DesEmail = '') and (VprDCliente.DesEmailNfe = '') then
       result := 'E-MAIL DO CLIENTE NÃO PREENCHIDO!!!'#13'Falta preencher o e-mail do cliente.'
     else
       if not ExisteArquivo(varia.PathVersoes+'\'+inttoStr(VpaCodFilial)+'.jpg') then

@@ -76,6 +76,7 @@ type
     PopupMenu1: TPopupMenu;
     MarcaContratocomoProcessado1: TMenuItem;
     BEnviarEmailCliente: TBitBtn;
+    LocacaoI_COD_CLI: TFMTBCDField;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BFecharClick(Sender: TObject);
@@ -254,7 +255,7 @@ begin
   Locacao.Sql.Clear;
   Locacao.Sql.add('SELECT LOC.CODFILIAL,LOC.SEQLEITURA, LOC.DATDIGITACAO,LOC.MESLOCACAO, LOC.ANOLOCACAO, LOC.DATLEITURA, '+
                   ' LOC.QTDCOPIA, LOC.QTDEXCEDENTE, LOC.VALTOTAL,LOC.VALTOTALDESCONTO, LOC.DATPROCESSAMENTO, LOC.LANORCAMENTO, '+
-                  ' CLI.C_NOM_CLI '+
+                  ' CLI.C_NOM_CLI, CLI.I_COD_CLI '+
                   ' FROM LEITURALOCACAOCORPO LOC, CADCLIENTES CLI '+
                   ' Where LOC.CODCLIENTE = CLI.I_COD_CLI');
   AdicionaFiltros(Locacao.Sql);
@@ -359,7 +360,7 @@ begin
       dtRave.free;
     end
     else
-      FunContratos.EnviaLeituraLocacaoProcessadaEmail(VprDLeitura.CodFilial, VprDLeitura.SeqLeitura);
+      FunContratos.EnviaLeituraLocacaoProcessadaEmail(VprDLeitura.CodFilial, VprDLeitura.SeqLeitura, VprDLeitura.CodCliente);
     AtualizaConsulta(true);
   end;
 end;
@@ -424,7 +425,7 @@ procedure TFLeiturasLocacao.BEnviarEmailClienteClick(Sender: TObject);
 var
   VpfResultado : String;
 begin
-  VpfResultado := FunContratos.EnviaLeituraLocacaoProcessadaEmail(LocacaoCODFILIAL.AsInteger,LocacaoSEQLEITURA.AsInteger);
+  VpfResultado := FunContratos.EnviaLeituraLocacaoProcessadaEmail(LocacaoCODFILIAL.AsInteger,LocacaoSEQLEITURA.AsInteger, LocacaoI_COD_CLI.AsInteger);
   if VpfREsultado <> '' then
     aviso(VpfREsultado);
 end;
