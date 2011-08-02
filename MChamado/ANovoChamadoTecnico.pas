@@ -122,6 +122,7 @@ type
     CEsticar: TCheckBox;
     VisualizadorImagem: TVisualizadorImagem;
     BitBtn1: TBitBtn;
+    BEnviarEmailCliente: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BGravarClick(Sender: TObject);
@@ -170,6 +171,7 @@ type
     procedure BCopiarImagemClick(Sender: TObject);
     procedure CEsticarClick(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
+    procedure BEnviarEmailClienteClick(Sender: TObject);
   private
     { Private declarations }
     VprAcao : Boolean;
@@ -667,6 +669,7 @@ begin
   BImprimir.Enabled := VpaEstado;
   BAlteraEstagio.Enabled := VpaEstado;
   BEmailTecnico.Enabled := VpaEstado;
+  BEnviarEmailCliente.Enabled := VpaEstado;
 end;
 
 {******************************************************************************}
@@ -884,6 +887,18 @@ begin
   end;
   VpfResultado := FunChamado.EnviaEmailChamado(VprDChamado,VprDCliente,FunChamado.REmailTecnico(VprDChamado.CodTecnico));
   if VpfResultado <> '' then
+    aviso(VpfREsultado);
+end;
+
+{******************************************************************************}
+procedure TFNovoChamado.BEnviarEmailClienteClick(Sender: TObject);
+var
+  VpfResultado : String;
+begin
+  VprDCliente.CodCliente:= ECliente.AInteiro;
+  FunClientes.CarDCliente(VprDCliente);
+  VpfResultado := FunChamado.EnviaEmailChamadoCliente(VprDChamado, VprDCliente);
+  if VpfREsultado <> '' then
     aviso(VpfREsultado);
 end;
 

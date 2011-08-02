@@ -135,6 +135,8 @@ type
     ImprimirSolicitacaoProducao1: TMenuItem;
     N5: TMenuItem;
     ImprimeProdutosPendentesaProduzir1: TMenuItem;
+    BEnviarEmailCliente: TBitBtn;
+    ChamadoTecnicoI_COD_CLI: TFMTBCDField;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BCadastrarClick(Sender: TObject);
@@ -184,6 +186,7 @@ type
     procedure ConsultarSolicitao1Click(Sender: TObject);
     procedure ImprimirSolicitacaoProducao1Click(Sender: TObject);
     procedure ImprimeProdutosPendentesaProduzir1Click(Sender: TObject);
+    procedure BEnviarEmailClienteClick(Sender: TObject);
   private
     { Private declarations }
     VprOrdem : String;
@@ -222,7 +225,7 @@ uses APrincipal, Constantes, FunData, FunSql, ANovoChamadoTecnico, UnCrystal, Co
   AAlteraEstagioChamado, ANovaCotacao, UnCotacao, funObjeto, UnProposta,
   AAgendaChamados, AEfetuarPesquisaSatisfacao, ANovaProposta,
   ABaixaProdutosChamado, AConsultaChamadoParcial, APropostasCliente, dmRave,
-  ANovaSolicitacaoCompra, ASolicitacaoCompras;
+  ANovaSolicitacaoCompra, ASolicitacaoCompras, UnClientes;
 
 {$R *.DFM}
 
@@ -316,7 +319,7 @@ begin
   ChamadoTecnico.Sql.clear;
   ChamadoTecnico.Sql.add('select  CHA.CODFILIAL, CHA.NUMCHAMADO, CHA.DATCHAMADO, CHA.DATPREVISAO, CHA.NOMSOLICITANTE, '+
                          ' CHA.VALCHAMADO, CHA.VALDESLOCAMENTO, CHA.CODESTAGIO, CHA.LANORCAMENTO, CHA.CODTECNICO, '+
-                         ' CLI.C_NOM_CLI, '+
+                         ' CLI.C_NOM_CLI, CLI.I_COD_CLI, '+
                          ' TEC.NOMTECNICO, '+
                          ' USU.C_NOM_USU, '+
                          ' EST.NOMEST, EST.INDFIN,  '+
@@ -984,6 +987,23 @@ end;
 procedure TFChamadoTecnico.BDataClick(Sender: TObject);
 begin
   GraficoEstagio;
+end;
+
+{******************************************************************************}
+procedure TFChamadoTecnico.BEnviarEmailClienteClick(Sender: TObject);
+var
+  VpfResultado : String;
+  VpfDCliente: TRBDCliente;
+  VpfDChamado: TRBDChamado;
+begin
+  VpfDCliente:= TRBDCliente.cria;
+  VpfDCliente.CodCliente:= ChamadoTecnicoI_COD_CLI.AsInteger;
+  FunClientes.CarDCliente(VpfDCliente);
+  VpfDChamado:= TRBDChamado.cria;
+  FunChamado.CarDChamado(ChamadoTecnicoCODFILIAL.AsInteger, ChamadoTecnicoNUMCHAMADO.AsInteger, VpfDChamado);
+  VpfResultado := FunChamado.EnviaEmailChamadoCliente(VpfDChamado, VpfDCliente);
+  if VpfREsultado <> '' then
+    aviso(VpfREsultado);
 end;
 
 {******************************************************************************}

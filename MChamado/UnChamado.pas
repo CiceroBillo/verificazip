@@ -58,6 +58,10 @@ Type TRBFuncoesChamado = class(TRBLocalizaChamado)
     function GravaDChamadoProdutoExtra(VpaDChamado : TRBDChamado):string;
     function BaixaEstoqueBaixaParcial(VpaDChamado : TRBDChamado;VpaDParcial : TRBDChamadoParcial) : string;
     function CadastraNumeroSerieProduto(VpaDChamado : TRBDChamado) : string;
+    procedure GeraAnexosEmailChamadoCliente(VpaDChamado : TRBDChamado);
+    function AnexaArquivoEmail(VpaNomArquivo : String;VpaMensagem : TIdMessage):string;
+    procedure MontaEmailChamadoCliente(VpaTexto : TStrings; VpaDChamado: TRBDChamado;VpaDCliente : TRBDCliente);
+    function EnviaEmail(VpaMensagem : TIdMessage;VpaSMTP : TIdSMTP) : string;
   public
     constructor cria(VpaBaseDados : TSqlConnection);
     destructor destroy;override;
@@ -71,6 +75,7 @@ Type TRBFuncoesChamado = class(TRBLocalizaChamado)
     procedure SetaPesquisaSatisfacaoRealizada(VpaCodFilial,VpaNumChamado : Integer);
     function ExcluiChamado(VpaCodFilial,VpaNumChamado : Integer):String;
     function EnviaEmailChamado(VpaDChamado : TRBDChamado;VpaDCliente : TRBDCliente;VpaEmail : string):String;
+    function EnviaEmailChamadoCliente(VpaDChamado: TRBDChamado; VpaDCliente: TRBDCliente): String;
     function GravaDEmail(VpaDChamado: TRBDChamado;VpaDesEmail : String): String;
     function RNomeTecnico(VpaCodTecnico : Integer):String;
     function RNomeTipoContrato(VpaCodTipo : Integer):String;
@@ -85,7 +90,8 @@ end;
 
 implementation
 
-Uses FunSql, FunString, Constantes, FunData, UnSistema, UnClientes, ConstMsg, FunArquivos;
+Uses FunSql, FunString, Constantes, FunData, UnSistema, UnClientes, ConstMsg, FunArquivos,
+  dmRave;
 
 {(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
                               eventos da classe TRBLocalizaChamado
@@ -320,6 +326,76 @@ begin
     VpaTexto.add('</table>');
   end;
   VpaTexto.add('</body></html>');
+end;
+
+{******************************************************************************}
+procedure TRBFuncoesChamado.MontaEmailChamadoCliente(VpaTexto: TStrings;
+  VpaDChamado: TRBDChamado; VpaDCliente: TRBDCliente);
+begin
+  VpaTexto.Clear;
+  VpaTexto.Add('<html>');
+  VpaTexto.Add('<head>');
+  VpaTexto.add('<title> Eficacia Sistemas e Consultoria Ltda');
+  VpaTexto.Add('</title>');
+  VpaTexto.add('<body>');
+  VpaTexto.Add('<center>');
+  VpaTexto.add('<table width=80%  border=1 bordercolor="black" cellspacing="0" >');
+  VpaTexto.Add('<tr>');
+  VpaTexto.add('<td>');
+  VpaTexto.Add('<table width=100%  border=0>');
+  VpaTexto.add(' <tr>');
+  VpaTexto.Add('  <td width=40%>');
+  VpaTexto.add('    <a > <img src="cid:'+IntToStr(VpaDChamado.CodFilial)+'.jpg" width='+IntToStr(varia.CRMTamanhoLogo)+' height = '+IntToStr(Varia.CRMAlturaLogo)+' boder=0>');
+  VpaTexto.Add('  </td>');
+  VpaTexto.add('  <td width=20% align="center" > <font face="Verdana" size="5"><b>Chamado');
+  VpaTexto.Add('  <td width=40% align="right" > <font face="Verdana" size="3"><right> <a title="Sistema de Gestão Desenvolvido por Eficacia Sistemas e Consultoria" href="http://www.eficaciaconsultoria.com.br"> <img src="cid:efi.jpg" border="0"');
+  VpaTexto.add('  </td>');
+  VpaTexto.Add('  </td>');
+  VpaTexto.add('  </tr>');
+  VpaTexto.Add('</table>');
+
+  VpaTexto.add('<br>');
+  VpaTexto.Add('<br>');
+  VpaTexto.add('<table width=100%  border=0 cellpadding="0" cellspacing="0" >');
+  VpaTexto.Add(' <tr>');
+  VpaTexto.add('  <td width=100% bgcolor=#6699FF ><font face="Verdana" size="3">');
+  VpaTexto.Add('   <br> <center>');
+  VpaTexto.add('   <br>Esta mensagem refere-se a confirmacao do Chamado.');
+  VpaTexto.Add('   <br></center>');
+  VpaTexto.add('   <br>');
+  VpaTexto.Add('   <br>');
+  VpaTexto.add(' </tr><tr>');
+  VpaTexto.Add('  <td width=100% bgcolor="silver" ><font face="Verdana" size="3">');
+  VpaTexto.add('   <br><center>');
+  VpaTexto.Add('   <br>Cliente : '+RetiraAcentuacao(VpaDCliente.NomCliente) );
+  VpaTexto.add('   <br>CNPJ :'+VpaDCliente.CGC_CPF);
+  VpaTexto.Add('   <br>');
+  VpaTexto.add('   <br>');
+  VpaTexto.Add('   <br>');
+  VpaTexto.add(' </tr><tr>');
+  VpaTexto.Add('  <td width=100% bgcolor=#6699FF ><font face="Verdana" size="3">');
+  VpaTexto.add('   <br><center>');
+
+  VpaTexto.add('<br>');
+  VpaTexto.Add('<table width=100%  border=1 cellpadding="3" cellspacing="0">');
+  VpaTexto.Add(' <tr>');
+  VpaTexto.add('	<td width="20%" bgcolor="#EEEEEE"><font face="Verdana" size="1">');
+  VpaTexto.add('&nbsp;&nbsp;&nbsp;Esta mensagem e referente ao Chamado Tecnico. <b>');
+  VpaTexto.add('<br>&nbsp;&nbsp;&nbsp;Qualquer duvida entrar em contato com o fone '+Varia.FoneFilial);
+  VpaTexto.add('	</td>');
+  VpaTexto.add(' </tr></table>');
+
+  VpaTexto.add(' </tr>');
+  VpaTexto.add('</table>');
+
+  VpaTexto.add('<hr>');
+  VpaTexto.Add('<center>');
+  if sistema.PodeDivulgarEficacia then
+    VpaTexto.add('<address>Sistema de gestao desenvolvido por <a href="http://www.eficaciaconsultoria.com.br">Eficacia Sistemas e Consultoria Ltda.</a>  </address>');
+  VpaTexto.Add('</center>');
+  VpaTexto.add('</body>');
+  VpaTexto.Add('');
+  VpaTexto.add('</html>');
 end;
 
 {******************************************************************************}
@@ -1643,6 +1719,54 @@ begin
 end;
 
 {******************************************************************************}
+function TRBFuncoesChamado.EnviaEmail(VpaMensagem: TIdMessage;
+  VpaSMTP: TIdSMTP): string;
+begin
+  VpaMensagem.Priority := TIdMessagePriority(0);
+  VpaMensagem.ContentType := 'multipart/mixed';
+  if VpaMensagem.From.Address = '' then
+    VpaMensagem.From.Address := varia.UsuarioSMTP;
+  VpaMensagem.From.Name := varia.NomeFilial;
+
+  VpaSMTP.UserName := varia.UsuarioSMTP;
+  VpaSMTP.Password := Varia.SenhaEmail;
+  VpaSMTP.Host := Varia.ServidorSMTP;
+  VpaSMTP.Port := varia.PortaSMTP;
+  if config.ServidorInternetRequerAutenticacao then
+    VpaSMTP.AuthType := satDefault
+  else
+    VpaSMTP.AuthType := satNone;
+
+  if VpaMensagem.ReceiptRecipient.Address = '' then
+    VpaMensagem.ReceiptRecipient.Text  :=VpaMensagem.From.Text;
+
+  if VpaMensagem.ReceiptRecipient.Address = '' then
+    result := 'E-MAIL DA FILIAL !!!'#13'É necessário preencher o e-mail da transportadora.';
+  if VpaSMTP.UserName = '' then
+    result := 'USUARIO DO E-MAIL ORIGEM NÃO CONFIGURADO!!!'#13'É necessário preencher nas configurações o e-mail de origem.';
+  if VpaSMTP.Password = '' then
+    result := 'SENHA SMTP DO E-MAIL ORIGEM NÃO CONFIGURADO!!!'#13'É necessário preencher nas configurações a senha do e-mail de origem';
+  if VpaSMTP.Host = '' then
+    result := 'SERVIDOR DE SMTP NÃO CONFIGURADO!!!'#13'É necessário configurar qual o servidor de SMTP...';
+  if result = '' then
+  begin
+    VpaSMTP.Connect;
+    try
+      VpaSMTP.Send(VpaMensagem);
+
+    except
+      on e : exception do
+      begin
+        result := 'ERRO AO ENVIAR O E-MAIL!!!'#13+e.message;
+        VpaSMTP.Disconnect;
+      end;
+    end;
+    VpaSMTP.Disconnect;
+    VpaMensagem.Clear;
+  end;
+end;
+
+{******************************************************************************}
 function TRBFuncoesChamado.EnviaEmailChamado(VpaDChamado : TRBDChamado;VpaDCliente : TRBDCliente;VpaEmail : string):String;
 var
   VpfEmailTexto, VpfEmailHTML : TIdText;
@@ -1710,6 +1834,67 @@ begin
 end;
 
 {******************************************************************************}
+function TRBFuncoesChamado.EnviaEmailChamadoCliente(VpaDChamado: TRBDChamado;
+  VpaDCliente: TRBDCliente): String;
+var
+  VpfPDF, Vpfbmppart : TIdAttachmentFile;
+  VpfChar : Char;
+  VpfNomAnexo, VpfEmailCliente : String;
+  VpfEmailHTML : TIdText;
+begin
+  result := '';
+  Mensagem.Clear;
+  if not ExisteArquivo(varia.PathVersoes+'\efi.jpg') then
+    result := 'Falta arquivo "'+varia.PathVersoes+'\efi.jpg'+'"'
+  else
+    if VpaDCliente.DesEmail = '' then
+      result := 'E-MAIL DO CLIENTE NÃO PREENCHIDO!!!'#13'Falta preencher o e-mail do cliente.'
+    else
+      if not ExisteArquivo(varia.PathVersoes+'\'+inttoStr(VpaDChamado.CodFilial)+'.jpg') then
+        result := 'Falta arquivo "'+varia.PathVersoes+'\'+inttoStr(VpaDChamado.CodFilial)+'.jpg'+'"';
+
+  if result = '' then
+  begin
+      Vpfbmppart := TIdAttachmentfile.Create(Mensagem.MessageParts,varia.PathVersoes+'\efi.jpg');
+      Vpfbmppart.ContentType := 'image/jpg';
+      Vpfbmppart.ContentDisposition := 'inline';
+      Vpfbmppart.ExtraHeaders.Values['content-id'] := 'efi.jpg';
+      Vpfbmppart.FileName := '';
+      Vpfbmppart.DisplayName := '';
+  end;
+  if result = '' then
+  begin
+    Mensagem.Clear;
+    GeraAnexosEmailChamadoCliente(VpaDChamado);
+
+    Vpfbmppart := TIdAttachmentfile.Create(Mensagem.MessageParts,varia.PathVersoes+'\'+inttoStr(VpaDChamado.CodFilial)+'.jpg');
+    Vpfbmppart.ContentType := 'image/jpg';
+    Vpfbmppart.ContentDisposition := 'inline';
+    Vpfbmppart.ExtraHeaders.Values['content-id'] := inttoStr(VpaDChamado.CodFilial)+'.jpg';
+    Vpfbmppart.FileName := '';
+    Vpfbmppart.DisplayName := '';
+
+    VpfEmailHTML := TIdText.Create(Mensagem.MessageParts);
+    VpfEmailHTML.ContentType := 'text/html';
+
+    MontaEmailChamadoCliente(VpfEmailHTML.Body,VpaDChamado,VpaDCliente);
+
+    VpfEmailCliente := VpaDCliente.DesEmail;
+    VpfChar := ',';
+    if ExisteLetraString(';',VpfEmailCliente) then
+      VpfChar := ';';
+    while Length(VpfEmailCliente) > 0 do
+    begin
+      Mensagem.Recipients.Add.Address := DeletaChars(CopiaAteChar(VpfEmailCliente,VpfChar),VpfChar);
+      VpfEmailCliente := DeleteAteChar(VpfEmailCliente,VpfChar);
+    end;
+    Mensagem.Subject := Varia.NomeFilial+' - Chamado : ' + IntToStr(VpaDChamado.NumChamado);
+    Mensagem.ReceiptRecipient.Text  :='';
+    result := EnviaEmail(Mensagem,SMTP);
+  end;
+end;
+
+{******************************************************************************}
 function TRBFuncoesChamado.GravaDEmail(VpaDChamado: TRBDChamado;VpaDesEmail : String): String;
 begin
   Result:= '';
@@ -1769,6 +1954,23 @@ begin
                             ' Where CODTIPOCONTRATO = '+IntToStr(VpaCodTipo));
   result := Aux.FieldByName('NOMTIPOCONTRATO').AsString;
   Aux.close;
+end;
+
+{******************************************************************************}
+procedure TRBFuncoesChamado.GeraAnexosEmailChamadoCliente(
+  VpaDChamado: TRBDChamado);
+var
+  VpfNomArquivo : string;
+begin
+  try //Chamado
+    dtRave := TdtRave.Create(nil);
+    VpfNomArquivo := Varia.PathVersoes+'\ANEXOS\Chamado\CH'+IntToStr(VpaDChamado.CodFilial)+'_'+IntToStr(VpaDChamado.NumChamado)+'.pdf';
+    dtRave.VplArquivoPDF := VpfNomArquivo;
+    dtRave.ImprimeChamado(VpaDChamado.CodFilial,VpaDChamado.NumChamado,false);
+  finally
+    dtRave.Free;
+  end;
+  AnexaArquivoEmail(VpfNomArquivo,Mensagem);
 end;
 
 {******************************************************************************}
@@ -1838,6 +2040,20 @@ begin
     on e : exception do result := 'ERRO NA GRAVAÇÃO DA ALTERAÇÃO DO TECNICO!!!'#13+e.message;
   end;
   Cadastro.close;
+end;
+
+{******************************************************************************}
+function TRBFuncoesChamado.AnexaArquivoEmail(VpaNomArquivo: String;
+  VpaMensagem: TIdMessage): string;
+var
+  VpfAnexo : TIdAttachmentfile;
+begin
+  VpfAnexo := TIdAttachmentfile.Create(VpaMensagem.MessageParts,VpaNomArquivo);
+  VpfAnexo.ContentType := 'application/pdf';
+  VpfAnexo.ContentDisposition := 'inline';
+  VpfAnexo.DisplayName:=RetornaNomArquivoSemDiretorio(VpaNomArquivo);
+  VpfAnexo.ExtraHeaders.Values['content-id'] := RetornaNomArquivoSemDiretorio(VpaNomArquivo);;
+  VpfAnexo.DisplayName := RetornaNomArquivoSemDiretorio(VpaNomArquivo);;
 end;
 
 {******************************************************************************}

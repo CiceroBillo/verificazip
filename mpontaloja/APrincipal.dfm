@@ -3643,6 +3643,7 @@ object FPrincipal: TFPrincipal
       'trim char=False'
       'decimal separator=,')
     VendorLib = 'oci.dll'
+    Connected = True
     Left = 248
     Top = 96
   end

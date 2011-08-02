@@ -40,7 +40,7 @@ object FChamadoTecnico: TFChamadoTecnico
     Caption = '   Chamados T'#233'cnicos   '
     Font.Charset = ANSI_CHARSET
     Font.Color = clWhite
-    Font.Height = -24
+    Font.Height = -27
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
     ParentFont = False
@@ -1007,7 +1007,7 @@ object FChamadoTecnico: TFChamadoTecnico
         OnClick = BImprimirClick
       end
       object BFechar: TBitBtn
-        Left = 686
+        Left = 730
         Top = 5
         Width = 100
         Height = 30
@@ -1137,11 +1137,37 @@ object FChamadoTecnico: TFChamadoTecnico
         TabOrder = 9
         OnClick = BAgendaClick
       end
+      object BEnviarEmailCliente: TBitBtn
+        Left = 616
+        Top = 6
+        Width = 100
+        Height = 30
+        HelpContext = 66
+        Caption = 'Cliente'
+        DoubleBuffered = True
+        Glyph.Data = {
+          76010000424D7601000000000000760000002800000020000000100000000100
+          04000000000000010000120B0000120B00001000000000000000000000000000
+          800000800000008080008000000080008000808000007F7F7F00BFBFBF000000
+          FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00333333333333
+          3333333333333333333333333333333333333FFFFFFFFFFFFFFF000000000000
+          0000777777777777777707FFFFFFFFFFFF70773FF33333333F770F77FFFFFFFF
+          77F07F773FF3333F77370FFF77FFFF77FFF07F33773FFF7733370FFFFF0000FF
+          FFF07F333F77773FF3370FFF70EEEE07FFF07F3F773333773FF70F707FFFFFF7
+          07F07F77333333337737007EEEEEEEEEE70077FFFFFFFFFFFF77077777777777
+          77707777777777777777307EEEEEEEEEE7033773FF333333F77333707FFFFFF7
+          0733333773FF33F773333333707EE707333333333773F7733333333333700733
+          3333333333377333333333333333333333333333333333333333}
+        NumGlyphs = 2
+        ParentDoubleBuffered = False
+        TabOrder = 10
+        OnClick = BEnviarEmailClienteClick
+      end
     end
   end
   object PGraficos: TCorPainelGra
-    Left = 160
-    Top = 84
+    Left = 352
+    Top = 33
     Width = 193
     Height = 243
     Alignment = taLeftJustify
@@ -1367,7 +1393,7 @@ object FChamadoTecnico: TFChamadoTecnico
         '           CHA.VALCHAMADO, CHA.VALDESLOCAMENTO, CHA.CODESTAGIO, ' +
         'CHA.LANORCAMENTO,'
       '          CHA.CODTECNICO,'
-      '          CLI.C_NOM_CLI, '
+      '          CLI.C_NOM_CLI,  CLI.I_COD_CLI,'
       '    TEC.NOMTECNICO,'
       '   USU.C_NOM_USU,'
       '  EST.NOMEST, EST.INDFIN,'
@@ -1392,7 +1418,7 @@ object FChamadoTecnico: TFChamadoTecnico
         '           CHA.VALCHAMADO, CHA.VALDESLOCAMENTO, CHA.CODESTAGIO, ' +
         'CHA.LANORCAMENTO,'
       '          CHA.CODTECNICO,'
-      '          CLI.C_NOM_CLI, '
+      '          CLI.C_NOM_CLI,  CLI.I_COD_CLI,'
       '    TEC.NOMTECNICO,'
       '   USU.C_NOM_USU,'
       '  EST.NOMEST, EST.INDFIN,'
@@ -1480,6 +1506,12 @@ object FChamadoTecnico: TFChamadoTecnico
       FieldName = 'INDFIN'
       FixedChar = True
       Size = 1
+    end
+    object ChamadoTecnicoI_COD_CLI: TFMTBCDField
+      FieldName = 'I_COD_CLI'
+      Required = True
+      Precision = 10
+      Size = 0
     end
   end
   object DataChamadoTecnico: TDataSource
