@@ -77,7 +77,7 @@ type
     puESCadastrarEstoqueChapas, puESSomenteSolicitacaodeComprasdeInsumos, puESPermiteAcrescimoDescontoNotaEntrada, puESCadastrarPedidoCompra, puESExcluirPedidoCompra, puESCadastrarSolicitacaoCompra,
     puAlterarValorVendaCadastroProduto,puValorMinimoParcela, puESEstornarRevisaoFaccionista, puPLVisualizarTotalCotacao, puCRPropostas,puExcluirHistoricoTelemarketing,puOcultarVendedor, puClientesInativos,
     puCHExcluirChamado,puCHAlterarEstagioChamadoFinalizadoeCancelado,puCRAlterarPropostasFinalizadas, puCRAlterarEstagioPropostasFinalizadaseCanceladas,puCRNaoAlteraVendedorNaTelaDeDigitacaoRapida,puCRNaoExluiAmostra,puESMenuGerencialCortePendente,puESBaixarOrdemCorte, puESExcluiProdutoDuplicado,
-    puSomenteRelatoriosAutorizados);
+    puSomenteRelatoriosAutorizados,puPLIniciarSeparacao);
 
   TRBDPermisaoUsuario = set of TRBDOpcoesPermisaoUsuario;
   TRBDTipoValorComissao = (vcTotalNota,vcTotalProdutos);
@@ -809,6 +809,7 @@ type
     RetornarPrecoProdutoUltimaTabelaPreco: Boolean;
     LayoutModificadoEmailCotacaoEstagio: Boolean;
     PermitirAlterarNomedaCorProdutonaCotacao : Boolean;
+    ImprimirOPQuandoIniciarSeparacao : boolean;
 
 
     //-----------------------Caixa
@@ -1276,6 +1277,8 @@ begin
     VpaDPermissao := VpaDPermissao + [puESExcluiProdutoDuplicado];
   if TipoCheck(VarAux.FieldByName('C_GER_SRA').AsString) then
     VpaDPermissao := VpaDPermissao + [puSomenteRelatoriosAutorizados];
+  if TipoCheck(VarAux.FieldByName('C_POL_ISE').AsString) then
+    VpaDPermissao := VpaDPermissao + [puPLIniciarSeparacao];
 
   config.UtilizarPercentualConsulta := TipoCheck(VarAux.fieldByName('C_IND_PER').AsString);
   config.ResponsavelLeituraLocacao := TipoCheck(VarAux.fieldByName('C_RES_LEL').AsString);
@@ -1982,6 +1985,7 @@ begin
       MostrarCodBarrasCorNoAcertoEstoque := TipoCheck( VpfTabela.fieldByName('C_EAN_ACE').AsString);
       LeitorSemFioNoAcertodeEstoque := TipoCheck( VpfTabela.fieldByName('C_LEI_SEF').AsString);
       MostrarTecnicoNoAcertodeEstoque := TipoCheck( VpfTabela.fieldByName('C_TEC_ACE').AsString);
+      ImprimirOPQuandoIniciarSeparacao := TipoCheck( VpfTabela.fieldByName('C_COT_IOI').AsString);
     end;
   end;
 

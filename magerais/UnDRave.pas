@@ -153,6 +153,16 @@ Type
 end;
 
 Type
+  TRBDVendaMesProduto = class
+    public
+      Mes,
+      Ano : Integer;
+      QtdVendida : Double;
+      constructor cria;
+      destructor destroy;override;
+end;
+
+Type
   TRBDTamanhoProdutoRave = class
     public
      CodTamanho : Integer;
@@ -160,8 +170,10 @@ Type
      QtdEstoque,
      QtdProduzido,
      ValEstoque : Double;
+     Vendas : TList;
      constructor cria;
      destructor destroy;override;
+     function RVendaMes(VpaMes,VpaAno : Integer) : TRBDVendaMesProduto;
   end;
 
 Type
@@ -172,10 +184,12 @@ Type
       QtdEstoque,
       QtdProduzido,
       ValEstoque  : Double;
-      Tamanhos : TList;
+      Tamanhos,
+      Vendas : TList;
       constructor cria;
       destructor destroy;override;
       function addTamanho : TRBDTamanhoProdutoRave;
+      function RVendaMes(VpaMes,VpaAno : Integer) : TRBDVendaMesProduto;
 end;
 
 Type
@@ -191,10 +205,12 @@ Type
       QtdProduzido,
       ValEstoque,
       ValTroca : Double;
-      Cores : TList;
+      Cores,
+      Vendas : TList;
       constructor cria;
       destructor destroy;override;
       function AddCor : TRBDCorProdutoRave;
+      function RVendaMes(VpaMes,VpaAno : Integer) : TRBDVendaMesProduto;
 end;
 
 Type
@@ -616,13 +632,40 @@ end;
 constructor TRBDTamanhoProdutoRave.cria;
 begin
   inherited create;
+  Vendas := TList.Create;
 end;
 
 {********************************************************************}
 destructor TRBDTamanhoProdutoRave.destroy;
 begin
-
+  FreeTObjectsList(Vendas);
+  vendas.Free;
   inherited;
+end;
+
+{******************************************************************************}
+function TRBDTamanhoProdutoRave.RVendaMes(VpaMes,VpaAno: Integer): TRBDVendaMesProduto;
+var
+  VpfLaco : Integer;
+  VpfDVendaMes : TRBDVendaMesProduto;
+begin
+  result := nil;
+  for VpfLaco := 0 to Vendas.Count - 1 do
+  begin
+    VpfDVendaMes := TRBDVendaMesProduto(Vendas.Items[VpfLaco]);
+    if (VpaMes = VpfDVendaMes.Mes) and (VpaAno = VpfDVendaMes.Ano) then
+    begin
+      result := VpfDVendaMes;
+      break;
+    end;
+  end;
+  if result = nil then
+  begin
+    Result := TRBDVendaMesProduto.cria;
+    Vendas.Add(result);
+    result.Mes := VpaMes;
+    result.Ano := VpaAno;
+  end;
 end;
 
 { TRBDTamanhoProdutoRave }
@@ -644,6 +687,7 @@ constructor TRBDCorProdutoRave.cria;
 begin
   inherited create;
   Tamanhos := TList.Create;
+  Vendas := TList.Create;
 end;
 
 {********************************************************************}
@@ -651,8 +695,36 @@ destructor TRBDCorProdutoRave.destroy;
 begin
   FreeTObjectsList(Tamanhos);
   Tamanhos.free;
+  FreeTObjectsList(Vendas);
+  Vendas.Free;
   inherited;
 end;
+
+{******************************************************************************}
+function TRBDCorProdutoRave.RVendaMes(VpaMes,VpaAno : Integer): TRBDVendaMesProduto;
+var
+  VpfLaco : Integer;
+  VpfDVendaMes : TRBDVendaMesProduto;
+begin
+  result := nil;
+  for VpfLaco := 0 to Vendas.Count - 1 do
+  begin
+    VpfDVendaMes := TRBDVendaMesProduto(Vendas.Items[VpfLaco]);
+    if (VpaMes = VpfDVendaMes.Mes) and (VpaAno = VpfDVendaMes.Ano) then
+    begin
+      result := VpfDVendaMes;
+      break;
+    end;
+  end;
+  if result = nil then
+  begin
+    Result := TRBDVendaMesProduto.cria;
+    Vendas.Add(result);
+    result.Mes := VpaMes;
+    result.Ano := VpaAno;
+  end;
+end;
+
 { TRBDCorProdutoRave }
 
 
@@ -672,6 +744,7 @@ constructor TRBDProdutoRave.cria;
 begin
   inherited create;
   Cores := TList.create;
+  Vendas := TList.Create;
   QtdEstoque := 0;
   ValEstoque := 0;
 end;
@@ -681,11 +754,37 @@ destructor TRBDProdutoRave.destroy;
 begin
   FreeTObjectsList(Cores);
   Cores.free;
+  FreeTObjectsList(Vendas);
+  Vendas.Free;
   inherited;
 end;
+
+{******************************************************************************}
+function TRBDProdutoRave.RVendaMes(VpaMes,VpaAno: Integer): TRBDVendaMesProduto;
+var
+  VpfLaco : Integer;
+  VpfDVendaMes : TRBDVendaMesProduto;
+begin
+  result := nil;
+  for VpfLaco := 0 to Vendas.Count - 1 do
+  begin
+    VpfDVendaMes := TRBDVendaMesProduto(Vendas.Items[VpfLaco]);
+    if (VpaMes = VpfDVendaMes.Mes) and (VpaAno = VpfDVendaMes.Ano) then
+    begin
+      result := VpfDVendaMes;
+      break;
+    end;
+  end;
+  if result = nil then
+  begin
+    Result := TRBDVendaMesProduto.cria;
+    Vendas.Add(result);
+    result.Mes := VpaMes;
+    result.Ano := VpaAno;
+  end;
+end;
+
 { TRBDProdutoRave }
-
-
 
 {(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
                   Dados da classe dos TRBDRCelulaTrabalho
@@ -957,6 +1056,22 @@ destructor TRBDAmostraEntrega.destroy;
 begin
 
   inherited;
+end;
+
+{******************************************************************************}
+{ TRBDVendaMesProduto }
+{******************************************************************************}
+
+{******************************************************************************}
+constructor TRBDVendaMesProduto.cria;
+begin
+  inherited create;
+end;
+
+{******************************************************************************}
+destructor TRBDVendaMesProduto.destroy;
+begin
+  inherited destroy;
 end;
 
 end.

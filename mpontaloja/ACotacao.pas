@@ -1554,11 +1554,14 @@ end;
 procedure TFCotacao.ConfiguraPermissaoUsuario;
 begin
   MAlterarVendedor.Visible := Config.PermitirAlterarVendedornaCotacao;
+  if CONFIG.ControlarASeparacaodaCotacao then
+    MIniciarSeparacao.Visible := true;
+
   if not((puAdministrador in varia.PermissoesUsuario) or (puPLCompleto in varia.PermissoesUsuario)) then
   begin
     AlterarVisibleDet([BCadastrar,BAlterar,BGraficos,PTotal,BGeraNota,BtExtornar,BRomaneio,BtExcluir,BCancelar,BConsulta,BGeraCupom,BEtiqueta,BGerarOP,BImprimeOP,MBaixarNumero,n7,BCancelar,
                        MImprimirPedidosPedentes,MGeraRomaneioParcial,MConferenciaSeparacao,MEnvioParcial,MAlterarCliente,MAlterarPreposto,MDuplicarOrcamento,
-                       MConsultaOP,MMarcarOPGerada],false);
+                       MConsultaOP,MMarcarOPGerada,MIniciarSeparacao],false);
     GOrcamento.Columns[RIndiceColuna(GOrcamento,'N_VLR_TOT')].Visible := false;
     GridMov.Columns[RIndiceColuna(GridMov,'N_VLR_PRO')].Visible := false;
     GridMov.Columns[RIndiceColuna(GridMov,'N_VLR_TOT')].Visible := false;
@@ -1616,6 +1619,8 @@ begin
       AlterarVisibledet([MDuplicarOrcamento],true);
     if (puOcultarVendedor in varia.PermissoesUsuario) then
       AlterarVisibledet([MAlterarVendedor,BVendedor],false);
+    if (puPLIniciarSeparacao in varia.PermissoesUsuario) then
+      AlterarVisibledet([MIniciarSeparacao],true);
     if not (puPLVisualizarTotalCotacao in varia.PermissoesUsuario) then
     begin
       CTotal.Enabled:= false;
@@ -1650,7 +1655,6 @@ begin
   if CONFIG.ControlarASeparacaodaCotacao then
   begin
     MGeraRomaneioParcial.Caption := 'Separação de Produtos';
-    MIniciarSeparacao.Visible := true;
     GridMov.Columns[RIndiceColuna(GridMov,'N_QTD_BAI')].Title.Caption := 'Separado';
   end
   else
@@ -2935,8 +2939,11 @@ begin
 
       if VpfResultado = '' then
       begin
-        BImprimeOP.Click;
-        FunCotacao.ImprimeEtiquetaSeparacaoPedido(VpfDCotacao);
+        if config.ImprimirOPQuandoIniciarSeparacao then
+        begin
+          BImprimeOP.Click;
+          FunCotacao.ImprimeEtiquetaSeparacaoPedido(VpfDCotacao);
+        end;
       end;
 
 
