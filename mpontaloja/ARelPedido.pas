@@ -793,7 +793,10 @@ begin
                 end
                 else
                 if (VpaNomRelatorio = 'VALOR FRETE NOTA X VALOR CONHECIMENTO FRETE') then
-                  AlterarVisibleDet([PFilial,PTransportadora,PPeriodo],true);
+                  AlterarVisibleDet([PFilial,PTransportadora,PPeriodo],true)
+                else
+                if (VpaNomRelatorio = 'DEMANDA COMPRA') then
+                  AlterarVisibleDet([PFilial,PClassificacaoProduto,PPeriodo],true)
 end;
 
 
@@ -1183,8 +1186,8 @@ begin
               if (VprNomRelatorio = 'VALOR FRETE NOTA X VALOR CONHECIMENTO FRETE') then
                 FunRave.ImprimeValorFreteNotaXValorConhecimento(EFilial.AInteiro, ETransportadora.AInteiro,LTransportadora.Caption,LFilial.Caption,VprCaminhoRelatorio, CDataIni.Date,CdataFim.Date)
             else
-              if (VprNomRelatorio = 'TESTE') then
-                dtRave.TesteDataConection;
+              if (VprNomRelatorio = 'DEMANDA COMPRA') then
+                FunRave.ImprimeDemandaCompra(EFilial.AInteiro,ECodClassifcacao.Text,LNomClassificacao.Caption,LFilial.Caption,VprCaminhoRelatorio,CDataIni.Date,CDataFim.Date);
 
   dtRave.free;
 end;

@@ -3049,6 +3049,7 @@ begin
     VpfDProdutoNota.CodCST :=  FunNotaFiscal.RCSTICMSProduto(VprDCliente,VpfDProduto,VprDNatureza);
   end;
   GProdutos.CarregaGrade;
+  CalculaValorTotal;
 end;
 
 {******************************************************************************}

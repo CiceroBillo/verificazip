@@ -75,6 +75,7 @@ type
       function RMateriaPrimaProduto(VpaDProdutoPedido : TRBDProdutoPedidoCompra;VpaSeqProduto,VpaCodCor : Integer;VpaAltMolde, VpaLarMolde : Double):TRBDProdutoPedidoCompraMateriaPrima;
       function RArquivoProjeto(VpaCodProduto: String): String;
       procedure ZeraQtdBaixada(VpaDPedidoCompra : TRBDPedidoCompraCorpo);
+      function RQtdProdutoAReceber(VpaSeqProduto,VpaCodCor, VpaCodTamanho : integer):Double;
 end;
 
 implementation
@@ -1608,6 +1609,29 @@ begin
       break;
     end;
   end;
+end;
+
+{******************************************************************************}
+function TRBFunPedidoCompra.RQtdProdutoAReceber(VpaSeqProduto, VpaCodCor,VpaCodTamanho: integer): Double;
+begin
+  result := 0;
+  AdicionaSQLAbreTabela(Tabela,'select PRO.C_COD_UNI UMORIGINAL, '+
+                               ' ITE.DESUM, ITE.QTDPRODUTO, ITE.QTDBAIXADO '+
+                               ' from PEDIDOCOMPRACORPO PED, PEDIDOCOMPRAITEM ITE, ESTAGIOPRODUCAO EST, CADPRODUTOS PRO '+
+                               ' Where PED.CODFILIAL = ITE.CODFILIAL '+
+                               ' AND PED.SEQPEDIDO = ITE.SEQPEDIDO '+
+                               ' AND ITE.SEQPRODUTO = PRO.I_SEQ_PRO '+
+                               ' AND PED.CODESTAGIO = EST.CODEST '+
+                               ' and ITE.SEQPRODUTO = ' +IntToStr(VpaSeqProduto)+
+                               ' and '+SQLTextoIsNull('ITE.CODCOR','0')+' = '+IntToStr(VpaCodCor)+
+                               ' AND '+SQLTextoIsNull('ITE.CODTAMANHO','0')+' = '+IntToStr(VpaCodTamanho)+
+                               ' AND EST.INDFIN = ''N''' );
+  while not Tabela.Eof do
+  begin
+    result := result + FunProdutos.CalculaQdadePadrao(Tabela.FieldByName('DESUM').AsString,Tabela.FieldByName('UMORIGINAL').AsString,Tabela.FieldByName('QTDPRODUTO').AsFloat-Tabela.FieldByName('QTDBAIXADO').AsFloat,IntToStr(VpaSeqProduto));
+    Tabela.Next;
+  end;
+  Tabela.Close;
 end;
 
 {******************************************************************************}

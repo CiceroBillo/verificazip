@@ -203,6 +203,7 @@ Type
       QtdEstoque,
       QtdTrocada,
       QtdProduzido,
+      QtdComprada,
       ValEstoque,
       ValTroca : Double;
       Cores,

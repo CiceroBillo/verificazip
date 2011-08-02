@@ -179,7 +179,7 @@ begin
   VprConsultaChequeBaixaCP := false;
   EDatInicio.DateTime := PrimeiroDiaMes(Date);
   EDatFim.DateTime := UltimoDiaMes(date);
-  ESituacao.ItemIndex := 4;
+  ESituacao.ItemIndex := 5;
   ETipoPeriodo.ItemIndex := 0;
   VprOrdem := 'ORDER BY CHE.DATVENCIMENTO';
 end;

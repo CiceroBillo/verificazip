@@ -6,7 +6,7 @@ interface
 Uses SQLExpr, RpRave, UnDados, SysUtils, RpDefine, RpBase, RpSystem,RPDevice,
      Classes, forms, Graphics, unprodutos, UnClassificacao, UnAmostra, RpRenderPDF,
      unDadosProduto, windows, rpBars, UnSistema, UnordemProducao, UnDRave, UnClassesImprimir,
-     UnClientes, Unvendedor, UnDadosCR, UnContasAPagar, UnNotasFiscaisFor;
+     UnClientes, Unvendedor, UnDadosCR, UnContasAPagar, UnNotasFiscaisFor, UnPedidoCompra;
 
 type
   TRBFunRave = class
@@ -131,6 +131,7 @@ type
       procedure ImprimeTotalUFLivroSaida(VpaListaUF : TList);
       procedure ImprimeCabecalhoEstoque;
       procedure ImprimeCabecalhoConsumoProdutoProducao;
+      procedure ImprimeCabecalhoDemandaCompra;
       procedure ImprimeCabecalhoServicoVendido;
       procedure ImprimeCabecalhoTabelaPreco;
       procedure ImprimeCabecalhoProdutocomDefeito;
@@ -288,6 +289,7 @@ type
     public
       VplArquivoPDF,
       VplArquivoRTF : String;
+      VplFunPedidoCompra : TRBFunPedidoCompra;
       constructor cria(VpaBaseDados : TSQLConnection);
       destructor destroy;override;
       procedure EnviaParametrosFilial(VpaProjeto : TrvProject;VpaDFilial : TRBDFilial);
@@ -360,6 +362,7 @@ Uses FunSql, constantes, funObjeto, funString, FunData, UnContasAReceber, FunNum
 constructor TRBFunRave.cria(VpaBaseDados: TSQLConnection);
 begin
   inherited create;
+  VplFunPedidoCompra := TRBFunPedidoCompra.Cria(VpaBaseDados);
   VprBaseDados := VpaBaseDados;
   Aux := TSqlQuery.create(nil);
   Aux.SqlConnection := VpaBaseDAdos;
@@ -415,6 +418,7 @@ begin
   VprConsumoAmostra.Free;
   FunClassificacao.free;
   FreeTObjectsList(VprNiveis);
+  VplFunPedidoCompra.Free;
   inherited;
 end;
 
@@ -1371,9 +1375,7 @@ begin
          else
            SetTab(NA,pjLeft,11.3,0.5,Boxlinenone,0); //nomeproduto
      if (config.EstoquePorCor) and (config.EstoquePorTamanho) then
-       SetTab(NA,pjLeft,2.6,0.2,Boxlinenone,0) //Cor
-     else
-       SetTab(NA,pjLeft,3.1,0.2,Boxlinenone,0); //Cor
+       SetTab(NA,pjLeft,2.6,0.2,Boxlinenone,0); //Cor
      if (config.EstoquePorTamanho) then
        SetTab(NA,pjLeft,1,0.2,Boxlinenone,0); //Tamanho
      SetTab(NA,pjRight,2.3,0,Boxlinenone,0); //Qtd
@@ -1970,6 +1972,7 @@ begin
   end;
 end;
 
+{******************************************************************************}
 procedure TRBFunRave.SalvaTabelaProdutosDemandaCompra(VpaDProduto: TRBDProdutoRave);
 var
   VpfLacoCor, vpfLacoTamanho, VpfLacoVenda : Integer;
@@ -2015,13 +2018,17 @@ begin
     end;
     PrintTab(FormatFloat(varia.MascaraQtd,VpaDProduto.QtdEstoque));
     PrintTab('  '+VpaDProduto.DesUM);
-    for VpfLacoVenda := 0 to VpaDProduto.Vendas.Count - 1 do
+    for VpfLacoVenda := 0 to 2 do
     begin
-      if VpfLacoVenda > 2 then
-        break;
-      VpfDVendaMes := TRBDVendaMesProduto(VpaDProduto.Vendas.Items[VpfLacoVenda]);
-      PrintTab(FormatFloat(varia.MascaraQtd,VpfDVendaMes.QtdVendida));
+      if VpfLacoVenda < VpaDProduto.Vendas.Count then
+      begin
+        VpfDVendaMes := TRBDVendaMesProduto(VpaDProduto.Vendas.Items[VpfLacoVenda]);
+        PrintTab(FormatFloat(varia.MascaraQtd,VpfDVendaMes.QtdVendida));
+      end
+      else
+        PrintTab('');
     end;
+    PrintTab(FormatFloat(varia.MascaraQtd,VpaDProduto.QtdComprada));
 
     newline;
     If LinesLeft<=1 Then
@@ -3100,6 +3107,30 @@ begin
 end;
 
 {******************************************************************************}
+procedure TRBFunRave.ImprimeCabecalhoDemandaCompra;
+begin
+    with RVSystem.BaseReport do
+    begin
+      RestoreTabs(2);
+      bold := true;
+      PrintTab('Código');
+      PrintTab('Nome');
+      if config.EstoquePorCor then
+        PrintTab('Cor');
+      if config.EstoquePorTamanho then
+        PrintTab('Tamanho');
+      PrintTab('Qtd Estoque');
+      PrintTab('  UM');
+      PrintTab('Mes 1 ');
+      PrintTab('Mes 2 ');
+      PrintTab('Mes 3 ');
+      PrintTab('Qtd Comprada ');
+      PrintTab('Sugestao Compra ');
+      Bold := false;
+  end;
+end;
+
+{******************************************************************************}
 procedure TRBFunRave.ImprimeCabecalhoFechamentoEstoque;
 begin
   with RVSystem.BaseReport do
@@ -3524,6 +3555,7 @@ begin
        19 : ImprimeCabecalhoProdutocomDefeito;
        33 : ImprimeCabecalhoServicoVendido;
        48 : ImprimeCabecalhoConsumoProdutoProducao;
+       50 : ImprimeCabecalhoDemandaCompra;
       end;
       newline;
       If LinesLeft<=1 Then
@@ -5357,7 +5389,7 @@ begin
                                  ' AND CAD.I_LAN_ORC = MOV.I_LAN_ORC  '+
                                  ' AND MOV.I_SEQ_PRO = PRO.I_SEQ_PRO '+
                                  SQLTextoDataEntreAAAAMMDD('CAD.D_DAT_ORC',VpaDaInicial,VpaDatFinal,true)+
-                                 ' and MOV.I_COD_TAM = ' +IntToStr(VpaDTamanho.CodTamanho)+
+                                 ' and '+SQLTextoIsNull('MOV.I_COD_TAM','0')+' = ' +IntToStr(VpaDTamanho.CodTamanho)+
                                  ' and MOV.I_COD_COR = ' +IntToStr(VpaDCorRave.CodCor)+
                                  ' and MOV.I_SEQ_PRO = '+IntToStr(VpaDProdutoRave.SeqProduto)+
                                  ' ORDER BY CAD.D_DAT_ORC');
@@ -9337,7 +9369,7 @@ end;
 {******************************************************************************}
 procedure TRBFunRave.ImprimeRelDemandaCompra(VpaObjeto: TObject);
 var
-  VpfQtdProduto,  VpfQtdGeral, VpfQtdConsumidoGeral : Double;
+  VpfQtdProduto,  VpfQtdGeral, VpfQtdConsumidoGeral, VpfQtdComprada : Double;
   VpfProdutoAtual, VpaTamanhoAtual,VpaCorAtual : Integer;
   VpfClassificacaoAtual, VpfUM : string;
   VpfDProduto : TRBDProdutoRave;
@@ -9357,7 +9389,7 @@ begin
       if VpfProdutoAtual <> Tabela.FieldByName('I_SEQ_PRO').AsInteger then
       begin
         if (VpfProdutoAtual <> 0) then
-          SalvaTabelaProdutosPorCoreTamanho(VpfDProduto);
+          SalvaTabelaProdutosDemandaCompra(VpfDProduto);
 
         if VpfDClassificacao <> nil then
         begin
@@ -9386,8 +9418,10 @@ begin
 
       VpfQtdProduto := Tabela.FieldByName('N_QTD_PRO').AsFloat;
       CarQtdVendidaDemandaCompra(VpfDProduto,vpfDCor,VpfDTamanho,VprDatInicio,VprDatFim);
+      VpfQtdComprada := VplFunPedidoCompra.RQtdProdutoAReceber(Tabela.FieldByname('I_SEQ_PRO').AsInteger,Tabela.FieldByname('I_COD_COR').AsInteger,Tabela.FieldByname('I_COD_TAM').AsInteger);
 
       VpfDProduto.QtdEstoque := VpfDProduto.QtdEstoque + VpfQtdProduto;
+      VpfDProduto.QtdComprada := VpfDProduto.QtdComprada + VpfQtdComprada;
       vpfDCor.QtdEstoque := vpfDCor.QtdEstoque+ VpfQtdProduto;
       VpfDTamanho.QtdEstoque := VpfDTamanho.QtdEstoque + VpfQtdProduto;
 
@@ -9396,7 +9430,7 @@ begin
     end;
 
     if VpfProdutoAtual <> 0  then
-      SalvaTabelaProdutosPorCoreTamanho(VpfDProduto);
+      SalvaTabelaProdutosDemandaCompra(VpfDProduto);
     if VpfDClassificacao <> nil then
     begin
       VpfDClassificacao.QtdProduto := VpfDClassificacao.QtdProduto +VpfDProduto.QtdEstoque;
