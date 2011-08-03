@@ -47,6 +47,7 @@ type
     VprConhecimento: TList;
     function RColunaGrade(VpaColuna : TRBDColunaGrade):Integer;
     function ExisteNota: Boolean;
+    function ExisteSerieNota: Boolean;
     function ExisteTransportadora: Boolean;
     function ExisteModelo: Boolean;
     procedure CarTitulosGrade;
@@ -214,6 +215,14 @@ begin
                   begin
                     Aviso('NÚMERO DE SÉRIE NÃO PREENCHIDO !!!'#13'É necessário informar o número da série.');
                     Grade.Col:= RColunaGrade(clNumSerieNota);
+                  end
+                  else
+                  begin
+                    if not ExisteSerieNota then
+                    begin
+                      Aviso('SÉRIE DA NOTA FISCAL INVALIDA !!!'#13'É necessário informar o  número da série.');
+                      Grade.Col:= RColunaGrade(clNumSerieNota);
+                    end;
                   end;
                 end;
           end;
@@ -398,6 +407,16 @@ begin
   if Grade.Cells[RColunaGrade(clNumNota),Grade.ALinha] <> '' then
   begin
     Result:= FunNotaFiscal.ExisteNota(StrToInt(Grade.Cells[RColunaGrade(clNumNota),Grade.ALinha]));
+  end;
+end;
+
+{ *************************************************************************** }
+function TFConhecimentoTransporteSaida.ExisteSerieNota: Boolean;
+begin
+  Result:= False;
+  if Grade.Cells[RColunaGrade(clNumSerieNota),Grade.ALinha] <> '' then
+  begin
+    Result:= FunNotaFiscal.ExisteSerieNota(StrToInt(Grade.Cells[RColunaGrade(clNumNota),Grade.ALinha]), Grade.Cells[RColunaGrade(clNumSerieNota),Grade.ALinha]);
   end;
 end;
 

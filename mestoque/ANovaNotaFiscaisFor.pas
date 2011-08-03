@@ -323,7 +323,7 @@ uses APrincipal, fundata, funstring, ANovoCliente,FunObjeto,
    ANovaNatureza, APlanoConta, ACores,
   ANaturezas, ALocalizaProdutos, UnClientes, AFormasPagamento,
   ANovoProdutoPro, dmRave, AMostraEstoqueChapas, alocalizaservico, UnNotaFiscal,
-  AConhecimentoTransporte;
+  AConhecimentoTransporteEntrada;
 
 {$R *.DFM}
 
@@ -2380,9 +2380,9 @@ end;
 {******************************************************************************}
 procedure TFNovaNotaFiscaisFor.BConhecimentoClick(Sender: TObject);
 begin
-  FConhecimentoTransporte := TFConhecimentoTransporte.CriarSDI(self,'',true);
-  FConhecimentoTransporte.ConsultarConhecimento(VprDNotaFor.CodTransportadora, VprDNotaFor.CodFilial, VprDNotaFor.SeqNota);
-  FConhecimentoTransporte.Free;
+  FConhecimentoTransporteEntrada := TFConhecimentoTransporteEntrada.CriarSDI(self,'',true);
+  FConhecimentoTransporteEntrada.ConsultarConhecimento(VprDNotaFor.CodTransportadora, VprDNotaFor.CodFilial, VprDNotaFor.SeqNota, true);
+  FConhecimentoTransporteEntrada.Free;
 end;
 
 {******************************************************************************}

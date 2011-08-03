@@ -175,7 +175,7 @@ uses Constantes, UnRegistro, funsql,FunString,
   AImportaMunicipios, AAliquotaFiscal, AVisualizaLogs,
   AVisualizaEstatisticaConsulta, UnVersoes, AHigienizarCadastros, ASpedFiscal, ACondicaoPagamento,
   AExportaNfeContabilidade, AExportaRPS, UnCotacao,
-  AConhecimentoTransporteSaida;
+  AConhecimentoTransporteSaida, AConhecimentoTransporte;
 
 {$R *.DFM}
 
@@ -538,9 +538,9 @@ begin
       4012 : FManutencaoNotas := TFManutencaoNotas.CriarMDI(application,varia.CT_areaX, varia.CT_areaY, FPrincipal.VerificaPermisao('FManutencaoNotas'));
       4014 : FDemonstrativoFaturamento := TFDemonstrativoFaturamento.CriarMDI(application,varia.CT_areaX, varia.CT_areaY, FPrincipal.VerificaPermisao('FDemonstrativoFaturamento'));
       4020 : begin
-               FConhecimentoTransporteSaida := TFConhecimentoTransporteSaida.CriarSDI(self,'',true);
-               FConhecimentoTransporteSaida.NovoConhecimento;
-               FConhecimentoTransporteSaida.Free;
+               FConhecimentoTransporte := TFConhecimentoTransporte.CriarSDI(self,'',true);
+               FConhecimentoTransporte.ShowModal;
+               FConhecimentoTransporte.Free;
              end;
       4510 : begin
                VerificaStatusSefaz;

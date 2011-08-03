@@ -105,6 +105,7 @@ type
       procedure DefineTabelaCreditoCliente(VpaObjeto : TObject);
       procedure DefineTabelaHistoricoConsumoProdutoProducao(VpaObjeto: TObject);
       procedure DefineTabelaValorFreteXValorConhecimento(VpaObjeto: TObject);
+      procedure DefineTabelaProdutoFornecedor(VpaObjeto: TObject);
       procedure ImprimeProdutoPorClassificacao(VpaObjeto : TObject);
       procedure ImprimeProdutosFaturadoPorPeriodo(VpaObjeto : TObject);
       procedure SalvaTabelaProdutosPorCoreTamanho(VpaDProduto :TRBDProdutoRave);
@@ -168,6 +169,8 @@ type
       procedure ImprimeCabecalhoPrazoEntregaRealProdutos;
       procedure ImprimeCabecalhoHistoricoConsumoProdutoProducao;
       procedure ImprimeCabecalhoValorFreteNotaXValorConhecimento;
+      procedure ImprimeCabecalhoTotalFreteNotaXValorConhecimento;
+      procedure ImprimeCabecalhoProdutoFornecedor;
       procedure ImprimeTituloUF(VpaCodUf : String);
       procedure ImprimeTituloClassificacao(VpaNiveis : TList;VpaTudo : boolean);
       procedure ImprimetituloPlanoContas(VpaNiveis : TList;VpaTudo : boolean);
@@ -189,6 +192,7 @@ type
       procedure ImprimeRelResumoCaixas(VpaObjeto : TObject);
       procedure ImprimeRelConsumoProdutoProducao(VpaObjeto : TObject);
       procedure ImprimeRelValorFreteNotaXValorConhecimento(VpaObjeto: TObject);
+      procedure ImprimeRelProdutoFornecedor(VpaObjeto: TObject);
       function RProdutoRomaneio(VpaRomaneios : TList; VpaDProCotacao : TRBDOrcProduto) : TRBDOrcProduto;
       procedure PreparaRomaneioCotacoes(VpaCotacoes, VpaRomaneio : TList);
       procedure OrdenaRomaneioCotacoes(VpaRomaneio : TList);
@@ -344,6 +348,7 @@ type
       procedure ImprimeConsumoProdutoProducao(VpaCodFilial : Integer; VpaSeqProduto: Integer; VpaCodProduto, VpaNomProduto, VpaCodClassificacao, VpaNomClassificacao, VpaNomFilial,VpaCaminhoRelatorio:String;VpaDatInicio,VpaDatFim : TDateTime;VpaSomenteComQtdEstoque : Boolean;VpaOrdemRelatorio:Integer;VpaSomenteComQtdConsumida : Boolean);
       procedure ImprimeValorFreteNotaXValorConhecimento(VpaCodFilial, VpaCodTransportadora: Integer; VpaNomTransportadora, VpaNomFilial, VpaCaminhoRelatorio: String; VpaDatInicio,VpaDatFim : TDateTime);
       procedure ImprimeDemandaCompra(VpaCodFilial : Integer; VpaCodClassificacao,VpaNomClassificacao,VpaNomFilial, VpaCaminho : String;VpaDatInicio,VpaDatFim : TDateTime);
+      procedure ImprimeProdutoFornecedor(VpaCodFornecedor : integer; VpaCaminho, VpaNomFornecedor : String);
   end;
 
 
@@ -475,6 +480,25 @@ begin
      SetTab(NA,pjright,2.5,0.5,Boxlineall,0); //Valor Produtos
      SetTab(NA,pjright,2.5,0.5,Boxlineall,0); //% Valor Produtos
      SaveTabs(2);
+   end;
+end;
+
+{******************************************************************************}
+procedure TRBFunRave.DefineTabelaProdutoFornecedor(VpaObjeto: TObject);
+begin
+  with RVSystem.BaseReport do begin
+     clearTabs;
+     SetTab(1,pjLeft,1.5,0.1,BOXLINENONE,0); //Codigo
+     SetTab(NA,pjLeft,10.5,0,BOXLINENONE,0); //Produto
+     SetTab(NA,pjCenter,2,0,BOXLINENONE,0); //Valor Unitario
+     SetTab(NA,pjCenter,1,0.2,BOXLINENONE,0); // %IPI
+     SetTab(NA,pjCenter,1.5,0.2,BOXLINENONE,0); // ICMS
+     SetTab(NA,pjCenter,1,0.2,BOXLINENONE,0); // MVA
+     SetTab(NA,pjCenter,4,0.2,BOXLINENONE,0); // Classificacao fiscal
+     SetTab(NA,pjCenter,1.5,0.2,BOXLINENONE,0); // %ST
+     SetTab(NA,pjCenter,3,0.2,BOXLINENONE,0); // Ultima compra
+     SetTab(NA,pjLeft,3,0.2,BOXLINENONE,0); // Referencia
+     SaveTabs(1);
    end;
 end;
 
@@ -918,9 +942,9 @@ begin
      SaveTabs(1);
 
      ClearTabs;
-     SetTab(NA,pjRight,2.5,0,BOXLINENONE,0); //Total Valor Frete
-     SetTab(NA,pjCenter,3.5,0.2,BOXLINENONE,0); // Total Valor Conhecimento
-     SetTab(NA,pjCenter,3,0.2,BOXLINENONE,0); // Total Diferenca
+     SetTab(3.5,pjRight,2.5,0,BOXLINENONE,0); //Total Valor Frete
+     SetTab(9,pjCenter,4,0.2,BOXLINENONE,0); // Total Valor Conhecimento
+     SetTab(13,pjCenter,3.5,0.2,BOXLINENONE,0); // Total Diferenca
      SaveTabs(2);
    end;
 end;
@@ -1718,6 +1742,47 @@ begin
      SaveTabs(15);
 
    end;
+end;
+
+{******************************************************************************}
+procedure TRBFunRave.ImprimeProdutoFornecedor(VpaCodFornecedor: integer;
+  VpaCaminho, VpaNomFornecedor: String);
+begin
+  RvSystem.Tag := 51;
+  LimpaSQlTabela(Tabela);
+  AdicionaSqltabela(Tabela, ' SELECT PRO.C_COD_PRO, PRO.C_NOM_PRO,  ' +
+                            ' PFO.VALUNITARIO, PFO.PERIPI, PFO.DATULTIMACOMPRA, PFO.NUMDIAENTREGA, PFO.DESREFERENCIA, ' +
+                            ' CLI.I_COD_CLI, CLI.C_NOM_CLI, CLI.C_NOM_REP, CLI.C_FON_REP, CLI.C_COM_END, TRA.C_NOM_CLI C_NOM_TRA  ' +
+                            ' FROM PRODUTOFORNECEDOR PFO, CADPRODUTOS PRO, CADCLIENTES CLI, CADCLIENTES TRA ' +
+                            ' WHERE PFO.SEQPRODUTO = PRO.I_SEQ_PRO ' +
+                            ' AND PFO.CODCLIENTE = CLI.I_COD_CLI ' +
+                            ' AND ' + SQLTextoRightJoin('CLI.I_COD_TRA', 'TRA.I_COD_CLI'));
+  if VpaCodFornecedor <> 0 then
+    AdicionaSqlTabela(Tabela,' AND PFO.CODCLIENTE = '+InttoStr(VpaCodFornecedor));
+
+  AdicionaSqlTabela(Tabela,' ORDER BY PRO.C_NOM_PRO');
+  Tabela.open;
+
+  RvSystem.SystemPrinter.Orientation:= poLandScape;
+  rvSystem.onBeforePrint := DefineTabelaProdutoFornecedor;
+  rvSystem.onNewPage := ImprimeCabecalho;
+  rvSystem.onPrintFooter := Imprimerodape;
+  rvSystem.onPrint := ImprimeRelProdutoFornecedor;
+
+  VprCaminhoRelatorio := VpaCaminho;
+  VprNomeRelatorio := ' Relação de Produtos Fornecedor';
+  VprCabecalhoEsquerdo.Clear;
+
+  if VpaCodFornecedor <> 0 then
+  begin
+    VprCabecalhoEsquerdo.add('Fornecedor : ' +VpaNomFornecedor);
+    VprCabecalhoDireito.Clear;
+    VprCabecalhoDireito.add('Representante : ' + Tabela.FieldByName('C_NOM_REP').AsString);
+    VprCabecalhoDireito.add('Fone : ' + Tabela.FieldByName('C_FON_REP').AsString);
+  end;
+
+  ConfiguraRelatorioPDF;
+  RvSystem.execute;
 end;
 
 {******************************************************************************}
@@ -2821,6 +2886,20 @@ begin
 end;
 
 {******************************************************************************}
+procedure TRBFunRave.ImprimeCabecalhoTotalFreteNotaXValorConhecimento;
+begin
+    with RVSystem.BaseReport do
+    begin
+      RestoreTabs(2);
+      bold := true;
+      PrintTab(' Total Frete ');
+      PrintTab(' Total Conhecimento ');
+      PrintTab(' Total Diferenca ');
+      bold := false;
+    end;
+end;
+
+{******************************************************************************}
 procedure TRBFunRave.ImprimeCabecalhoTotalTipoPedidoXCusto;
 begin
     with RVSystem.BaseReport do
@@ -3414,6 +3493,28 @@ begin
     Bold := false;
     newline;
   end;
+end;
+
+{******************************************************************************}
+procedure TRBFunRave.ImprimeCabecalhoProdutoFornecedor;
+begin
+    with RVSystem.BaseReport do
+    begin
+      RestoreTabs(1);
+      bold := true;
+      PrintTab('Código ');
+      PrintTab(' Produto');
+      PrintTab(' Val. Unit.');
+      PrintTab(' %IPI ');
+      PrintTab(' ICMS ');
+      PrintTab(' MVA ');
+      PrintTab(' Classificação Fiscal ');
+      PrintTab(' %ST ');
+      PrintTab(' Última Compra ');
+      PrintTab(' Referencia ');
+      bold := false;
+      newline;
+    end;
 end;
 
 {******************************************************************************}
@@ -7079,6 +7180,42 @@ begin
 end;
 
 {******************************************************************************}
+procedure TRBFunRave.ImprimeRelProdutoFornecedor(VpaObjeto: TObject);
+begin
+  with RVSystem.BaseReport do
+  begin
+    while not Tabela.Eof do
+    begin
+      PrintTab(Tabela.FieldByName('C_COD_PRO').AsString);
+      PrintTab(Tabela.FieldByName('C_NOM_PRO').AsString);
+      PrintTab(FormatFloat('#,###,###,##0.00', Tabela.FieldByName('VALUNITARIO').AsFloat)+' ');
+      PrintTab(FormatFloat('#,###,###,##0.00', Tabela.FieldByName('PERIPI').AsFloat)+' ');
+      PrintTab(' ');
+      PrintTab(' ');
+      PrintTab(' ');
+      PrintTab(' ');
+//      PrintTab(FormatFloat('#,###,###,##0.00', Tabela.FieldByName('ICMS').AsFloat)+' ');
+//      PrintTab(FormatFloat('#,###,###,##0.00', Tabela.FieldByName('MVA').AsFloat)+' ');
+//      PrintTab(Tabela.FieldByName('CLASSIFICACAOFISCAL').AsString);
+//      PrintTab(FormatFloat('#,###,###,##0.00', Tabela.FieldByName('CST').AsFloat)+' ');
+      PrintTab(DateToStr(Tabela.FieldByName('DATULTIMACOMPRA').AsDateTime));
+      PrintTab(Tabela.FieldByName('DESREFERENCIA').AsString);
+      Tabela.Next;
+      NewLine;
+      if LinesLeft<=1 Then
+        NewPage;
+    end;
+    NewLine;
+    if LinesLeft<=1 Then
+      NewPage;
+    ImprimeCabecalhoTotalFreteNotaXValorConhecimento;
+    NewLine;
+    if LinesLeft<=1 Then
+      NewPage;
+  end;
+end;
+
+{******************************************************************************}
 procedure TRBFunRave.ImprimeRelProdutosComDefeito(VpaObjeto: TObject);
 var
   VpfQtdProduto,VpfQtdGeral, VpfValGeral : Double;
@@ -8417,8 +8554,12 @@ end;
 {******************************************************************************}
 procedure TRBFunRave.ImprimeRelValorFreteNotaXValorConhecimento(VpaObjeto: TObject);
 var
-  VpfValorDiferenca: Double;
+  VpfValorDiferenca, VpfValTotalFrete, VpfValTotalConhecimento,
+  VpfValTotalDiferenca: Double;
 begin
+  VpfValTotalFrete:= 0;
+  VpfValTotalConhecimento:= 0;
+  VpfValTotalDiferenca:= 0;
   with RVSystem.BaseReport do
   begin
     while not Tabela.Eof do
@@ -8426,12 +8567,32 @@ begin
       VpfValorDiferenca:= 0;
       PrintTab(Tabela.FieldByName('I_NRO_NOT').AsString);
       PrintTab(FormatFloat('#,###,###,##0.00', Tabela.FieldByName('N_VLR_FRE').AsFloat)+' ');
+      VpfValTotalFrete:= VpfValTotalFrete + Tabela.FieldByName('N_VLR_FRE').AsFloat;
       PrintTab(Tabela.FieldByName('NUMCONHECIMENTO').AsString);
       PrintTab(FormatFloat('#,###,###,##0.00', Tabela.FieldByName('VALCONHECIMENTO').AsFloat)+' ');
+      VpfValTotalConhecimento:= VpfValTotalConhecimento + Tabela.FieldByName('VALCONHECIMENTO').AsFloat;
       VpfValorDiferenca:= Tabela.FieldByName('N_VLR_FRE').AsFloat - Tabela.FieldByName('VALCONHECIMENTO').AsFloat;
+      VpfValTotalDiferenca:= VpfValTotalDiferenca + VpfValorDiferenca;
       PrintTab(FormatFloat('#,###,###,##0.00', VpfValorDiferenca)+' ');
       PrintTab(Tabela.FieldByName('C_NOM_CLI').AsString);
       Tabela.Next;
+      NewLine;
+      if LinesLeft<=1 Then
+        NewPage;
+    end;
+    NewLine;
+    if LinesLeft<=1 Then
+      NewPage;
+    ImprimeCabecalhoTotalFreteNotaXValorConhecimento;
+    with RVSystem.BaseReport do
+    begin
+      RestoreTabs(2);
+      NewLine;
+      if LinesLeft<=1 Then
+        NewPage;
+      PrintTab(FormatFloat('#,###,###,##0.00', VpfValTotalFrete)+' ');
+      PrintTab(FormatFloat('#,###,###,##0.00', VpfValTotalConhecimento)+' ');
+      PrintTab(FormatFloat('#,###,###,##0.00', VpfValTotalDiferenca)+' ');
       NewLine;
       if LinesLeft<=1 Then
         NewPage;
@@ -9650,6 +9811,7 @@ begin
       44 : ImprimeCabecalhoAnaliseRenovacaoContrato;
       46 : ImprimeCabecalhoCreditoCliente;
       49 : ImprimeCabecalhoValorFreteNotaXValorConhecimento;
+      51 : ImprimeCabecalhoProdutoFornecedor;
      end;
    end;
 end;

@@ -1130,7 +1130,8 @@ begin
                 FunRave.ImprimeProdutoVendidosPorClassificacao(EFilial.AInteiro,ECliente.AInteiro,EVendedor.Ainteiro,ETipoCotacao.Ainteiro, EClienteMaster.AInteiro,CDataIni.Date,CdataFim.Date,VprCaminhoRelatorio,LFilial.Caption,LCliente.caption,lVendedor.caption,LTipoCotacao.Caption,LClienteMaster.Caption, false,true,TBitBtn(Sender).Tag = 20)
             else
                if (VPRNOMRELATORIO = 'PRODUTOS FORNECEDOR') then
-                dtRave.ImprimeProdutoFornecedor(ECliente.AInteiro, VprCaminhoRelatorio,LCliente.caption)
+                 FunRave.ImprimeProdutoFornecedor(ECliente.AInteiro, VprCaminhoRelatorio,LCliente.caption)
+                //dtRave.ImprimeProdutoFornecedor(ECliente.AInteiro, VprCaminhoRelatorio,LCliente.caption)
             else
                if (VPRNOMRELATORIO = 'AMOSTRAS ENTREGUES E NAO APROVADAS') then
                 dtRave.ImprimeAmostrasEntregueseNaoAprovadas(CDataIni.Date, CDataFim.Date,ECliente.AInteiro, VprCaminhoRelatorio,LCliente.caption)

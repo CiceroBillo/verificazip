@@ -69,9 +69,10 @@ type
     procedure EstornaNotaEntrada( VpaCodFilial, VpaSeqNota : integer );
     procedure CarDNaturezaOperacao(VpaDNotaFor : TRBDNotaFiscalFor);overload;
     procedure CarDNotaFor(VpaDNotaFor : TRBDNotaFiscalFor);
-    procedure CarDConhecimentoTransporte(VpaSeqNota, VpaCodFilial: Integer; VpaDConhecimentoTransporte: TRBDConhecimentoTransporte);
+    procedure CarDConhecimentoTransporte(VpaSeqNota, VpaCodFilial: Integer; VpaDConhecimentoTransporte: TRBDConhecimentoTransporte; VpaNotaEntrada: Boolean);
     function GravaDNotaFor(VpaDNotaFor : TRBDNotaFiscalFor) : String;
     Function GravaDConhecimentoTransporte(VpaDConhecimentoTransporte : TRBDConhecimentoTransporte) : String;
+    Function ExcluiConhecimentoTransporte(VpaCodFilial, VpaSeqConhecimento, VpaCodTransportadora: Integer): String;
     function GravaDConhecimentoTransporteNotaSaida(VpaConhecimento : TList): String;
     function GeraNotaDevolucao(VpaNotas : TList;VpaDNotaFor : TRBDNotaFiscalFor) : string;
     function BaixaProdutosEstoque(VpaDNotaFor : TRBDNotaFiscalFor) :String;
@@ -414,11 +415,16 @@ begin
 end;
 
 {******************************************************************************}
-procedure TFuncoesNFFor.CarDConhecimentoTransporte(VpaSeqNota, VpaCodFilial: Integer; VpaDConhecimentoTransporte: TRBDConhecimentoTransporte);
+procedure TFuncoesNFFor.CarDConhecimentoTransporte(VpaSeqNota, VpaCodFilial: Integer; VpaDConhecimentoTransporte: TRBDConhecimentoTransporte; VpaNotaEntrada: Boolean);
 begin
-  AdicionaSQLAbreTabela(Tabela,'Select * from CONHECIMENTOTRANSPORTE '+
-                               ' Where CODFILIALNOTA = '+ IntToStr(VpaCodFilial)+
-                               ' and SEQNOTAENTRADA = '+ IntToStr(VpaSeqNota));
+  AdicionaSQLTabela(Tabela,'Select * from CONHECIMENTOTRANSPORTE '+
+                               ' Where CODFILIALNOTA = '+ IntToStr(VpaCodFilial));
+  if VpaNotaEntrada then
+    AdicionaSQLTabela(Tabela, ' and SEQNOTAENTRADA = '+ IntToStr(VpaSeqNota))
+  else
+    AdicionaSQLTabela(Tabela, ' and SEQNOTASAIDA = '+ IntToStr(VpaSeqNota));
+
+ Tabela.Open;
  if not Tabela.Eof then
  begin
   VpaDConhecimentoTransporte.SeqConhecimento:= Tabela.FieldByName('SEQCONHECIMENTO').AsInteger;
@@ -832,6 +838,19 @@ begin
       VpfDProdutoNota.ValOutrasDespesas := VpfDProdutoNota.ValOutrasDespesas + (VpaDNota.ValOutrasDespesas - VpfTotalOutrasDespesas);
     end;
   end;
+end;
+
+{******************************************************************************}
+function TFuncoesNFFor.ExcluiConhecimentoTransporte(VpaCodFilial,
+  VpaSeqConhecimento, VpaCodTransportadora: Integer): String;
+begin
+  NotCadastro.sql.clear;
+  ExecutaComandoSql(NotCadastro, ' DELETE FROM CONHECIMENTOTRANSPORTE '+
+                         ' WHERE CODFILIALNOTA = ' + InttoStr(VpaCodFilial) +
+                         ' AND SEQCONHECIMENTO = ' + IntToStr(VpaSeqConhecimento) +
+                         ' AND CODTRANSPORTADORA = ' + IntToStr(VpaCodTransportadora));
+  result := NotCadastro.AMensagemErroGravacao;
+  NotCadastro.Close;
 end;
 
 {******************************************************************************}

@@ -1,4 +1,4 @@
-unit AConhecimentoTransporte;
+unit AConhecimentoTransporteEntrada;
 
 interface
 
@@ -8,7 +8,7 @@ uses
   PainelGradiente, Mask, numericos, UnDados, UnNotasFiscaisFor, ConstMsg, FunData, FunString;
 
 type
-  TFConhecimentoTransporte = class(TFormularioPermissao)
+  TFConhecimentoTransporteEntrada = class(TFormularioPermissao)
     PainelGradiente1: TPainelGradiente;
     PanelColor1: TPanelColor;
     Panel1: TPanelColor;
@@ -45,11 +45,11 @@ type
     procedure CarDTela;
   public
     { Public declarations }
-    procedure ConsultarConhecimento(VpaCodTransportadora, VpaCodFilial, VpaSeqNota: Integer);
+    procedure ConsultarConhecimento(VpaCodTransportadora, VpaCodFilial, VpaSeqNota: Integer; VpaNotaEntrada : Boolean);
   end;
 
 var
-  FConhecimentoTransporte: TFConhecimentoTransporte;
+  FConhecimentoTransporteEntrada: TFConhecimentoTransporteEntrada;
 
 implementation
 
@@ -59,7 +59,7 @@ uses APrincipal;
 
 
 { **************************************************************************** }
-procedure TFConhecimentoTransporte.FormCreate(Sender: TObject);
+procedure TFConhecimentoTransporteEntrada.FormCreate(Sender: TObject);
 begin
   {  abre tabelas }
   { chamar a rotina de atualização de menus }
@@ -68,19 +68,19 @@ begin
 end;
 
 { *************************************************************************** }
-procedure TFConhecimentoTransporte.BCancelaClick(Sender: TObject);
+procedure TFConhecimentoTransporteEntrada.BCancelaClick(Sender: TObject);
 begin
   close;
 end;
 
 { **************************************************************************** }
-procedure TFConhecimentoTransporte.BFecharClick(Sender: TObject);
+procedure TFConhecimentoTransporteEntrada.BFecharClick(Sender: TObject);
 begin
   close;
 end;
 
 { **************************************************************************** }
-procedure TFConhecimentoTransporte.BGravarClick(Sender: TObject);
+procedure TFConhecimentoTransporteEntrada.BGravarClick(Sender: TObject);
 Var
   VpfResultado: String;
 begin
@@ -93,7 +93,7 @@ begin
 end;
 
 { **************************************************************************** }
-procedure TFConhecimentoTransporte.CarDClasse;
+procedure TFConhecimentoTransporteEntrada.CarDClasse;
 begin
   VprDConhecimentoTransporte.CodModeloDocumento:= ETipoDocumentoFiscal.Text;
   if DeletaEspaco(DeletaChars(EDataConhecimento.Text,'/')) = '' then
@@ -110,7 +110,7 @@ begin
 end;
 
 { **************************************************************************** }
-procedure TFConhecimentoTransporte.CarDTela;
+procedure TFConhecimentoTransporteEntrada.CarDTela;
 begin
   ETipoDocumentoFiscal.Text:= VprDConhecimentoTransporte.CodModeloDocumento;
   ETipoDocumentoFiscal.Atualiza;
@@ -127,18 +127,26 @@ begin
 end;
 
 { **************************************************************************** }
-procedure TFConhecimentoTransporte.ConsultarConhecimento(VpaCodTransportadora, VpaCodFilial, VpaSeqNota: Integer);
+procedure TFConhecimentoTransporteEntrada.ConsultarConhecimento(VpaCodTransportadora, VpaCodFilial, VpaSeqNota: Integer; VpaNotaEntrada : Boolean);
 begin
-  FunNotaFor.CarDConhecimentoTransporte(VpaSeqNota,VpaCodFilial,VprDConhecimentoTransporte);
   VprDConhecimentoTransporte.CodTransportadora:= VpaCodTransportadora;
   VprDConhecimentoTransporte.CodFilial:= VpaCodFilial;
-  VprDConhecimentoTransporte.SeqNotaEntrada:= VpaSeqNota;
+  if VpaNotaEntrada then
+  begin
+    FunNotaFor.CarDConhecimentoTransporte(VpaSeqNota,VpaCodFilial,VprDConhecimentoTransporte, true);
+    VprDConhecimentoTransporte.SeqNotaEntrada:= VpaSeqNota;
+  end
+  else
+  begin
+    FunNotaFor.CarDConhecimentoTransporte(VpaSeqNota,VpaCodFilial,VprDConhecimentoTransporte, false);
+    VprDConhecimentoTransporte.SeqNotaSaida:= VpaSeqNota;
+  end;
   CarDTela;
   ShowModal;
 end;
 
 { **************************************************************************** }
-procedure TFConhecimentoTransporte.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFConhecimentoTransporteEntrada.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   { fecha tabelas }
   { chamar a rotina de atualização de menus }
@@ -154,5 +162,5 @@ end;
 
 Initialization
 { *************** Registra a classe para evitar duplicidade ****************** }
- RegisterClasses([TFConhecimentoTransporte]);
+ RegisterClasses([TFConhecimentoTransporteEntrada]);
 end.

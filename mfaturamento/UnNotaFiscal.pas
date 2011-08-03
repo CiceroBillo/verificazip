@@ -105,6 +105,7 @@ type
    procedure AssociaNotaOrcamento(VpaEmpfil,VpaSeqNota, VpaFilialOrcamento, VpaLanOrcamento : Integer);
    function ExisteProdutoNota(VpaMovNota : TDataSet; VpaCodFilial, VpaSeqNota, VpaSeqProduto : Integer) : Boolean;
    function ExisteNota(VpaNumNota: Integer): Boolean;
+   function ExisteSerieNota(VpaNumNota: Integer;  VpaNumSerie: String): Boolean;
    function ExisteModelo(VpaCodModelo: String): Boolean;
    function ExisteProduto(VpaCodProduto : String; VpaDNota :TRBDNotaFiscal; VpaDProdutoNota : TRBDNotaFiscalProduto):Boolean;
    function ExisteServico(VpaCodServico : String;VpaDNota : TRBDNotaFiscal; VpaDServicoNota : TRBDNotaFiscalServico):Boolean;
@@ -1380,6 +1381,16 @@ begin
                             ' Where I_EMP_FIL = '+IntToStr(VpaCodFilial)+
                             ' and I_SEQ_NOT = ' +IntToStr(VpaSeqNota));
   result := not Aux.Eof;
+  Aux.Close;
+end;
+
+{******************************************************************************}
+function TFuncoesNotaFiscal.ExisteSerieNota(VpaNumNota: Integer;  VpaNumSerie: String): Boolean;
+begin
+  AdicionaSQLAbreTabela(AUX,'SELECT I_NRO_NOT, C_SER_NOT FROM CADNOTAFISCAIS '+
+                            ' WHERE I_NRO_NOT = '+IntToStr(VpaNumNota)+
+                            ' AND C_SER_NOT = ''' + VpaNumSerie + '''');
+  Result:= not Aux.Eof;
   Aux.Close;
 end;
 
