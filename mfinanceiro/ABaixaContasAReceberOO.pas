@@ -85,6 +85,7 @@ type
     procedure DescontaDuplicatas;
     procedure FundoPerdido;
     procedure CobrancaExterna;
+    procedure AssociaPerDescontoFormaPagamento(VpaCodFormaPagamento : Integer);
   public
     VpfTransacao : TTransactionDesc;
 
@@ -301,6 +302,22 @@ begin
 
 end;
 
+
+{******************************************************************************}
+procedure TFBaixaContasaReceberOO.AssociaPerDescontoFormaPagamento(VpaCodFormaPagamento: Integer);
+var
+  VpfLaco : Integer;
+  VpfPerDeconto : Double;
+  VpfDParcela : TRBDParcelaBaixaCR;
+begin
+  VpfPerDeconto := FunContasAReceber.RPerDescontoFormaPagamento(VpaCodFormaPagamento);
+  for VpfLaco := 0 to VprDBaixaCR.Parcelas.Count - 1 do
+  begin
+    VpfDParcela := TRBDParcelaBaixaCR(VprDBaixaCR.Parcelas.Items[Vpflaco]);
+    VpfDParcela.PerDescontoFormaPagamento := VpfPerDeconto;
+  end;
+  CalculaAcrescimoDesconto;
+end;
 
 {******************************************************************************}
 procedure TFBaixaContasaReceberOO.AtualizaValoresTela;
@@ -567,6 +584,10 @@ procedure TFBaixaContasaReceberOO.EFormaPagamentoRetorno(Retorno1,
   Retorno2: String);
 begin
   VprDBaixaCR.TipFormaPagamento := FunContasAReceber.RTipoFormaPagamento(Retorno1);
+  if VprDBaixaCR.CodFormaPagamento <> EFormaPagamento.AInteiro then
+  begin
+    AssociaPerDescontoFormaPagamento(EFormaPagamento.AInteiro);
+  end;
 end;
 
 {******************************************************************************}

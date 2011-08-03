@@ -239,6 +239,7 @@ type
     function RNroDocumentoImpressaoCheque(VpaNumConta : string):Integer;
     function RTipoConta(VpaNumConta : string):string;
     function RDiasVencimentoFormaPagamento(VpaCodFormaPagamento : Integer): Integer;
+    function RPerDescontoFormaPagamento(VpaCodFormaPagamento : Integer):double;
     procedure AlteraValorDescontoCotacao(VpaCodFilial,VpaLanOrcamento : Integer;VpaValDesconto : Double);
     procedure ExtornaValorDescontoCotacao(VpaCodFilial,VpaLanReceber : Integer;VpaValDesconto : Double);
     procedure CarDRecibo(VpaCodFilial, VpaLanReceber, VpaNumParcela : Integer;VpaDRecibo: TDadosRecibo);
@@ -658,6 +659,16 @@ begin
     if TRBDParcelaBaixaCR(VpaDBaixa.Parcelas.Items[VpfLaco]).IndGeraParcial then
       result := TRBDParcelaBaixaCR(VpaDBaixa.Parcelas.Items[VpfLaco]);
   end;
+end;
+
+{******************************************************************************}
+function TFuncoesContasAReceber.RPerDescontoFormaPagamento(VpaCodFormaPagamento: Integer): double;
+begin
+  result := 0;
+  AdicionaSQLAbreTabela(Aux,'Select N_PER_DES FROM CADFORMASPAGAMENTO ' +
+                            ' Where I_COD_FRM = '+IntToStr(VpaCodFormaPagamento));
+  result := Aux.FieldByName('N_PER_DES').AsFloat;
+  Aux.Close;
 end;
 
 {******************************************************************************}

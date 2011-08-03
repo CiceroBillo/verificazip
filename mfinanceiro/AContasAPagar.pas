@@ -244,6 +244,10 @@ type
     AlterarFornecedor1: TMenuItem;
     LTotalSemNota: TLabel;
     ETotalSemNota: Tnumerico;
+    Label8: TLabel;
+    SpeedButton3: TSpeedButton;
+    Label38: TLabel;
+    EContaCorrente: TEditLocaliza;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BitBtn1Click(Sender: TObject);
@@ -629,6 +633,8 @@ begin
                                         ' AND CHE.SEQCHEQUE = ' + IntToStr(VprSeqCheque)+')')
   else
   begin
+    if EContaCorrente.Text <> '' then
+      VpaSelect.Add('AND MCP.C_NRO_CON = '''+EContaCorrente.Text+'''');
     if CPeriodo.Checked then
     begin
       case RPeriodo.ItemIndex of
@@ -1254,7 +1260,7 @@ procedure TFContasaPagar.BFiltrosClick(Sender: TObject);
 begin
   if BFiltros.Caption = '>>' then
   begin
-    PanelColor3.Height := ECentroCusto.Top + ECentroCusto.Height + 5;
+    PanelColor3.Height := EContaCorrente.Top + EContaCorrente.Height + 5;
     BFiltros.Caption := '<<';
   end
   else

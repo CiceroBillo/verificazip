@@ -935,7 +935,7 @@ begin
     if EntradaNumero('Valor Recibo','Valor',VpfValor,false,ECodCliente.Color,PanelColor2.Color,true) then
     begin
       dtRave := TdtRave.create(self);
-      dtRave.ImprimeRecibo(varia.CodigoEmpFil,VprDCliente,VpfDescricao,FormatFloat('#,###,##0.00',StrToFloat(VpfValor)),Extenso(StrToFloat(VpfValor),'reais','real'),varia.CidadeFilial+' '+ IntTostr(dia(date))+', de ' + TextoMes(date,false)+ ' de '+Inttostr(ano(date)));
+      dtRave.ImprimeRecibo(varia.CodigoEmpFil,VprDCliente,VpfDescricao,FormatFloat('#,###,##0.00',StrToFloat(VpfValor)),Extenso(StrToFloat(VpfValor),'reais','real'),varia.CidadeFilial+' '+ IntTostr(dia(date))+', de ' + TextoMes(date,false)+ ' de '+Inttostr(ano(date)),varia.NomeFilial);
       dtRave.free;
     end;
 end;

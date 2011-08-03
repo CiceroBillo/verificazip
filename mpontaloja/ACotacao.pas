@@ -2743,7 +2743,7 @@ begin
     VpfDCliente.CodCliente := CadOrcamentoI_COD_CLI.AsInteger;
     FunClientes.CarDCliente(VpfDCliente,false,false,false);
     dtRave := TdtRave.create(self);
-    dtRave.ImprimeRecibo(varia.CodigoEmpFil,VpfDCliente,IntToStr(VprDOrcamento.LanOrcamento),FormatFloat('#,###,##0.00',VprDOrcamento.ValTotal),Extenso(VprDOrcamento.ValTotal,'reais','real'),varia.CidadeFilial+' '+ IntTostr(dia(date))+', de ' + TextoMes(date,false)+ ' de '+Inttostr(ano(date)));
+    dtRave.ImprimeRecibo(varia.CodigoEmpFil,VpfDCliente,IntToStr(VprDOrcamento.LanOrcamento),FormatFloat('#,###,##0.00',VprDOrcamento.ValTotal),Extenso(VprDOrcamento.ValTotal,'reais','real'),varia.CidadeFilial+' '+ IntTostr(dia(date))+', de ' + TextoMes(date,false)+ ' de '+Inttostr(ano(date)),varia.NomeFilial);
     dtRave.free;
     VpfDCliente.free;
   end;

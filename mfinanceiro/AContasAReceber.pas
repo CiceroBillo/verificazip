@@ -1161,7 +1161,7 @@ begin
   VpfDCliente.CodCliente := MovParcelasI_COD_CLI.AsInteger;
   FunClientes.CarDCliente(VpfDCliente);
   dtRave := TdtRave.create(self);
-  dtRave.ImprimeRecibo(MovParcelasI_EMP_FIL.AsInteger,VpfDCliente,MovParcelasC_NRO_DUP.AsString,FormatFloat('#,###,##0.00',MovParcelasN_VLR_PAR.AsFloat),Extenso(MovParcelasN_VLR_PAR.AsFloat,'reais','real'),varia.CidadeFilial+' '+ IntTostr(dia(date))+', de ' + TextoMes(date,false)+ ' de '+Inttostr(ano(date)));
+  dtRave.ImprimeRecibo(MovParcelasI_EMP_FIL.AsInteger,VpfDCliente,MovParcelasC_NRO_DUP.AsString,FormatFloat('#,###,##0.00',MovParcelasN_VLR_PAR.AsFloat),Extenso(MovParcelasN_VLR_PAR.AsFloat,'reais','real'),varia.CidadeFilial+' '+ IntTostr(dia(date))+', de ' + TextoMes(date,false)+ ' de '+Inttostr(ano(date)),varia.NomeFilial);
   dtRave.free;
   VpfDCliente.free;
 end;

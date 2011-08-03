@@ -91,6 +91,8 @@ type
     ECidadePagador: TEditColor;
     Label17: TLabel;
     EUF: TEditColor;
+    ELocalizaEmitente: TRBEditLocaliza;
+    SpeedButton2: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BFecharClick(Sender: TObject);
@@ -99,6 +101,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure EValorChange(Sender: TObject);
     procedure EClienteRetorno(VpaColunas: TRBColunasLocaliza);
+    procedure ELocalizaEmitenteRetorno(VpaColunas: TRBColunasLocaliza);
   private
     IMP : TFuncoesImpressao;
     VprDCliente : TRBDCliente;
@@ -214,7 +217,7 @@ begin
   CarDCliente;
 
   dtRave := TdtRave.create(self);
-  dtRave.ImprimeRecibo(Varia.CodigoEmpFil,VprDCliente,EDescReferente1.Text+EDescReferente2.text,FormatFloat('#,###,##0.00',EValor.AValor),EDescValor1.Text+EDescValor2.Text,ECidade.text+', '+EDia.Text+' de '+EMes.Text+' de '+EAno.Text);
+  dtRave.ImprimeRecibo(Varia.CodigoEmpFil,VprDCliente,EDescReferente1.Text+EDescReferente2.text,FormatFloat('#,###,##0.00',EValor.AValor),EDescValor1.Text+EDescValor2.Text,ECidade.text+', '+EDia.Text+' de '+EMes.Text+' de '+EAno.Text,EEmitente.Text);
   dtRave.free;
   VpfDFilial.Free;
 end;
@@ -294,6 +297,19 @@ begin
     ECidadePagador.Text := VprDCliente.DesCidade;
     EUF.Text := VprDCliente.DesUF;
   end;
+end;
+
+procedure TFMostraRecibo.ELocalizaEmitenteRetorno(
+  VpaColunas: TRBColunasLocaliza);
+begin
+  if ELocalizaEmitente.AInteiro <> 0  then
+  begin
+    VprDCliente.CodCliente := ELocalizaEmitente.AInteiro;
+    FunClientes.CarDCliente(VprDCliente);
+    EEmitente.Text := VprDCliente.NomCliente;
+    ECGCCPFGREmitente.Text := VprDCliente.CGC_CPF;
+  end;
+
 end;
 
 procedure TFMostraRecibo.EValorChange(Sender: TObject);

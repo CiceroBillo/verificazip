@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
-    <Transaction>2009/07/18 17:28:10.671.dproj,C:\Eficacia\siscorp\mfaturamento\faturamento.dproj=C:\Documents and Settings\Rafael Budag\Meus documentos\RAD Studio\Projects\Project1.dproj</Transaction>
-    <Transaction>2009/08/18 20:08:25.687.dfm,C:\Eficacia\siscorp\mfaturamento\AHigienizarCadastros.dfm=C:\Eficacia\siscorp\mfaturamento\formpadraopermissao.dfm</Transaction>
-    <Transaction>2009/08/18 20:08:25.687.pas,C:\Eficacia\siscorp\mfaturamento\AHigienizarCadastros.pas=C:\Eficacia\siscorp\mfaturamento\formpadraopermissao.pas</Transaction>
-    <Transaction>2009/11/14 17:05:08.359.pas,C:\Eficacia\SisCorp\mfaturamento\ASpedFiscal.pas=C:\Eficacia\siscorp\mfaturamento\formpadraopermissao.pas</Transaction>
-    <Transaction>2009/11/14 17:05:08.359.dfm,C:\Eficacia\SisCorp\mfaturamento\ASpedFiscal.dfm=C:\Eficacia\siscorp\mfaturamento\formpadraopermissao.dfm</Transaction>
-    <Transaction>2010/06/28 09:41:32.313.dfm,D:\Eficacia\SisCorp\mfaturamento\ACorrigeNotasSpedFiscal.dfm=D:\Eficacia\Siscorp\mfaturamento\formpadraopermissao.dfm</Transaction>
-    <Transaction>2010/09/25 21:28:59.186.dfm,D:\Eficacia\SisCorp\mfaturamento\AExportaNfeContabilidade.dfm=D:\Eficacia\Siscorp\mfaturamento\formpadraopermissao.dfm</Transaction>
-    <Transaction>2011/06/13 10:03:04.000.275,M:\Eficacia\Siscorp\mfaturamento\AExportaRPS.dfm=M:\Eficacia\Siscorp\mfaturamento\formpadraopermissao.dfm</Transaction>
+    <Transaction>2009/07/18 17:28:10.671.dproj,C:\Documents and Settings\Rafael Budag\Meus documentos\RAD Studio\Projects\Project1.dproj=C:\Eficacia\siscorp\mfaturamento\faturamento.dproj</Transaction>
+    <Transaction>2009/08/18 20:08:25.687.pas,C:\Eficacia\siscorp\mfaturamento\formpadraopermissao.pas=C:\Eficacia\siscorp\mfaturamento\AHigienizarCadastros.pas</Transaction>
+    <Transaction>2009/08/18 20:08:25.687.dfm,C:\Eficacia\siscorp\mfaturamento\formpadraopermissao.dfm=C:\Eficacia\siscorp\mfaturamento\AHigienizarCadastros.dfm</Transaction>
+    <Transaction>2009/11/14 17:05:08.359.pas,C:\Eficacia\siscorp\mfaturamento\formpadraopermissao.pas=C:\Eficacia\SisCorp\mfaturamento\ASpedFiscal.pas</Transaction>
+    <Transaction>2009/11/14 17:05:08.359.dfm,C:\Eficacia\siscorp\mfaturamento\formpadraopermissao.dfm=C:\Eficacia\SisCorp\mfaturamento\ASpedFiscal.dfm</Transaction>
+    <Transaction>2010/06/28 09:41:32.313.dfm,D:\Eficacia\Siscorp\mfaturamento\formpadraopermissao.dfm=D:\Eficacia\SisCorp\mfaturamento\ACorrigeNotasSpedFiscal.dfm</Transaction>
+    <Transaction>2010/09/25 21:28:59.186.dfm,D:\Eficacia\Siscorp\mfaturamento\formpadraopermissao.dfm=D:\Eficacia\SisCorp\mfaturamento\AExportaNfeContabilidade.dfm</Transaction>
+    <Transaction>2011/06/13 10:03:04.000.275,M:\Eficacia\Siscorp\mfaturamento\formpadraopermissao.dfm=M:\Eficacia\Siscorp\mfaturamento\AExportaRPS.dfm</Transaction>
   </Transactions>
 </BorlandProject>

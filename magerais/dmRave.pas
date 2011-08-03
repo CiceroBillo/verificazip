@@ -124,7 +124,7 @@ type
     procedure ImprimeConsistenciadeEstoque(VpaCodFilial, VpaSeProduto : Integer;VpaDatInicio,VpaDatFim : TDateTime;VpaCaminhoRelatorio,VpaNomFilial,VpaNomProduto : String;VpaIndSomenteMonitorados : Boolean);
     procedure ImprimeConsumoFracionada(VpaCodFilial, VpaSeqOrdemProduccao : Integer;VpaSomenteAReservar : Boolean);
     procedure ImprimeConsumoSubmontagem(VpaCodFilial, VpaSeqOrdemProduccao, VpaSeqFracao : Integer;VpaSomenteAReservar, VpaConsumoExcluir : Boolean);
-    procedure ImprimeRecibo(VpaCodFilial : Integer;VpaDCliente : TRBDCliente;VpaDesDuplicata, VpaValDuplicata,VpaValExtenso,VpaLocaleData : String);
+    procedure ImprimeRecibo(VpaCodFilial : Integer;VpaDCliente : TRBDCliente;VpaDesDuplicata, VpaValDuplicata,VpaValExtenso,VpaLocaleData, VpaNomEmitente : String);
     procedure ImprimePromissoria(VpaDFilial: TRBDFilial; VpaDCliente : TRBDCliente; VpaDesDuplicata, VpaValDuplicata,VpaValExtenso,VpaLocaleData, VpaDiaVencimento,VpaDiaVencExtenso,VpaAnoVencimento,VpaDesMesVencimento : String;VpaVisualizar : Boolean);
     procedure ImprimeDevolucoesPendente(VpaCodFilial,VpaCodCliente,VpaCodTransportadora,VpaCodEstagio,VpaCodVendedor, VpaCodProduto : Integer; VpaData : TDatetime;VpaCaminhoRelatorio,VpaNomFilial,VpaNomCliente,VpaNomTranportadora,VpaNomEstagio, VpaNomVendedor, VpaNomProduto : String);
     procedure ImprimeEstoqueFiscal(VpaCodFilial,VpaSeqProduto : integer;VpaCaminhoRelatorio,VpaNomFilial, VpaNomProduto : String);
@@ -2693,7 +2693,7 @@ begin
 end;
 
 {******************************************************************************}
-procedure TdtRave.ImprimeRecibo(VpaCodFilial : Integer ;VpaDCliente : TRBDCliente;VpaDesDuplicata, VpaValDuplicata,VpaValExtenso,VpaLocaleData : String);
+procedure TdtRave.ImprimeRecibo(VpaCodFilial : Integer ;VpaDCliente : TRBDCliente;VpaDesDuplicata, VpaValDuplicata,VpaValExtenso,VpaLocaleData, VpaNomEmitente : String);
 begin
   Rave.close;
   RvSystem1.SystemPrinter.Title := 'Eficácia - Recibo';
@@ -2714,6 +2714,7 @@ begin
   Rave.SetParam('CONCLIENTE',VpaDCliente.NomContato);
   Rave.SetParam('DESDATADUPLICATA',VpaLocaleData);
   Rave.SetParam('DESDUPLICATA',VpaDesDuplicata);
+  Rave.SetParam('NOMEMITENTE',VpaNomEmitente);
   Rave.SetParam('VALDUPLICATA',VpaValDuplicata);
   Rave.SetParam('VALEXTENSO',VpaValExtenso);
   Rave.Execute;
