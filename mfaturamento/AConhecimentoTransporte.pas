@@ -53,16 +53,10 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BFecharClick(Sender: TObject);
     procedure BCadastrarClick(Sender: TObject);
-    procedure EFilialFimConsulta(Sender: TObject);
-    procedure ETransportadoraFimConsulta(Sender: TObject);
-    procedure CPeriodoClick(Sender: TObject);
-    procedure EDatInicioExit(Sender: TObject);
     procedure EDatFimExit(Sender: TObject);
-    procedure EconhecimentoExit(Sender: TObject);
     procedure BConsultaClick(Sender: TObject);
     procedure BAlterarClick(Sender: TObject);
     procedure BtExcluirClick(Sender: TObject);
-    procedure BImprimirClick(Sender: TObject);
   private
     FunNotaFor : TFuncoesNFFor;
     procedure AtualizaConsulta;
@@ -108,12 +102,15 @@ begin
     VpaSelect.Add(' AND CON.NUMCONHECIMENTO = ' + IntToStr(Econhecimento.AInteiro));
 
   if CPeriodo.Checked then
-    VpaSelect.add(' AND ' + SQLTextoDataEntreAAAAMMDD('CON.DATCONHECIMENTO',EDatInicio.Date,EDatFim.Date,FALSE));
+    VpaSelect.add(SQLTextoDataEntreAAAAMMDD('CON.DATCONHECIMENTO',EDatInicio.Date,EDatFim.Date,TRUE));
 end;
 
 { *************************************************************************** }
 procedure TFConhecimentoTransporte.AtualizaConsulta;
+var
+  VpfPosicao : TBookmark;
 begin
+  VpfPosicao :=  CONHECIMENTOTRANSPORTE.GetBookmark;
   CONHECIMENTOTRANSPORTE.Close;
   LimpaSQLTabela(CONHECIMENTOTRANSPORTE);
   AdicionaSQLTabela(CONHECIMENTOTRANSPORTE,
@@ -130,13 +127,25 @@ begin
   AdicionaFiltros(CONHECIMENTOTRANSPORTE.SQL);
   CONHECIMENTOTRANSPORTE.sql.add('order by CON.DATCONHECIMENTO, CON.NUMCONHECIMENTO');
   CONHECIMENTOTRANSPORTE.open;
+  try
+    CONHECIMENTOTRANSPORTE.GotoBookmark(VpfPosicao);
+    CONHECIMENTOTRANSPORTE.FreeBookmark(VpfPosicao);
+  except
+    try
+      CONHECIMENTOTRANSPORTE.Last;
+      CONHECIMENTOTRANSPORTE.GotoBookmark(VpfPosicao);
+    finally
+      CONHECIMENTOTRANSPORTE.FreeBookmark(VpfPosicao);
+    end;
+  end;
 end;
 
 { *************************************************************************** }
 procedure TFConhecimentoTransporte.BAlterarClick(Sender: TObject);
 begin
   FConhecimentoTransporteEntrada := TFConhecimentoTransporteEntrada.CriarSDI(self,'',true);
-  FConhecimentoTransporteEntrada.ConsultarConhecimento(CONHECIMENTOTRANSPORTEI_COD_CLI.AsInteger, CONHECIMENTOTRANSPORTECODFILIALNOTA.AsInteger, CONHECIMENTOTRANSPORTESEQNOTASAIDA.AsInteger, false);
+  if FConhecimentoTransporteEntrada.ConsultarConhecimento(CONHECIMENTOTRANSPORTEI_COD_CLI.AsInteger, CONHECIMENTOTRANSPORTECODFILIALNOTA.AsInteger, CONHECIMENTOTRANSPORTESEQNOTASAIDA.AsInteger, false) then
+    AtualizaConsulta;
   FConhecimentoTransporteEntrada.Free;
 end;
 
@@ -144,7 +153,8 @@ end;
 procedure TFConhecimentoTransporte.BCadastrarClick(Sender: TObject);
 begin
   FConhecimentoTransporteSaida := TFConhecimentoTransporteSaida.CriarSDI(self,'',true);
-  FConhecimentoTransporteSaida.NovoConhecimento;
+  if FConhecimentoTransporteSaida.NovoConhecimento then
+    AtualizaConsulta;
   FConhecimentoTransporteSaida.Free;
 end;
 
@@ -163,12 +173,6 @@ begin
 end;
 
 { *************************************************************************** }
-procedure TFConhecimentoTransporte.BImprimirClick(Sender: TObject);
-begin
-
-end;
-
-{ *************************************************************************** }
 procedure TFConhecimentoTransporte.BtExcluirClick(Sender: TObject);
 var
   VpfResultado: String;
@@ -182,40 +186,11 @@ begin
 end;
 
 { *************************************************************************** }
-procedure TFConhecimentoTransporte.CPeriodoClick(Sender: TObject);
-begin
-  AtualizaConsulta;
-end;
-
-{ *************************************************************************** }
-procedure TFConhecimentoTransporte.EconhecimentoExit(Sender: TObject);
-begin
-  AtualizaConsulta;
-end;
-
-{ *************************************************************************** }
 procedure TFConhecimentoTransporte.EDatFimExit(Sender: TObject);
 begin
   AtualizaConsulta;
 end;
 
-{ *************************************************************************** }
-procedure TFConhecimentoTransporte.EDatInicioExit(Sender: TObject);
-begin
-  AtualizaConsulta;
-end;
-
-{ *************************************************************************** }
-procedure TFConhecimentoTransporte.EFilialFimConsulta(Sender: TObject);
-begin
-  AtualizaConsulta;
-end;
-
-{ *************************************************************************** }
-procedure TFConhecimentoTransporte.ETransportadoraFimConsulta(Sender: TObject);
-begin
-  AtualizaConsulta;
-end;
 
 { *************************************************************************** }
 procedure TFConhecimentoTransporte.FormClose(Sender: TObject; var Action: TCloseAction);

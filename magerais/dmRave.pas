@@ -125,7 +125,8 @@ type
     procedure ImprimeConsumoFracionada(VpaCodFilial, VpaSeqOrdemProduccao : Integer;VpaSomenteAReservar : Boolean);
     procedure ImprimeConsumoSubmontagem(VpaCodFilial, VpaSeqOrdemProduccao, VpaSeqFracao : Integer;VpaSomenteAReservar, VpaConsumoExcluir : Boolean);
     procedure ImprimeRecibo(VpaCodFilial : Integer;VpaDCliente : TRBDCliente;VpaDesDuplicata, VpaValDuplicata,VpaValExtenso,VpaLocaleData, VpaNomEmitente : String);
-    procedure ImprimePromissoria(VpaDFilial: TRBDFilial; VpaDCliente : TRBDCliente; VpaDesDuplicata, VpaValDuplicata,VpaValExtenso,VpaLocaleData, VpaDiaVencimento,VpaDiaVencExtenso,VpaAnoVencimento,VpaDesMesVencimento : String;VpaVisualizar : Boolean);
+    procedure ImprimePromissoria(VpaDFilial: TRBDFilial; VpaDCliente : TRBDCliente; VpaDesDuplicata, VpaValDuplicata,VpaValExtenso,VpaLocaleData, VpaDiaVencimento,VpaDiaVencExtenso,VpaAnoVencimento,VpaDesMesVencimento : String;VpaVisualizar : Boolean);overload;
+    procedure ImprimePromissoria(VpaVisualizar : Boolean);overload;
     procedure ImprimeDevolucoesPendente(VpaCodFilial,VpaCodCliente,VpaCodTransportadora,VpaCodEstagio,VpaCodVendedor, VpaCodProduto : Integer; VpaData : TDatetime;VpaCaminhoRelatorio,VpaNomFilial,VpaNomCliente,VpaNomTranportadora,VpaNomEstagio, VpaNomVendedor, VpaNomProduto : String);
     procedure ImprimeEstoqueFiscal(VpaCodFilial,VpaSeqProduto : integer;VpaCaminhoRelatorio,VpaNomFilial, VpaNomProduto : String);
     procedure ImprimeNotaFiscalEntrada(VpaCodFilial,VpaSeqNota : integer;VpaVisualizar : Boolean);
@@ -812,6 +813,20 @@ begin
 
   Principal.open;
 
+  Rave.Execute;
+end;
+
+{******************************************************************************}
+procedure TdtRave.ImprimePromissoria(VpaVisualizar: Boolean);
+begin
+  Rave.close;
+  RvSystem1.SystemPrinter.Title := 'Eficácia - Promissória';
+  Rave.projectfile := varia.PathRelatorios+'\Financeiro\XX_Promissorias.rav';
+  Rave.clearParams;
+  if VpaVisualizar then
+    RvSystem1.defaultDest := rdPreview
+  else
+    RvSystem1.defaultDest := rdPrinter;
   Rave.Execute;
 end;
 
@@ -2160,8 +2175,16 @@ begin
                              ' WHERE CODFILIAL = '+IntTosTr(VpaCodFilial)+
                              ' AND SEQORDEM = '+IntTosTr(VpaSeqOrdem)+
                              ' ORDER BY SEQFRACAO ');
+  AdicionaSqlAbreTabela(Item2,'SELECT SUM(FOC.QTDPRODUTO), FOC.SEQPRODUTO,  PRO.C_COD_PRO, PRO.C_NOM_PRO, FOC.CODCOR, COR.NOM_COR, '+
+                              ' FOC.DESUM '+
+                              ' FROM FRACAOOPCONSUMO FOC, COR, CADPRODUTOS PRO '+
+                              ' WHERE FOC.CODFILIAL =  '+IntTosTr(VpaCodFilial)+
+                              ' AND FOC.SEQORDEM = '+IntTosTr(VpaSeqOrdem)+
+                              ' AND FOC.CODCOR = COR.COD_COR(+) '+
+                              ' AND PRO.I_SEQ_PRO = FOC.SEQPRODUTO '+
+                              ' AND FOC.INDORDEMCORTE = ''S'''+
+                              ' GROUP BY FOC.SEQPRODUTO, PRO.C_COD_PRO, PRO.C_NOM_PRO, FOC.CODCOR, COR.NOM_COR, FOC.DESUM');
   Rave.Execute;
-//  salvasql;
 end;
 
 {******************************************************************************}

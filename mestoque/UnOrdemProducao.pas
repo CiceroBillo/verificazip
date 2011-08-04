@@ -2570,7 +2570,7 @@ begin
   while not OrdCadastro.Eof and (VpfQtdDevolvido > 0) do
   begin;
     OrdCadastro.edit;
-    if VpfQtdDevolvido > (OrdCadastro.FieldByname('QTDENVIADO').AsFloat -  OrdCadastro.FieldByname('QTDDEVOLUCAO').AsFloat - OrdCadastro.FieldByname('QTDPRODUZIDO').AsFloat) then
+    if VpfQtdDevolvido >= (OrdCadastro.FieldByname('QTDENVIADO').AsFloat -  OrdCadastro.FieldByname('QTDDEVOLUCAO').AsFloat - OrdCadastro.FieldByname('QTDPRODUZIDO').AsFloat) then
     begin
       VpfQtdDevolvido := VpfQtdDevolvido - (OrdCadastro.FieldByname('QTDENVIADO').AsFloat - OrdCadastro.FieldByname('QTDPRODUZIDO').AsFloat - OrdCadastro.FieldByname('QTDDEVOLUCAO').AsFloat);
       OrdCadastro.FieldByname('QTDDEVOLUCAO').AsFloat := OrdCadastro.FieldByname('QTDENVIADO').AsFloat - OrdCadastro.FieldByname('QTDPRODUZIDO').AsFloat;

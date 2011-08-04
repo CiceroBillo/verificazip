@@ -60,6 +60,7 @@ Type TRBFuncoesNFe = class
     function EnviaEmailContabilidadeNfe(VpaARquivo, VpaEmail : string;VpaMes,VpaAno : Integer):string;
     procedure ConsultapelaChave(VpaChave : string) ;
     procedure GeraPDFXML(VpaArquivoXML : String);
+    function NfeCanceladaSefaz(VpaDNota : TRBDNotaFiscal):boolean;
 end;
 
 
@@ -1037,6 +1038,22 @@ begin
       end;}
     end;
     VprStatusBar.Refresh;
+  end;
+end;
+
+{******************************************************************************}
+function TRBFuncoesNFe.NfeCanceladaSefaz(VpaDNota: TRBDNotaFiscal): boolean;
+Var
+  VpfVisulizarWebService : Boolean;
+begin
+  result := true;
+  if (Config.EmiteNFe) and (VpaDNota.IndNFEEnviada) then
+  begin
+    VpfVisulizarWebService := NFe.Configuracoes.WebServices.Visualizar;
+    NFe.Configuracoes.WebServices.Visualizar := false;
+    ConsultapelaChave(VpaDNota.DesChaveNFE);
+    result := nfe.WebServices.Consulta.cStat = 101;
+    NFe.Configuracoes.WebServices.Visualizar := VpfVisulizarWebService;
   end;
 end;
 

@@ -1350,20 +1350,29 @@ begin
                                ' AND CAD.I_LAN_ORC = ' + IntToStr(VpaLanOrcamento));
   VpfDFilial := TRBDFilial.cria;
   Sistema.CarDFilial(VpfDFilial,VpaCodFilial);
+  dtRave := TdtRave.create(nil);
+  dtRave.Promissoria.close;
+  dtRave.Promissoria.open;
   while not Tabela.Eof do
   begin
-    try
-      dtRave := TdtRave.create(nil);
-      dtRave.ImprimePromissoria(VpfDFilial,VpaDCliente,Tabela.FieldByName('C_NRO_DUP').AsString,
-          FormatFloat('#,###,##0.00',Tabela.FieldByName('N_VLR_PAR').AsFloat),
-            Extenso(Tabela.FieldByName('N_VLR_PAR').AsFloat,'real','reais'),
-            varia.CidadeFilial+' '+ IntTostr(dia(date))+', de ' + TextoMes(date,false)+ ' de '+Inttostr(ano(date)),
-            IntToStr(dia(Tabela.FieldByName('D_DAT_VEN').AsDateTime)),Extenso(dia(Tabela.FieldByName('D_DAT_VEN').AsDateTime),'dia','dias'), IntToStr(Ano(Tabela.FieldByName('D_DAT_VEN').AsDateTime)),TextoMes(Tabela.FieldByName('D_DAT_VEN').AsDateTime,false),false);
-    finally
-      dtRave.Free;
-    end;
+    dtRave.Promissoria.insert;
+    dtRave.PromissoriaDesDuplicata.AsString := Tabela.FieldByName('C_NRO_DUP').AsString;
+    dtRave.PromissoriaValDuplicata.AsFloat := Tabela.FieldByName('N_VLR_PAR').AsFloat;
+    dtRave.PromissoriaDesValorExtenso.AsString := Extenso(Tabela.FieldByName('N_VLR_PAR').AsFloat,'real','reais');
+    dtRave.PromissoriaDesLocaleData.AsString := varia.CidadeFilial+' '+ IntTostr(dia(date))+', de ' + TextoMes(date,false)+ ' de '+Inttostr(ano(date));
+    dtRave.PromissoriaNumDiaVencimento.AsInteger := dia(Tabela.FieldByName('D_DAT_VEN').AsDateTime);
+    dtRave.PromissoriaDesDiaVencimento.AsString := Extenso(dia(Tabela.FieldByName('D_DAT_VEN').AsDateTime),'dia','dias');
+    dtRave.PromissoriaNumAnoVencimento.AsInteger := Ano(Tabela.FieldByName('D_DAT_VEN').AsDateTime);
+    dtRave.PromissoriaDesMesVencimto.AsString := TextoMes(Tabela.FieldByName('D_DAT_VEN').AsDateTime,false);
+    dtRave.Promissoria.Post;
     Tabela.Next;
   end;
+  try
+    dtRave.ImprimePromissoria(true);
+  finally
+    dtRave.Free;
+  end;
+
   Tabela.Close;
 end;
 

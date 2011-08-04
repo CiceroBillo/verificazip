@@ -577,47 +577,31 @@ object dtRave: TdtRave
     Left = 512
     Top = 256
     object PromissoriaDesDuplicata: TStringField
-      FieldKind = fkCalculated
       FieldName = 'DesDuplicata'
       Size = 50
-      Calculated = True
     end
     object PromissoriaValDuplicata: TFloatField
-      FieldKind = fkCalculated
       FieldName = 'ValDuplicata'
-      Calculated = True
     end
     object PromissoriaDesValorExtenso: TStringField
-      FieldKind = fkCalculated
       FieldName = 'DesValorExtenso'
       Size = 100
-      Calculated = True
     end
     object PromissoriaDesLocaleData: TStringField
-      FieldKind = fkCalculated
       FieldName = 'DesLocaleData'
       Size = 100
-      Calculated = True
     end
     object PromissoriaNumDiaVencimento: TIntegerField
-      FieldKind = fkCalculated
       FieldName = 'NumDiaVencimento'
-      Calculated = True
     end
     object PromissoriaDesDiaVencimento: TStringField
-      FieldKind = fkCalculated
       FieldName = 'DesDiaVencimento'
-      Calculated = True
     end
     object PromissoriaNumAnoVencimento: TStringField
-      FieldKind = fkCalculated
       FieldName = 'NumAnoVencimento'
-      Calculated = True
     end
     object PromissoriaDesMesVencimto: TStringField
-      FieldKind = fkCalculated
       FieldName = 'DesMesVencimto'
-      Calculated = True
     end
   end
   object RvPromissoria: TRvDataSetConnection

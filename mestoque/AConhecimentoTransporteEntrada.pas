@@ -39,13 +39,14 @@ type
     procedure BCancelaClick(Sender: TObject);
     procedure BGravarClick(Sender: TObject);
   private
+    VprAcao : Boolean;
     FunNotaFor : TFuncoesNFFor;
     VprDConhecimentoTransporte: TRBDConhecimentoTransporte;
     procedure CarDClasse;
     procedure CarDTela;
   public
     { Public declarations }
-    procedure ConsultarConhecimento(VpaCodTransportadora, VpaCodFilial, VpaSeqNota: Integer; VpaNotaEntrada : Boolean);
+    function ConsultarConhecimento(VpaCodTransportadora, VpaCodFilial, VpaSeqNota: Integer; VpaNotaEntrada : Boolean):boolean;
   end;
 
 var
@@ -63,6 +64,7 @@ procedure TFConhecimentoTransporteEntrada.FormCreate(Sender: TObject);
 begin
   {  abre tabelas }
   { chamar a rotina de atualização de menus }
+  VprAcao := false;
   FunNotaFor := TFuncoesNFFor.criar(self,FPrincipal.BaseDados);
   VprDConhecimentoTransporte:= TRBDConhecimentoTransporte.Cria;
 end;
@@ -89,7 +91,10 @@ begin
   if VpfResultado <> '' then
     aviso(VpfResultado)
   else
+  begin
+    VprAcao := true;
     Close;
+  end;
 end;
 
 { **************************************************************************** }
@@ -127,22 +132,18 @@ begin
 end;
 
 { **************************************************************************** }
-procedure TFConhecimentoTransporteEntrada.ConsultarConhecimento(VpaCodTransportadora, VpaCodFilial, VpaSeqNota: Integer; VpaNotaEntrada : Boolean);
+function TFConhecimentoTransporteEntrada.ConsultarConhecimento(VpaCodTransportadora, VpaCodFilial, VpaSeqNota: Integer; VpaNotaEntrada : Boolean):boolean;
 begin
   VprDConhecimentoTransporte.CodTransportadora:= VpaCodTransportadora;
   VprDConhecimentoTransporte.CodFilial:= VpaCodFilial;
+  FunNotaFor.CarDConhecimentoTransporte(VpaSeqNota,VpaCodFilial,VprDConhecimentoTransporte, VpaNotaEntrada);
   if VpaNotaEntrada then
-  begin
-    FunNotaFor.CarDConhecimentoTransporte(VpaSeqNota,VpaCodFilial,VprDConhecimentoTransporte, true);
-    VprDConhecimentoTransporte.SeqNotaEntrada:= VpaSeqNota;
-  end
+    VprDConhecimentoTransporte.SeqNotaEntrada:= VpaSeqNota
   else
-  begin
-    FunNotaFor.CarDConhecimentoTransporte(VpaSeqNota,VpaCodFilial,VprDConhecimentoTransporte, false);
     VprDConhecimentoTransporte.SeqNotaSaida:= VpaSeqNota;
-  end;
   CarDTela;
   ShowModal;
+  result := VprAcao;
 end;
 
 { **************************************************************************** }

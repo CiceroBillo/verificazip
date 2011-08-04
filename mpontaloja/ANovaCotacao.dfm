@@ -52,6 +52,7 @@ object FNovaCotacao: TFNovaCotacao
         Width = 808
         Height = 530
         HorzScrollBar.Visible = False
+        VertScrollBar.Position = 526
         Align = alClient
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
@@ -64,7 +65,7 @@ object FNovaCotacao: TFNovaCotacao
         TabOrder = 0
         object PCliente: TPanelColor
           Left = 0
-          Top = 0
+          Top = -526
           Width = 787
           Height = 243
           Align = alTop
@@ -866,7 +867,7 @@ object FNovaCotacao: TFNovaCotacao
         end
         object PRodaPe: TPanelColor
           Left = 0
-          Top = 966
+          Top = 440
           Width = 785
           Height = 912
           Hint = 'Rodape'
@@ -2609,7 +2610,7 @@ object FNovaCotacao: TFNovaCotacao
         end
         object PVendedor: TPanelColor
           Left = 0
-          Top = 386
+          Top = -140
           Width = 787
           Height = 344
           Align = alTop
@@ -3477,7 +3478,7 @@ object FNovaCotacao: TFNovaCotacao
         end
         object PTabelaPreco: TPanelColor
           Left = 0
-          Top = 349
+          Top = -177
           Width = 787
           Height = 37
           Align = alTop
@@ -3592,7 +3593,7 @@ object FNovaCotacao: TFNovaCotacao
         end
         object PServico: TPanelColor
           Left = 0
-          Top = 860
+          Top = 334
           Width = 787
           Height = 134
           Align = alTop
@@ -3671,7 +3672,7 @@ object FNovaCotacao: TFNovaCotacao
         end
         object PMedico: TPanelColor
           Left = 0
-          Top = 285
+          Top = -241
           Width = 787
           Height = 64
           Align = alTop
@@ -3877,7 +3878,7 @@ object FNovaCotacao: TFNovaCotacao
         end
         object PCompose: TPanelColor
           Left = 0
-          Top = 730
+          Top = 204
           Width = 787
           Height = 130
           Align = alTop
@@ -3953,7 +3954,7 @@ object FNovaCotacao: TFNovaCotacao
         end
         object PClienteFaccionista: TPanelColor
           Left = 0
-          Top = 243
+          Top = -283
           Width = 787
           Height = 42
           Align = alTop

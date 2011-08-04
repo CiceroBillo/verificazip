@@ -41,6 +41,7 @@ type
     procedure ETipoDocumentoFiscalRetorno(VpaColunas: TRBColunasLocaliza);
   private
     { Private declarations }
+    VprAcao : boolean;
     VprDConhecimentoTransporte: TRBDConhecimentoTransporte;
     VprDNota: TRBDNotaFiscal;
     FunNotaFor : TFuncoesNFFor;
@@ -48,13 +49,11 @@ type
     function RColunaGrade(VpaColuna : TRBDColunaGrade):Integer;
     function ExisteNota: Boolean;
     function ExisteSerieNota: Boolean;
-    function ExisteTransportadora: Boolean;
-    function ExisteModelo: Boolean;
     procedure CarTitulosGrade;
     procedure CarDClasse;
   public
     { Public declarations }
-    procedure NovoConhecimento;
+    function NovoConhecimento : boolean;
   end;
 
 var
@@ -72,6 +71,7 @@ procedure TFConhecimentoTransporteSaida.FormCreate(Sender: TObject);
 begin
   {  abre tabelas }
   { chamar a rotina de atualização de menus }
+  VprAcao := false;
   CarTitulosGrade;
 end;
 
@@ -80,27 +80,42 @@ procedure TFConhecimentoTransporteSaida.GradeDadosValidos(Sender: TObject;
  var VpaValidos: Boolean);
 begin
  VpaValidos:= True;
- if Grade.Cells[RColunaGrade(clNumNota),Grade.ALinha] = '' then
+ if not ExisteNota then
  begin
    VpaValidos:= False;
    Grade.Col:= RColunaGrade(clNumNota);
    aviso('NUMERO NOTA NAO PREENCHIDO!!!'#13'É necessário preencher um numero de nota fiscal.');
  end
  else
- if Grade.Cells[RColunaGrade(clNumSerieNota),Grade.ALinha] = '' then
- begin
-   VpaValidos:= False;
-   Grade.Col:= RColunaGrade(clNumSerieNota);
-   aviso('NUMERO SERIE NAO PREENCHIDO!!!'#13'É necessário preencher um numero de serie.');
- end
- else
- if Grade.Cells[RColunaGrade(clCodTransportadora),Grade.ALinha] = '' then
- begin
-   VpaValidos:= False;
-   Grade.Col:= RColunaGrade(clCodTransportadora);
-   aviso('TRANSPORTADORA NAO PREENCHIDA!!!'#13'É necessário preencher uma transportadora.');
- end;
+   if not ExisteSerieNota then
+   begin
+     VpaValidos:= False;
+     Grade.Col:= RColunaGrade(clNumSerieNota);
+     aviso('NUMERO SERIE NAO PREENCHIDO!!!'#13'É necessário preencher um numero de serie.');
+   end
+   else
+     if not ETransportadora.AExisteCodigo(Grade.Cells[RColunaGrade(clCodTransportadora),Grade.ALinha]) then
+     begin
+       VpaValidos:= False;
+       Grade.Col:= RColunaGrade(clCodTransportadora);
+       aviso('TRANSPORTADORA NAO PREENCHIDA!!!'#13'É necessário preencher uma transportadora.');
+     end
+     else
+       if not ETipoDocumentoFiscal.AExisteCodigo(Grade.Cells[RColunaGrade(clCodModelo),Grade.ALinha]) then
+       begin
+         VpaValidos:= False;
+         Grade.Col:= RColunaGrade(clCodModelo);
+         aviso('MODELO DO DOCUMENTO NÃO PREEHCIDO!!!'#13'É necessário preencher o modelo do documento.');
+       end
+       else
+         if Grade.Cells[RColunaGrade(clNumConhecimento),Grade.ALinha] = '' then
+         begin
+           VpaValidos:= False;
+           Grade.Col:= RColunaGrade(clNumConhecimento);
+           aviso('NUMERO DO CONHECIMENTO NÃO PREENCHIDO!!!'#13'É necessário preencher o numero do conhecimento.');
+         end;
  if VpaValidos then
+ begin
    CarDClasse;
    if VprDConhecimentoTransporte.DatConhecimento <= MontaData(1,1,1900) then
    begin
@@ -108,6 +123,7 @@ begin
      Vpavalidos := false;
      Grade.Col := RColunaGrade(clDatConhecimento);
    end
+ end;
 end;
 
 { *************************************************************************** }
@@ -178,7 +194,7 @@ begin
       else
         if RColunaGrade(clCodTransportadora) = Grade.AColuna then
           begin
-            if not ExisteTransportadora then
+            if not ETransportadora.AExisteCodigo(Grade.Cells[RColunaGrade(clCodTransportadora),Grade.ALinha]) then
             begin
                if not ETransportadora.AAbreLocalizacao then
                begin
@@ -190,7 +206,7 @@ begin
           else
             if RColunaGrade(clCodModelo) = Grade.AColuna then
             begin
-              if not ExisteModelo then
+              if not ETipoDocumentoFiscal.AExisteCodigo(Grade.Cells[RColunaGrade(clCodModelo),Grade.ALinha]) then
               begin
                 if not ETipoDocumentoFiscal.AAbreLocalizacao then
                 begin
@@ -230,7 +246,7 @@ begin
 end;
 
 { *************************************************************************** }
-procedure TFConhecimentoTransporteSaida.NovoConhecimento;
+function TFConhecimentoTransporteSaida.NovoConhecimento : boolean;
 begin
   FunNotaFor := TFuncoesNFFor.criar(self,FPrincipal.BaseDados);
   VprDNota:= TRBDNotaFiscal.cria;
@@ -239,6 +255,7 @@ begin
   Grade.ADados:= VprConhecimento;
   Grade.CarregaGrade;
   ShowModal;
+  result := VprAcao;
 end;
 
 { *************************************************************************** }
@@ -279,8 +296,12 @@ var
 begin
   VpfResultado:= FunNotaFor.GravaDConhecimentoTransporteNotaSaida(VprConhecimento);
   if VpfResultado <> '' then
-    aviso(VpfResultado);
-  Close;
+    aviso(VpfResultado)
+  else
+  begin
+    VprAcao := true;
+    Close;
+  end;
 end;
 
 { *************************************************************************** }
@@ -333,9 +354,9 @@ procedure TFConhecimentoTransporteSaida.CarTitulosGrade;
 begin
   grade.Cells[RColunaGrade(clNumNota),0] := 'Numero Nota';
   grade.Cells[RColunaGrade(clNumSerieNota),0] := 'Serie Nota';
-  grade.Cells[RColunaGrade(clCodTransportadora),0] := 'Cod. Transportadora';
+  grade.Cells[RColunaGrade(clCodTransportadora),0] := 'Codigo';
   grade.Cells[RColunaGrade(clNomTransportadora),0] := 'Transportadora';
-  grade.Cells[RColunaGrade(clCodModelo),0] := 'Cod. Modelo';
+  grade.Cells[RColunaGrade(clCodModelo),0] := 'Codigo';
   grade.Cells[RColunaGrade(clNomModelo),0] := 'Modelo';
   grade.Cells[RColunaGrade(clNumConhecimento),0] := 'Numero Conhecimento';
   grade.Cells[RColunaGrade(clDatConhecimento),0] := 'Data Conhecimento';
@@ -356,7 +377,10 @@ begin
     Grade.Cells[RColunaGrade(clCodModelo), Grade.ALinha]:= ETipoDocumentoFiscal.Text;
   end
   else
+  begin
     Grade.Cells[RColunaGrade(clNomModelo), Grade.ALinha]:= '';
+    Grade.Cells[RColunaGrade(clCodModelo), Grade.ALinha]:= '';
+  end;
 end;
 
 { ***************************************************************************}
@@ -369,36 +393,12 @@ begin
     Grade.Cells[RColunaGrade(clCodTransportadora), Grade.ALinha]:= ETransportadora.Text;
   end
   else
-    Grade.Cells[RColunaGrade(clNomTransportadora), Grade.ALinha]:= '';
-end;
-
-{ ***************************************************************************
-procedure TFConhecimentoTransporteSaida.ETransportadoraRetorno(Retorno1,
-  Retorno2: string);
-begin
-  if Retorno1 <> '' then
   begin
-    Grade.Cells[RColunaGrade(clNomTransportadora), Grade.ALinha]:= Retorno1;
-    Grade.Cells[RColunaGrade(clCodTransportadora), Grade.ALinha]:= ETransportadora.Text;
-  end
-  else
     Grade.Cells[RColunaGrade(clNomTransportadora), Grade.ALinha]:= '';
-end;
-
-{ *************************************************************************** }
-function TFConhecimentoTransporteSaida.ExisteModelo: Boolean;
-begin
-  Result:= False;
-  if Grade.Cells[RColunaGrade(clCodModelo),Grade.ALinha] <> '' then
-  begin
-    Result:= FunNotaFiscal.ExisteModelo(Grade.Cells[RColunaGrade(clCodModelo),Grade.ALinha]);
-    if Result then
-    begin
-      ETipoDocumentoFiscal.Text:= Grade.Cells[RColunaGrade(clCodModelo),Grade.ALinha];
-      ETipoDocumentoFiscal.Atualiza;
-    end;
+    Grade.Cells[RColunaGrade(clCodTransportadora), Grade.ALinha]:= '';
   end;
 end;
+
 
 { *************************************************************************** }
 function TFConhecimentoTransporteSaida.ExisteNota: Boolean;
@@ -417,21 +417,6 @@ begin
   if Grade.Cells[RColunaGrade(clNumSerieNota),Grade.ALinha] <> '' then
   begin
     Result:= FunNotaFiscal.ExisteSerieNota(StrToInt(Grade.Cells[RColunaGrade(clNumNota),Grade.ALinha]), Grade.Cells[RColunaGrade(clNumSerieNota),Grade.ALinha]);
-  end;
-end;
-
-{ *************************************************************************** }
-function TFConhecimentoTransporteSaida.ExisteTransportadora: Boolean;
-begin
-  Result:= False;
-  if Grade.Cells[RColunaGrade(clCodTransportadora),Grade.ALinha] <> '' then
-  begin
-    Result:= FunClientes.ExisteTransportadora(StrToInt(Grade.Cells[RColunaGrade(clCodTransportadora),Grade.ALinha]));
-    if Result then
-    begin
-      ETransportadora.Text:= Grade.Cells[RColunaGrade(clCodTransportadora),Grade.ALinha];
-      ETransportadora.Atualiza;
-    end;
   end;
 end;
 

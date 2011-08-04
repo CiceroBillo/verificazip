@@ -1745,47 +1745,6 @@ begin
 end;
 
 {******************************************************************************}
-procedure TRBFunRave.ImprimeProdutoFornecedor(VpaCodFornecedor: integer;
-  VpaCaminho, VpaNomFornecedor: String);
-begin
-  RvSystem.Tag := 51;
-  LimpaSQlTabela(Tabela);
-  AdicionaSqltabela(Tabela, ' SELECT PRO.C_COD_PRO, PRO.C_NOM_PRO,  ' +
-                            ' PFO.VALUNITARIO, PFO.PERIPI, PFO.DATULTIMACOMPRA, PFO.NUMDIAENTREGA, PFO.DESREFERENCIA, ' +
-                            ' CLI.I_COD_CLI, CLI.C_NOM_CLI, CLI.C_NOM_REP, CLI.C_FON_REP, CLI.C_COM_END, TRA.C_NOM_CLI C_NOM_TRA  ' +
-                            ' FROM PRODUTOFORNECEDOR PFO, CADPRODUTOS PRO, CADCLIENTES CLI, CADCLIENTES TRA ' +
-                            ' WHERE PFO.SEQPRODUTO = PRO.I_SEQ_PRO ' +
-                            ' AND PFO.CODCLIENTE = CLI.I_COD_CLI ' +
-                            ' AND ' + SQLTextoRightJoin('CLI.I_COD_TRA', 'TRA.I_COD_CLI'));
-  if VpaCodFornecedor <> 0 then
-    AdicionaSqlTabela(Tabela,' AND PFO.CODCLIENTE = '+InttoStr(VpaCodFornecedor));
-
-  AdicionaSqlTabela(Tabela,' ORDER BY PRO.C_NOM_PRO');
-  Tabela.open;
-
-  RvSystem.SystemPrinter.Orientation:= poLandScape;
-  rvSystem.onBeforePrint := DefineTabelaProdutoFornecedor;
-  rvSystem.onNewPage := ImprimeCabecalho;
-  rvSystem.onPrintFooter := Imprimerodape;
-  rvSystem.onPrint := ImprimeRelProdutoFornecedor;
-
-  VprCaminhoRelatorio := VpaCaminho;
-  VprNomeRelatorio := ' Relação de Produtos Fornecedor';
-  VprCabecalhoEsquerdo.Clear;
-
-  if VpaCodFornecedor <> 0 then
-  begin
-    VprCabecalhoEsquerdo.add('Fornecedor : ' +VpaNomFornecedor);
-    VprCabecalhoDireito.Clear;
-    VprCabecalhoDireito.add('Representante : ' + Tabela.FieldByName('C_NOM_REP').AsString);
-    VprCabecalhoDireito.add('Fone : ' + Tabela.FieldByName('C_FON_REP').AsString);
-  end;
-
-  ConfiguraRelatorioPDF;
-  RvSystem.execute;
-end;
-
-{******************************************************************************}
 procedure TRBFunRave.ImprimeProdutoPorClassificacao(VpaObjeto : TObject);
 var
   VpfQtdProduto,VpfQtdGeral, VpfValGeral : Double;
@@ -8567,14 +8526,16 @@ begin
       VpfValorDiferenca:= 0;
       PrintTab(Tabela.FieldByName('I_NRO_NOT').AsString);
       PrintTab(FormatFloat('#,###,###,##0.00', Tabela.FieldByName('N_VLR_FRE').AsFloat)+' ');
-      VpfValTotalFrete:= VpfValTotalFrete + Tabela.FieldByName('N_VLR_FRE').AsFloat;
       PrintTab(Tabela.FieldByName('NUMCONHECIMENTO').AsString);
       PrintTab(FormatFloat('#,###,###,##0.00', Tabela.FieldByName('VALCONHECIMENTO').AsFloat)+' ');
-      VpfValTotalConhecimento:= VpfValTotalConhecimento + Tabela.FieldByName('VALCONHECIMENTO').AsFloat;
       VpfValorDiferenca:= Tabela.FieldByName('N_VLR_FRE').AsFloat - Tabela.FieldByName('VALCONHECIMENTO').AsFloat;
-      VpfValTotalDiferenca:= VpfValTotalDiferenca + VpfValorDiferenca;
       PrintTab(FormatFloat('#,###,###,##0.00', VpfValorDiferenca)+' ');
       PrintTab(Tabela.FieldByName('C_NOM_CLI').AsString);
+
+      VpfValTotalConhecimento:= VpfValTotalConhecimento + Tabela.FieldByName('VALCONHECIMENTO').AsFloat;
+      VpfValTotalFrete:= VpfValTotalFrete + Tabela.FieldByName('N_VLR_FRE').AsFloat;
+      VpfValTotalDiferenca:= VpfValTotalDiferenca + VpfValorDiferenca;
+
       Tabela.Next;
       NewLine;
       if LinesLeft<=1 Then
@@ -12705,7 +12666,7 @@ begin
                            ' CAD.I_NRO_NOT, CAD.N_VLR_FRE, TRA.C_NOM_CLI ' +
                            ' FROM CONHECIMENTOTRANSPORTE CON, CADNOTAFISCAIS CAD, CADCLIENTES TRA ' +
                            ' WHERE CON.SEQNOTASAIDA = CAD.I_SEQ_NOT ' +
-                           ' AND CAD.I_COD_TRA = TRA.I_COD_CLI' +
+                           ' AND CON.CODTRANSPORTADORA = TRA.I_COD_CLI' +
                            ' AND CON.CODFILIALNOTA = CAD.I_EMP_FIL '+
                            SQLTextoDataEntreAAAAMMDD('CON.DATCONHECIMENTO', VpaDatInicio, VpaDatFim, true));
   if VpaCodfilial <> 0 then
@@ -12718,6 +12679,7 @@ begin
 
   AdicionaSqlTabela(Tabela,' ORDER BY CON.NUMCONHECIMENTO, TRA.I_COD_CLI');
   Tabela.open;
+  Tabela.SQL.SaveToFile('conhecimento.sql');
 
   rvSystem.onBeforePrint := DefineTabelaValorFreteXValorConhecimento;
   rvSystem.onNewPage := ImprimeCabecalho;
@@ -12790,6 +12752,47 @@ begin
   VprCabecalhoDireito.Clear;
   if VpaCodClassificacao <> ''  then
     VprCabecalhoDireito.add('Classificacao : ' +VpaNomClassificacao);
+
+  ConfiguraRelatorioPDF;
+  RvSystem.execute;
+end;
+
+{******************************************************************************}
+procedure TRBFunRave.ImprimeProdutoFornecedor(VpaCodFornecedor: integer;
+  VpaCaminho, VpaNomFornecedor: String);
+begin
+  RvSystem.Tag := 51;
+  LimpaSQlTabela(Tabela);
+  AdicionaSqltabela(Tabela, ' SELECT PRO.C_COD_PRO, PRO.C_NOM_PRO,  ' +
+                            ' PFO.VALUNITARIO, PFO.PERIPI, PFO.DATULTIMACOMPRA, PFO.NUMDIAENTREGA, PFO.DESREFERENCIA, ' +
+                            ' CLI.I_COD_CLI, CLI.C_NOM_CLI, CLI.C_NOM_REP, CLI.C_FON_REP, CLI.C_COM_END, TRA.C_NOM_CLI C_NOM_TRA  ' +
+                            ' FROM PRODUTOFORNECEDOR PFO, CADPRODUTOS PRO, CADCLIENTES CLI, CADCLIENTES TRA ' +
+                            ' WHERE PFO.SEQPRODUTO = PRO.I_SEQ_PRO ' +
+                            ' AND PFO.CODCLIENTE = CLI.I_COD_CLI ' +
+                            ' AND ' + SQLTextoRightJoin('CLI.I_COD_TRA', 'TRA.I_COD_CLI'));
+  if VpaCodFornecedor <> 0 then
+    AdicionaSqlTabela(Tabela,' AND PFO.CODCLIENTE = '+InttoStr(VpaCodFornecedor));
+
+  AdicionaSqlTabela(Tabela,' ORDER BY PRO.C_NOM_PRO');
+  Tabela.open;
+
+  RvSystem.SystemPrinter.Orientation:= poLandScape;
+  rvSystem.onBeforePrint := DefineTabelaProdutoFornecedor;
+  rvSystem.onNewPage := ImprimeCabecalho;
+  rvSystem.onPrintFooter := Imprimerodape;
+  rvSystem.onPrint := ImprimeRelProdutoFornecedor;
+
+  VprCaminhoRelatorio := VpaCaminho;
+  VprNomeRelatorio := ' Relação de Produtos Fornecedor';
+  VprCabecalhoEsquerdo.Clear;
+
+  if VpaCodFornecedor <> 0 then
+  begin
+    VprCabecalhoEsquerdo.add('Fornecedor : ' +VpaNomFornecedor);
+    VprCabecalhoDireito.Clear;
+    VprCabecalhoDireito.add('Representante : ' + Tabela.FieldByName('C_NOM_REP').AsString);
+    VprCabecalhoDireito.add('Fone : ' + Tabela.FieldByName('C_FON_REP').AsString);
+  end;
 
   ConfiguraRelatorioPDF;
   RvSystem.execute;
