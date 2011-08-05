@@ -74,7 +74,7 @@ object FNovoProdutoPro: TFNovoProdutoPro
       Top = 1
       Width = 802
       Height = 512
-      ActivePage = PGerais
+      ActivePage = PFilial
       Align = alClient
       TabOrder = 0
       OnChange = PaginasChange
@@ -99,8 +99,6 @@ object FNovoProdutoPro: TFNovoProdutoPro
           TabOrder = 0
           AUsarCorForm = False
           ACorForm = FPrincipal.CorForm
-          ExplicitLeft = 32
-          ExplicitTop = -73
           object SpeedButton1: TSpeedButton
             Left = 282
             Top = 0
@@ -7853,7 +7851,7 @@ object FNovoProdutoPro: TFNovoProdutoPro
     Caption = '  Produto  '
     Font.Charset = ANSI_CHARSET
     Font.Color = clWhite
-    Font.Height = -27
+    Font.Height = -24
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
     ParentFont = False

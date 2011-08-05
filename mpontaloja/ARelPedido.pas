@@ -230,6 +230,11 @@ type
     EFaixaInicial: Tnumerico;
     EFaixaFinal: Tnumerico;
     LFaixaFinal: TLabel;
+    PFornecedor: TPanelColor;
+    Label38: TLabel;
+    SpeedButton32: TSpeedButton;
+    LNomFornecedor: TLabel;
+    ECodFornecedor: TRBEditLocaliza;
     procedure FormCreate(Sender: TObject);
     procedure BImprimirClick(Sender: TObject);
     procedure BFecharClick(Sender: TObject);
@@ -733,7 +738,7 @@ begin
                   AlterarVisibleDet([PFilial,PPeriodo,PCliente],true)
                 else
                 if (VPANOMRELATORIO = 'PRODUTOS FORNECEDOR') then
-                  AlterarVisibleDet([PCliente],true)
+                  AlterarVisibleDet([PFornecedor],true)
                 else
                 if (VPANOMRELATORIO = 'AMOSTRAS ENTREGUES E NAO APROVADAS') then
                   AlterarVisibleDet([PPeriodo,PCliente],true)
@@ -1130,7 +1135,7 @@ begin
                 FunRave.ImprimeProdutoVendidosPorClassificacao(EFilial.AInteiro,ECliente.AInteiro,EVendedor.Ainteiro,ETipoCotacao.Ainteiro, EClienteMaster.AInteiro,CDataIni.Date,CdataFim.Date,VprCaminhoRelatorio,LFilial.Caption,LCliente.caption,lVendedor.caption,LTipoCotacao.Caption,LClienteMaster.Caption, false,true,TBitBtn(Sender).Tag = 20)
             else
                if (VPRNOMRELATORIO = 'PRODUTOS FORNECEDOR') then
-                 FunRave.ImprimeProdutoFornecedor(ECliente.AInteiro, VprCaminhoRelatorio,LCliente.caption)
+                 FunRave.ImprimeProdutoFornecedor(ECodFornecedor.AInteiro, VprCaminhoRelatorio,LNomFornecedor.caption)
                 //dtRave.ImprimeProdutoFornecedor(ECliente.AInteiro, VprCaminhoRelatorio,LCliente.caption)
             else
                if (VPRNOMRELATORIO = 'AMOSTRAS ENTREGUES E NAO APROVADAS') then

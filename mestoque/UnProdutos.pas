@@ -6810,6 +6810,10 @@ begin
                         ' SET SEQPRODUTO = '+IntToStr(VpaSeqProdutoDestino)+
                         ' Where SEQPRODUTO = '+IntToStr(VpaSeqProdutoExcluir));
   VpaLog.Insert(0,'IMPORTANDO ESTOQUE CHAPA');
+  ExecutaComandoSql(AUX,'UPDATE PRODUTOFILIALFATURAMENTO '+
+                        ' SET SEQPRODUTO = '+IntToStr(VpaSeqProdutoDestino)+
+                        ' Where SEQPRODUTO = '+IntToStr(VpaSeqProdutoExcluir));
+  VpaLog.Insert(0,'IMPORTANDO PRODUTO FILIAL FATURAMENTO');
   ExecutaComandoSql(AUX,'UPDATE ESTOQUECHAPA '+
                         ' SET SEQPRODUTO = '+IntToStr(VpaSeqProdutoDestino)+
                         ' Where SEQPRODUTO = '+IntToStr(VpaSeqProdutoExcluir));

@@ -7140,11 +7140,16 @@ end;
 
 {******************************************************************************}
 procedure TRBFunRave.ImprimeRelProdutoFornecedor(VpaObjeto: TObject);
+var
+  VpfNomfornecedorAnterior : String;
 begin
+  VpfNomfornecedorAnterior := '';
   with RVSystem.BaseReport do
   begin
     while not Tabela.Eof do
     begin
+      if VpfNomfornecedorAnterior <> Tabela.FieldByName('C_NOM_CLI').AsString then
+      
       PrintTab(Tabela.FieldByName('C_COD_PRO').AsString);
       PrintTab(Tabela.FieldByName('C_NOM_PRO').AsString);
       PrintTab(FormatFloat('#,###,###,##0.00', Tabela.FieldByName('VALUNITARIO').AsFloat)+' ');

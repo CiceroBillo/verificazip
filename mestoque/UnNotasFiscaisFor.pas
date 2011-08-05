@@ -362,7 +362,7 @@ begin
 
     NotCadastro.Post;
     if not VpfDItemNota.IndProdutoAtivo then
-      result := FunProdutos.ColocaProdutoEmAtividade(VpfDItemNota.SeqProduto);
+      result := FunProdutos.ColocaProdutoEmAtividade(IntToStr(VpfDItemNota.SeqProduto));
 
     Result := NotCadastro.AMensagemErroGravacao;
     if NotCadastro.AErronaGravacao then
