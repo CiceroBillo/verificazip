@@ -375,15 +375,9 @@ begin
   VpaTexto.add(' </tr><tr>');
   VpaTexto.Add('  <td width=100% bgcolor=#6699FF ><font face="Verdana" size="3">');
   VpaTexto.add('   <br><center>');
-
-  VpaTexto.add('<br>');
-  VpaTexto.Add('<table width=100%  border=1 cellpadding="3" cellspacing="0">');
-  VpaTexto.Add(' <tr>');
-  VpaTexto.add('	<td width="20%" bgcolor="#EEEEEE"><font face="Verdana" size="1">');
   VpaTexto.add('&nbsp;&nbsp;&nbsp;Esta mensagem e referente ao Chamado Tecnico. <b>');
   VpaTexto.add('<br>&nbsp;&nbsp;&nbsp;Qualquer duvida entrar em contato com o fone '+Varia.FoneFilial);
-  VpaTexto.add('	</td>');
-  VpaTexto.add(' </tr></table>');
+ VpaTexto.add('	<br> </td>');
 
   VpaTexto.add(' </tr>');
   VpaTexto.add('</table>');
@@ -1776,10 +1770,6 @@ begin
   VpfDFilial := TRBDFilial.cria;
   Sistema.CarDFilial(VpfDFilial,VpaDChamado.CodFilial);
 
-{d5 colocado em comentario porque o novo indy ja gera em texto e html
- VpfEmailTexto := TIdText.Create(Mensagem.MessageParts);
-  VpfEmailTexto.ContentType := 'text/plain';
-  MontaEmailChamadoTexto(VpfEmailTexto.body,VpaDChamado,VpaDCliente);}
 
   VpfEmailHTML := TIdText.Create(Mensagem.MessageParts, Mensagem.Body);
   VpfEmailHTML.ContentType := 'text/html';
@@ -1834,14 +1824,23 @@ begin
 end;
 
 {******************************************************************************}
-function TRBFuncoesChamado.EnviaEmailChamadoCliente(VpaDChamado: TRBDChamado;
-  VpaDCliente: TRBDCliente): String;
+function TRBFuncoesChamado.EnviaEmailChamadoCliente(VpaDChamado: TRBDChamado;VpaDCliente: TRBDCliente): String;
 var
   VpfPDF, Vpfbmppart : TIdAttachmentFile;
   VpfChar : Char;
   VpfNomAnexo, VpfEmailCliente : String;
   VpfEmailHTML : TIdText;
+  VpfIndClienteCriado : Boolean;
 begin
+  VpfIndClienteCriado := false;
+  if VpaDCliente = nil then
+  begin
+    VpaDCliente:= TRBDCliente.cria;
+    VpaDCliente.CodCliente:= VpaDChamado.CodCliente;
+    FunClientes.CarDCliente(VpaDCliente);
+    VpfIndClienteCriado := true;
+  end;
+
   result := '';
   Mensagem.Clear;
   if not ExisteArquivo(varia.PathVersoes+'\efi.jpg') then
@@ -1853,26 +1852,26 @@ begin
       if not ExisteArquivo(varia.PathVersoes+'\'+inttoStr(VpaDChamado.CodFilial)+'.jpg') then
         result := 'Falta arquivo "'+varia.PathVersoes+'\'+inttoStr(VpaDChamado.CodFilial)+'.jpg'+'"';
 
+  Mensagem.Clear;
   if result = '' then
   begin
       Vpfbmppart := TIdAttachmentfile.Create(Mensagem.MessageParts,varia.PathVersoes+'\efi.jpg');
       Vpfbmppart.ContentType := 'image/jpg';
       Vpfbmppart.ContentDisposition := 'inline';
       Vpfbmppart.ExtraHeaders.Values['content-id'] := 'efi.jpg';
-      Vpfbmppart.FileName := '';
-      Vpfbmppart.DisplayName := '';
+      Vpfbmppart.FileName := 'efi.jpg';
+      Vpfbmppart.DisplayName := 'efi.jpg';
   end;
   if result = '' then
   begin
-    Mensagem.Clear;
     GeraAnexosEmailChamadoCliente(VpaDChamado);
 
     Vpfbmppart := TIdAttachmentfile.Create(Mensagem.MessageParts,varia.PathVersoes+'\'+inttoStr(VpaDChamado.CodFilial)+'.jpg');
     Vpfbmppart.ContentType := 'image/jpg';
     Vpfbmppart.ContentDisposition := 'inline';
     Vpfbmppart.ExtraHeaders.Values['content-id'] := inttoStr(VpaDChamado.CodFilial)+'.jpg';
-    Vpfbmppart.FileName := '';
-    Vpfbmppart.DisplayName := '';
+    Vpfbmppart.FileName :=inttoStr(VpaDChamado.CodFilial)+'.jpg';
+    Vpfbmppart.DisplayName := inttoStr(VpaDChamado.CodFilial)+'.jpg';
 
     VpfEmailHTML := TIdText.Create(Mensagem.MessageParts);
     VpfEmailHTML.ContentType := 'text/html';
@@ -1880,18 +1879,25 @@ begin
     MontaEmailChamadoCliente(VpfEmailHTML.Body,VpaDChamado,VpaDCliente);
 
     VpfEmailCliente := VpaDCliente.DesEmail;
-    VpfChar := ',';
-    if ExisteLetraString(';',VpfEmailCliente) then
-      VpfChar := ';';
-    while Length(VpfEmailCliente) > 0 do
+    if result = '' then
+       result := GravaDEmail(VpaDChamado,VpaDCliente.DesEmail);
+    if result = '' then
     begin
-      Mensagem.Recipients.Add.Address := DeletaChars(CopiaAteChar(VpfEmailCliente,VpfChar),VpfChar);
-      VpfEmailCliente := DeleteAteChar(VpfEmailCliente,VpfChar);
+      VpfChar := ',';
+      if ExisteLetraString(';',VpfEmailCliente) then
+        VpfChar := ';';
+      while Length(VpfEmailCliente) > 0 do
+      begin
+        Mensagem.Recipients.Add.Address := DeletaChars(CopiaAteChar(VpfEmailCliente,VpfChar),VpfChar);
+        VpfEmailCliente := DeleteAteChar(VpfEmailCliente,VpfChar);
+      end;
+      Mensagem.Subject := Varia.NomeFilial+' - Chamado : ' + IntToStr(VpaDChamado.NumChamado);
+      Mensagem.ReceiptRecipient.Text  :='';
+      result := EnviaEmail(Mensagem,SMTP);
     end;
-    Mensagem.Subject := Varia.NomeFilial+' - Chamado : ' + IntToStr(VpaDChamado.NumChamado);
-    Mensagem.ReceiptRecipient.Text  :='';
-    result := EnviaEmail(Mensagem,SMTP);
   end;
+  if VpfIndClienteCriado then
+    VpaDCliente.Free;
 end;
 
 {******************************************************************************}
@@ -1957,8 +1963,7 @@ begin
 end;
 
 {******************************************************************************}
-procedure TRBFuncoesChamado.GeraAnexosEmailChamadoCliente(
-  VpaDChamado: TRBDChamado);
+procedure TRBFuncoesChamado.GeraAnexosEmailChamadoCliente(VpaDChamado: TRBDChamado);
 var
   VpfNomArquivo : string;
 begin

@@ -264,7 +264,7 @@ begin
                  ' AND ' + SQLTextoRightJoin('CHE.CODFORNECEDORRESERVA', 'CLI.I_COD_CLI'));
   AdicionaFiltros(Cheque.sql);
   if VprConsultaChequeBaixaCP then
-    Cheque.sql.add('AND (CHE.CODFORNECEDORRESERVA = 0 or CHE.CODFORNECEDORRESERVA is null or CHE.CODFORNECEDORRESERVA = ' + IntToStr(VprDCheque.CodCliente)+')');
+    Cheque.sql.add('AND '+SQLTextoISNULL('CHE.CODFORNECEDORRESERVA',IntToStr(VprDCheque.CodCliente))+' = ' + IntToStr(VprDCheque.CodCliente));
   Cheque.SQl.add(VprOrdem);
   Grade.ALinhaSQLOrderBy := Cheque.sql.count - 1;
   Cheque.open;

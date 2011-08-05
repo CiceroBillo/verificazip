@@ -2287,18 +2287,18 @@ begin
       if not ExisteArquivo(varia.PathVersoes+'\'+inttoStr(VpaCodFilial)+'.jpg') then
         result := 'Falta arquivo "'+varia.PathVersoes+'\'+inttoStr(VpaCodFilial)+'.jpg'+'"';
 
+  VprMensagem.Clear;
   if result = '' then
   begin
       Vpfbmppart := TIdAttachmentfile.Create(VprMensagem.MessageParts,varia.PathVersoes+'\efi.jpg');
       Vpfbmppart.ContentType := 'image/jpg';
       Vpfbmppart.ContentDisposition := 'inline';
       Vpfbmppart.ExtraHeaders.Values['content-id'] := 'efi.jpg';
-      Vpfbmppart.FileName := '';
-      Vpfbmppart.DisplayName := '';
+      Vpfbmppart.FileName := 'efi.jpg';
+      Vpfbmppart.DisplayName := 'efi.jpg';
   end;
   if result = '' then
   begin
-    VprMensagem.Clear;
     VpfDLeitura := TRBDLeituraLocacaoCorpo.cria;
     CarDLeituraLocacao(VpfDLeitura,VpaCodFilial,VpaSeqLeitura);
     GeraAnexosEmailLeituraLocacao(VpfDLeitura);

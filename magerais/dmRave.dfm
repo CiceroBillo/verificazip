@@ -574,8 +574,8 @@ object dtRave: TdtRave
   object Promissoria: TClientDataSet
     Aggregates = <>
     Params = <>
-    Left = 512
-    Top = 256
+    Left = 536
+    Top = 248
     object PromissoriaDesDuplicata: TStringField
       FieldName = 'DesDuplicata'
       Size = 50

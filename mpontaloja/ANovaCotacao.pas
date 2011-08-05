@@ -296,6 +296,7 @@ type
     EUfEmbarque: TRBEditLocaliza;
     N8: TMenuItem;
     Promissria1: TMenuItem;
+    Label67: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure EClienteRetorno(Retorno1, Retorno2: String);

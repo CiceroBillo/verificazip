@@ -135,8 +135,9 @@ type
     ImprimirSolicitacaoProducao1: TMenuItem;
     N5: TMenuItem;
     ImprimeProdutosPendentesaProduzir1: TMenuItem;
-    BEnviarEmailCliente: TBitBtn;
     ChamadoTecnicoI_COD_CLI: TFMTBCDField;
+    N6: TMenuItem;
+    EnviarEmailBoleto1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BCadastrarClick(Sender: TObject);
@@ -187,6 +188,7 @@ type
     procedure ImprimirSolicitacaoProducao1Click(Sender: TObject);
     procedure ImprimeProdutosPendentesaProduzir1Click(Sender: TObject);
     procedure BEnviarEmailClienteClick(Sender: TObject);
+    procedure EnviarEmailBoleto1Click(Sender: TObject);
   private
     { Private declarations }
     VprOrdem : String;
@@ -910,6 +912,20 @@ begin
   end;
 end;
 
+{******************************************************************************}
+procedure TFChamadoTecnico.EnviarEmailBoleto1Click(Sender: TObject);
+var
+  VpfResultado : String;
+  VpfDChamado: TRBDChamado;
+begin
+  VpfDChamado:= TRBDChamado.cria;
+  FunChamado.CarDChamado(ChamadoTecnicoCODFILIAL.AsInteger, ChamadoTecnicoNUMCHAMADO.AsInteger, VpfDChamado);
+  VpfResultado := FunChamado.EnviaEmailChamadoCliente(VpfDChamado, nil);
+  if VpfREsultado <> '' then
+    aviso(VpfREsultado);
+end;
+
+{******************************************************************************}
 procedure TFChamadoTecnico.ETipoChamadoChange(Sender: TObject);
 begin
 
@@ -991,19 +1007,7 @@ end;
 
 {******************************************************************************}
 procedure TFChamadoTecnico.BEnviarEmailClienteClick(Sender: TObject);
-var
-  VpfResultado : String;
-  VpfDCliente: TRBDCliente;
-  VpfDChamado: TRBDChamado;
 begin
-  VpfDCliente:= TRBDCliente.cria;
-  VpfDCliente.CodCliente:= ChamadoTecnicoI_COD_CLI.AsInteger;
-  FunClientes.CarDCliente(VpfDCliente);
-  VpfDChamado:= TRBDChamado.cria;
-  FunChamado.CarDChamado(ChamadoTecnicoCODFILIAL.AsInteger, ChamadoTecnicoNUMCHAMADO.AsInteger, VpfDChamado);
-  VpfResultado := FunChamado.EnviaEmailChamadoCliente(VpfDChamado, VpfDCliente);
-  if VpfREsultado <> '' then
-    aviso(VpfREsultado);
 end;
 
 {******************************************************************************}

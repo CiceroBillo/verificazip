@@ -5,7 +5,7 @@ interface
        SQLExpr,IniFiles, UnProgramador1, Tabela ;
 
 Const
-  CT_VersaoBanco = 2118;
+  CT_VersaoBanco = 2119;
   CT_VersaoInvalida = 'SISTEMA DESATUALIZADO!!! Este sistema já possui novas versões, essa versão pode não funcionar corretamente,  para o bom funcionamento do mesmo é necessário fazer a atualização...' ;
 
   CT_SenhaAtual = '9774';
@@ -5967,6 +5967,12 @@ begin
     ExecutaComandoSql(Aux,'ALTER TABLE CADGRUPOS ADD C_POL_ISE CHAR(1)');
     ExecutaComandoSql(Aux,'UPDATE CADGRUPOS SET C_POL_ISE = ''T''');
     ExecutaComandoSql(Aux,'Update CFG_GERAL set I_Ult_Alt = 2118');
+  end;
+  if VpaNumAtualizacao < 2119 then
+  begin
+    result := '2119';
+    ExecutaComandoSql(Aux,'UPDATE CHEQUE SET CODFORNECEDORRESERVA = NULL WHERE CODFORNECEDORRESERVA = 0');
+    ExecutaComandoSql(Aux,'Update CFG_GERAL set I_Ult_Alt = 2119');
   end;
 end;
 

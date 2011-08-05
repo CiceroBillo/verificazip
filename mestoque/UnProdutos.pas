@@ -4580,11 +4580,15 @@ function TFuncoesProduto.ColocaProdutoEmAtividade(VpaSequencial : String):string
 begin
   AdicionaSQLAbreTabela(ProCadastro,'Select * from CadProdutos ' +
                         ' Where I_Seq_Pro = ' + VpaSequencial);
-  ProCadastro.Edit;
-  ProCadastro.FieldByName('C_ATI_PRO').AsString := 'S';
-  ProCadastro.FieldByName('D_ULT_ALT').AsDateTime := Sistema.RDataServidor;
-  ProCadastro.Post;
-  result := ProCadastro.AMensagemErroGravacao;
+  if ProCadastro.FieldByName('C_ATI_PRO').AsString <> 'S' then
+  begin
+    ProCadastro.Edit;
+    ProCadastro.FieldByName('C_ATI_PRO').AsString := 'S';
+    ProCadastro.FieldByName('D_ULT_ALT').AsDateTime := Sistema.RDataServidor;
+    ProCadastro.Post;
+    result := ProCadastro.AMensagemErroGravacao;
+  end;
+  ProCadastro.Close;
 end;
 
 {******************** tira o produto de atividade *****************************}

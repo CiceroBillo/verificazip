@@ -123,6 +123,7 @@ uses APrincipal,funsql, FunData, ANovaNotaFiscaisFor, dmRave, APedidoCompra, AMo
 { ****************** Na criação do Formulário ******************************** }
 procedure TFExtornoEntrada.FormCreate(Sender: TObject);
 begin
+  FunNotaFor := TFuncoesNFFor.criar(self,FPrincipal.BaseDados);
   VprOrdem := 'order by I_Nro_Not';
   EDataInicial.DateTime := PrimeiroDiaMes(Date);
   EDataFinal.DateTime := UltimoDiaMes(Date);
@@ -138,6 +139,7 @@ begin
    UnCP.Free;
    FechaTabela(CadNotasFiscaisFor);
    FechaTabela(MovNotasfiscaisFor);
+   FunNotaFor.Free;
    Action := CaFree;
 end;
 
@@ -309,30 +311,19 @@ end;
 {******************************************************************************}
 procedure TFExtornoEntrada.GeraNotaFiscal;
 var
-  VpfResultado : String;
   VpfDNotaEntrada: TRBDNotaFiscalFor;
 begin
-  VpfResultado := '';
   VpfDNotaEntrada := TRBDNotaFiscalFor.Cria;
-  FunNotaFor := TFuncoesNFFor.criar(self,FPrincipal.BaseDados);
   VpfDNotaEntrada.CodFilial := CadNotasFiscaisForI_Emp_Fil.AsInteger;
   VpfDNotaEntrada.SeqNota := CadNotasFiscaisForI_Seq_Not.AsInteger;
   FunNotaFor.CarDNotaFor(VpfDNotaEntrada);
-  if VpfResultado = '' then
-  begin
-    PainelTempo1.execute('Gerando Nota Fiscal...');
-    FNovaNotaFiscalNota := TFNovaNotaFiscalNota.criarSDI(Application,'',FPrincipal.VerificaPermisao('FNovaNotaFiscalNota'));
-    if FNovaNotaFiscalNota.GeraNotaNotaEntrada(VpfDNotaEntrada) then
-    begin
-      AtualizaConsulta(true);
-    end;
-    FNovaNotaFiscalNota.free;
-  end;
-  if VpfResultado <> '' then
-    aviso(VpfResultado);
+  PainelTempo1.execute('Gerando Nota Fiscal...');
+  FNovaNotaFiscalNota := TFNovaNotaFiscalNota.criarSDI(Application,'',FPrincipal.VerificaPermisao('FNovaNotaFiscalNota'));
+  if FNovaNotaFiscalNota.GeraNotaNotaEntrada(VpfDNotaEntrada) then
+    AtualizaConsulta(true);
+  FNovaNotaFiscalNota.free;
   PainelTempo1.fecha;
   VpfDNotaEntrada.free;
-  FunNotaFor.free;
 end;
 
 {******************************************************************************}

@@ -3719,7 +3719,7 @@ begin
     AdicionaSQLAbreTabela(Cadastro, 'SELECT * FROM CHEQUE' +
                                     ' WHERE SEQCHEQUE = ' + IntToStr(VpfDCheque.SeqCheque));
     Cadastro.edit;
-    Cadastro.FieldByName('CODFORNECEDORRESERVA').AsInteger := 0;
+    Cadastro.FieldByName('CODFORNECEDORRESERVA').clear;
     Cadastro.post;
     result := Cadastro.AMensagemErroGravacao;
     if Cadastro.AErronaGravacao then

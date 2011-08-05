@@ -895,8 +895,6 @@ procedure TFNovoChamado.BEnviarEmailClienteClick(Sender: TObject);
 var
   VpfResultado : String;
 begin
-  VprDCliente.CodCliente:= ECliente.AInteiro;
-  FunClientes.CarDCliente(VprDCliente);
   VpfResultado := FunChamado.EnviaEmailChamadoCliente(VprDChamado, VprDCliente);
   if VpfREsultado <> '' then
     aviso(VpfREsultado);

@@ -360,10 +360,10 @@ begin
     if VpfDItemNota.CodCST <> '' then
       FunProdutos.AlteraProdutoParaSubstituicaoTributaria(VpfDItemNota.SeqProduto, VpfDItemNota.CodCST);
 
-    if not VpfDItemNota.IndProdutoAtivo then
-      FunProdutos.ColocaProdutoEmAtividade(NotCadastro.FieldByName('I_SEQ_PRO').AsString);
-
     NotCadastro.Post;
+    if not VpfDItemNota.IndProdutoAtivo then
+      result := FunProdutos.ColocaProdutoEmAtividade(VpfDItemNota.SeqProduto);
+
     Result := NotCadastro.AMensagemErroGravacao;
     if NotCadastro.AErronaGravacao then
       exit;

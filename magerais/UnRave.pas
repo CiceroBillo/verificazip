@@ -12679,7 +12679,6 @@ begin
 
   AdicionaSqlTabela(Tabela,' ORDER BY CON.NUMCONHECIMENTO, TRA.I_COD_CLI');
   Tabela.open;
-  Tabela.SQL.SaveToFile('conhecimento.sql');
 
   rvSystem.onBeforePrint := DefineTabelaValorFreteXValorConhecimento;
   rvSystem.onNewPage := ImprimeCabecalho;
