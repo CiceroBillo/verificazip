@@ -7,7 +7,7 @@ Interface
 Uses Classes, DBTables, UnDados, SysUtils,IdBaseComponent, IdMessage, IdComponent,
      IdTCPConnection, IdTCPClient,IdMessageClient, IdSMTP, UnDadosProduto, FunObjeto,
      unProdutos,IdAttachment, idText, SQLExpr, Tabela, IdAttachmentFile, Windows, Jpeg, Graphics,
-     Clipbrd;
+     Clipbrd, UnSistema;
 
 //classe localiza
 Type TRBLocalizaChamado = class
@@ -24,6 +24,7 @@ Type TRBFuncoesChamado = class(TRBLocalizaChamado)
     Cadastro : TSQL;
     Mensagem : TidMessage;
     SMTP : TIdSMTP;
+    FunSistema : TRBFuncoesSistema;
     function RNumChamadoDisponivel(VpaCodfilial : Integer): Integer;
     function RSeqEstagioDisponivel(VpaCodFilial,VpaNumChamado : Integer):Integer;
     function RDesContrato(VpaCodFilial, VpaSeqContrato : Integer) : string;
@@ -59,7 +60,6 @@ Type TRBFuncoesChamado = class(TRBLocalizaChamado)
     function BaixaEstoqueBaixaParcial(VpaDChamado : TRBDChamado;VpaDParcial : TRBDChamadoParcial) : string;
     function CadastraNumeroSerieProduto(VpaDChamado : TRBDChamado) : string;
     procedure GeraAnexosEmailChamadoCliente(VpaDChamado : TRBDChamado);
-    function AnexaArquivoEmail(VpaNomArquivo : String;VpaMensagem : TIdMessage):string;
     procedure MontaEmailChamadoCliente(VpaTexto : TStrings; VpaDChamado: TRBDChamado;VpaDCliente : TRBDCliente);
     function EnviaEmail(VpaMensagem : TIdMessage;VpaSMTP : TIdSMTP) : string;
   public
@@ -90,7 +90,7 @@ end;
 
 implementation
 
-Uses FunSql, FunString, Constantes, FunData, UnSistema, UnClientes, ConstMsg, FunArquivos,
+Uses FunSql, FunString, Constantes, FunData, UnClientes, ConstMsg, FunArquivos,
   dmRave;
 
 {(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
@@ -121,6 +121,7 @@ begin
   Chamado2.SQLConnection := VpaBaseDados;
   Mensagem := TIdMessage.Create(nil);
   SMTP := TIdSMTP.Create(nil);
+  FunSistema:= TRBFuncoesSistema.cria(VpaBaseDados);
 end;
 
 {******************************************************************************}
@@ -132,6 +133,7 @@ begin
   Chamado2.Free;
   Mensagem.free;
   SMTP.free;
+  FunSistema.Free;
   inherited destroy;
 end;
 
@@ -1975,7 +1977,19 @@ begin
   finally
     dtRave.Free;
   end;
-  AnexaArquivoEmail(VpfNomArquivo,Mensagem);
+  FunSistema.AnexaArquivoEmail(VpfNomArquivo,Mensagem);
+
+  AdicionaSQLAbreTabela(Aux,'select DESCAMINHOIMAGEM from CHAMADOANEXOIMAGEM '+
+                                 ' Where CODFILIAL = ' + IntToStr(VpaDChamado.CodFilial) +
+                                 ' AND NUMCHAMADO = ' + IntToStr(VpaDChamado.NumChamado));
+
+  while not Aux.Eof do
+  begin
+     VpfNomArquivo:= Aux.FieldByName('DESCAMINHOIMAGEM').AsString;
+     VpfNomArquivo := Varia.DriveFoto+ '\Chamados\' + VpfNomArquivo;
+     FunSistema.AnexaArquivoEmail(VpfNomArquivo,Mensagem);
+     Aux.Next;
+  end;
 end;
 
 {******************************************************************************}
@@ -2045,20 +2059,6 @@ begin
     on e : exception do result := 'ERRO NA GRAVAÇÃO DA ALTERAÇÃO DO TECNICO!!!'#13+e.message;
   end;
   Cadastro.close;
-end;
-
-{******************************************************************************}
-function TRBFuncoesChamado.AnexaArquivoEmail(VpaNomArquivo: String;
-  VpaMensagem: TIdMessage): string;
-var
-  VpfAnexo : TIdAttachmentfile;
-begin
-  VpfAnexo := TIdAttachmentfile.Create(VpaMensagem.MessageParts,VpaNomArquivo);
-  VpfAnexo.ContentType := 'application/pdf';
-  VpfAnexo.ContentDisposition := 'inline';
-  VpfAnexo.DisplayName:=RetornaNomArquivoSemDiretorio(VpaNomArquivo);
-  VpfAnexo.ExtraHeaders.Values['content-id'] := RetornaNomArquivoSemDiretorio(VpaNomArquivo);;
-  VpfAnexo.DisplayName := RetornaNomArquivoSemDiretorio(VpaNomArquivo);;
 end;
 
 {******************************************************************************}

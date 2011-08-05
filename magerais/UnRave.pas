@@ -499,6 +499,11 @@ begin
      SetTab(NA,pjCenter,3,0.2,BOXLINENONE,0); // Ultima compra
      SetTab(NA,pjLeft,3,0.2,BOXLINENONE,0); // Referencia
      SaveTabs(1);
+
+     clearTabs;
+     SetTab(1,pjLeft,1.5,0.1,BOXLINENONE,0); //Codigo
+     SetTab(NA,pjLeft,10.5,0,BOXLINENONE,0); //Fornecedor
+     SaveTabs(2);
    end;
 end;
 
@@ -7149,7 +7154,21 @@ begin
     while not Tabela.Eof do
     begin
       if VpfNomfornecedorAnterior <> Tabela.FieldByName('C_NOM_CLI').AsString then
-      
+      begin
+        NewLine;
+        if LinesLeft<=1 Then
+          NewPage;
+        restoretabs(2);
+        bold:= true;
+        PrintTab(Tabela.FieldByName('I_COD_CLI').AsString);
+        PrintTab(Tabela.FieldByName('C_NOM_CLI').AsString);
+        bold:= false;
+        NewLine;
+        if LinesLeft<=1 Then
+        NewPage;
+        ImprimeCabecalhoProdutoFornecedor;
+      end;
+      restoretabs(1);
       PrintTab(Tabela.FieldByName('C_COD_PRO').AsString);
       PrintTab(Tabela.FieldByName('C_NOM_PRO').AsString);
       PrintTab(FormatFloat('#,###,###,##0.00', Tabela.FieldByName('VALUNITARIO').AsFloat)+' ');
@@ -7164,6 +7183,7 @@ begin
 //      PrintTab(FormatFloat('#,###,###,##0.00', Tabela.FieldByName('CST').AsFloat)+' ');
       PrintTab(DateToStr(Tabela.FieldByName('DATULTIMACOMPRA').AsDateTime));
       PrintTab(Tabela.FieldByName('DESREFERENCIA').AsString);
+      VpfNomfornecedorAnterior := Tabela.FieldByName('C_NOM_CLI').AsString;
       Tabela.Next;
       NewLine;
       if LinesLeft<=1 Then
@@ -9777,7 +9797,6 @@ begin
       44 : ImprimeCabecalhoAnaliseRenovacaoContrato;
       46 : ImprimeCabecalhoCreditoCliente;
       49 : ImprimeCabecalhoValorFreteNotaXValorConhecimento;
-      51 : ImprimeCabecalhoProdutoFornecedor;
      end;
    end;
 end;

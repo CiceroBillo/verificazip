@@ -8,7 +8,7 @@ uses
   Grids, CGrades, Mask, numericos, UnDados, Constantes, UnClientes,
   DBKeyViolation, UnChamado, UnCrystal, ComCtrls, Db, DBTables, DBGrids, SqlExpr,
   Tabela, DBCtrls, IdBaseComponent, IdMessage, UnSistema, Menus, UnProdutos, UnProposta,
-  DBClient, EditorImagem, FunArquivos, ExtDlgs;
+  DBClient, EditorImagem, FunArquivos, ExtDlgs, Shellapi;
 
 type
   TRBDColunaGradeAnexo = (clSequencial, clDesCaminho);

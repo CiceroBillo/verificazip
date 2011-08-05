@@ -1594,7 +1594,14 @@ object FChamadoTecnico: TFChamadoTecnico
       Caption = 'Alterar Est'#225'gio'
       OnClick = MAlterarEstagioClick
     end
-    object N2: TMenuItem
+    object TMenuItem
+      Caption = '-'
+    end
+    object AlteraCliente1: TMenuItem
+      Caption = 'Altera Cliente'
+      OnClick = AlteraCliente1Click
+    end
+    object N6: TMenuItem
       Caption = '-'
     end
     object GerarProposta1: TMenuItem
@@ -1630,9 +1637,6 @@ object FChamadoTecnico: TFChamadoTecnico
     object ConsultaRetornoProdutos1: TMenuItem
       Caption = 'Consulta Retorno Produtos'
       OnClick = ConsultaRetornoProdutos1Click
-    end
-    object N6: TMenuItem
-      Caption = '-'
     end
     object EnviarEmailBoleto1: TMenuItem
       Caption = 'Enviar E-mail Cliente'

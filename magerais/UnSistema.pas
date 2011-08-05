@@ -93,6 +93,7 @@ Type
     procedure AtualizaDataUltimoBackup;
     procedure VerificaDataBackup;
     function PodeDivulgarEficacia : Boolean;
+    function AnexaArquivoEmail(VpaNomArquivo : String;VpaMensagem : TIdMessage):string;
 end;
 
 Var
@@ -698,6 +699,24 @@ function TRBFuncoesSistema.PodeDivulgarEficacia: Boolean;
 begin
    result := (varia.CNPJFilial <> CNPJ_HORNBURG) and (Varia.CNPJFilial <> CNPJ_Majatex) and
              (varia.CNPJFilial <> CNPJ_Telitex);
+end;
+
+{******************************************************************************}
+function TRBFuncoesSistema.AnexaArquivoEmail(VpaNomArquivo: String;
+  VpaMensagem: TIdMessage): string;
+var
+  VpfAnexo : TIdAttachmentfile;
+  VpfExtArquivo: String;
+begin
+  VpfAnexo := TIdAttachmentfile.Create(VpaMensagem.MessageParts,VpaNomArquivo);
+  VpfExtArquivo:= CopiaEsquerda(VpaNomArquivo, 3);
+  if (VpfExtArquivo = 'PEG') or (VpfExtArquivo = 'peg') then
+    VpfExtArquivo:= 'jpg';
+  VpfAnexo.ContentType := 'application/' + VpfExtArquivo;
+  VpfAnexo.ContentDisposition := 'inline';
+  VpfAnexo.DisplayName:=RetornaNomArquivoSemDiretorio(VpaNomArquivo);
+  VpfAnexo.ExtraHeaders.Values['content-id'] := RetornaNomArquivoSemDiretorio(VpaNomArquivo);;
+  VpfAnexo.DisplayName := RetornaNomArquivoSemDiretorio(VpaNomArquivo);;
 end;
 
 {******************************************************************************}

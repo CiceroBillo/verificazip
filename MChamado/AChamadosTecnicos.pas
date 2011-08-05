@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, formularios,
   Grids, DBGrids, Tabela, DBKeyViolation, Componentes1, ExtCtrls,
   PainelGradiente, Db, DBTables, StdCtrls, Buttons, Mask, numericos,
-  ComCtrls, Localizacao, UnChamado, UnDados, DBCtrls, Menus, Graficos, DBClient;
+  ComCtrls, Localizacao, UnChamado, UnDados, DBCtrls, Menus, Graficos, DBClient, UnSistema;
 
 type
   TFChamadoTecnico = class(TFormularioPermissao)
@@ -107,7 +107,6 @@ type
     ChamadoProdutoQTDPRODUTO: TFMTBCDField;
     N1: TMenuItem;
     GerarProposta1: TMenuItem;
-    N2: TMenuItem;
     ChamadoProdutoQTDBAIXADO: TFMTBCDField;
     N3: TMenuItem;
     SeparaoProdutos1: TMenuItem;
@@ -138,6 +137,7 @@ type
     ChamadoTecnicoI_COD_CLI: TFMTBCDField;
     N6: TMenuItem;
     EnviarEmailBoleto1: TMenuItem;
+    AlteraCliente1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BCadastrarClick(Sender: TObject);
@@ -189,6 +189,7 @@ type
     procedure ImprimeProdutosPendentesaProduzir1Click(Sender: TObject);
     procedure BEnviarEmailClienteClick(Sender: TObject);
     procedure EnviarEmailBoleto1Click(Sender: TObject);
+    procedure AlteraCliente1Click(Sender: TObject);
   private
     { Private declarations }
     VprOrdem : String;
@@ -227,7 +228,7 @@ uses APrincipal, Constantes, FunData, FunSql, ANovoChamadoTecnico, UnCrystal, Co
   AAlteraEstagioChamado, ANovaCotacao, UnCotacao, funObjeto, UnProposta,
   AAgendaChamados, AEfetuarPesquisaSatisfacao, ANovaProposta,
   ABaixaProdutosChamado, AConsultaChamadoParcial, APropostasCliente, dmRave,
-  ANovaSolicitacaoCompra, ASolicitacaoCompras, UnClientes;
+  ANovaSolicitacaoCompra, ASolicitacaoCompras, UnClientes, ANovoCliente;
 
 {$R *.DFM}
 
@@ -395,6 +396,20 @@ begin
                                        ' AND '+SQLTextoRightJoin('CHP.CODFILIALCONTRATO','COC.CODFILIAL')+
                                        ' AND CHP.CODFILIAL = '+ChamadoTecnicoCODFILIAL.AsString+
                                        ' AND CHP.NUMCHAMADO = '+ChamadoTecnicoNUMCHAMADO.AsString);
+  end;
+end;
+
+{******************************************************************************}
+procedure TFChamadoTecnico.AlteraCliente1Click(Sender: TObject);
+begin
+  if ChamadotecnicoI_COD_CLI.AsInteger <> 0 then
+  begin
+    FNovoCliente := TFNovoCliente.CriarSDI(application,'', FPrincipal.VerificaPermisao('FNovoCliente'));
+    AdicionaSqlAbreTabela(FNovoCliente.CadClientes,'Select * from CadClientes '+
+                                                   ' Where I_COD_CLI = '+ChamadotecnicoI_COD_CLI.AsString);
+    FNovoCliente.CadClientes.Edit;
+    FNovoCliente.ShowModal;
+    FNovoCliente.Free;
   end;
 end;
 
