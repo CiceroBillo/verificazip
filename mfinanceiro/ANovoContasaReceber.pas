@@ -108,6 +108,8 @@ type
     capaLote : Double;
     fecharform : boolean;
     TipoFrmPagamento : String;
+    VprPressionadoR,
+    VprEsconderParcela : Boolean;
     VprTransacao : TTransactionDesc;
     procedure LimpaCampos;
     procedure InicializaTela;
@@ -150,6 +152,8 @@ begin
     SpeedButton5.Visible := false;
     label12.Visible := false;
   end;
+  VprPressionadoR := false;
+  VprEsconderParcela := false;
 end;
 
 { ******************* Quando o formulario e fechado ************************** }
@@ -311,6 +315,7 @@ begin
   VpfDContasAReceber.PercentualDesAcr := 0;
   VpfDContasAReceber.MostrarParcelas := true;
   VpfDContasAReceber.IndGerarComissao := true;
+  VpfDContasAReceber.EsconderConta:= VprEsconderParcela;
   VpfDContasAReceber.CodVendedor := EVendedor.AInteiro;
   if VpfDContasAReceber.CodVendedor <> 0 then
   begin
@@ -318,7 +323,6 @@ begin
     VpfDContasAReceber.ValComissao := (EValorCalcularComissao.AValor * VpfDContasAReceber.PerComissao)/100 ;
   end;
   VpfDContasAReceber.TipComissao := 0; // somente direta
-  VpfDContasAReceber.EsconderConta := false;
 
   FunContasAReceber.CriacontasAReceber( VpfDContasAReceber,VpfResultado,true );
   if VpfResultado = '' then
@@ -535,9 +539,29 @@ begin
   if BNovo.Enabled then
    if key = 116 then
      BNovo.Click;
+
+  if (Shift = [ssCtrl,ssAlt])  then
+  begin
+    if (key = 82) then
+      VprPressionadoR := true
+    else
+      if VprPressionadoR then
+        if (key = 87) then
+        begin
+          if BotaoGravar1.Enabled then
+          begin
+            VprEsconderParcela := true;
+            BotaoGravar1.Click;
+            VprEsconderParcela := false;
+            VprPressionadoR := false;
+          end;
+        end
+        else
+          VprPressionadoR := false;
+  end;
 end;
 
-
+{******************************************************************************}
 procedure TFNovoContasAReceber.EdcFormaPgtoRetorno(Retorno1,
   Retorno2: String);
 begin

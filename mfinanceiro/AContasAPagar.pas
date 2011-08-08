@@ -60,7 +60,6 @@ type
     dataParcela2: TCalendario;
     dataNota1: TCalendario;
     DataNota2: TCalendario;
-    ECodCliente: TEditLocaliza;
     ECodFilial: TEditLocaliza;
     SpeedButton4: TSpeedButton;
     SpeedButton5: TSpeedButton;
@@ -248,6 +247,8 @@ type
     SpeedButton3: TSpeedButton;
     Label38: TLabel;
     EContaCorrente: TEditLocaliza;
+    MovParcelasC_IND_CAD: TWideStringField;
+    ECodCliente: TRBEditLocaliza;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BitBtn1Click(Sender: TObject);
@@ -303,6 +304,8 @@ type
     procedure CPeriodoClick(Sender: TObject);
     procedure MProrrogadoClick(Sender: TObject);
     procedure AlterarFornecedor1Click(Sender: TObject);
+    procedure GParcelasDrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
   private
     Despesa : TFuncoesDespesas;
     TeclaPresionada : Boolean;
@@ -526,6 +529,17 @@ begin
   detalhes.Visible := true;
 end;
 
+{******************************************************************************}
+procedure TFContasaPagar.GParcelasDrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
+begin
+  if (MovParcelasC_IND_CAD.AsString = 'S') then
+  begin
+    GParcelas.Canvas.Font.Color:= clGray;
+    GParcelas.DefaultDrawDataCell(Rect, GParcelas.columns[datacol].field, State);
+  end;
+end;
+
 {*************************Mostra os detalhes da conta**************************}
 procedure TFContasaPagar.GParcelasKeyPress(Sender: TObject;
   var Key: Char);
@@ -560,7 +574,7 @@ begin
   MovParcelas.close;
   MovParcelas.Sql.clear;
   MovParcelas.sql.add('Select CP.I_LAN_APG, CP.C_CLA_PLA, MCP.L_OBS_APG, CP.I_SEQ_NOT,' +
-                                'CP.I_COD_CLI, CP.I_NRO_NOT, CP.C_PAT_FOT,MCP.I_NRO_PAR, ' +
+                                'CP.I_COD_CLI, CP.I_NRO_NOT, CP.C_PAT_FOT, CP.C_IND_CAD, MCP.I_NRO_PAR, ' +
                                 'MCP.C_BOL_REC , '+
                                 'MCP.C_NRO_DUP, MCP.D_DAT_VEN, CP.D_DAT_EMI, CP.D_DAT_MOV,' +
                                 '(MCP.N_VLR_DUP * MOE.N_VLR_DIA)  N_VLR_DUP, MCP.D_DAT_PAG,' +

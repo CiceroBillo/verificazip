@@ -1901,6 +1901,11 @@ begin
      GParcelas.Canvas.Font.Color:= $FFD700;
       GParcelas.DefaultDrawDataCell(Rect, GParcelas.columns[datacol].field, State);
     end;
+  if (MovParcelasC_IND_CAD.AsString = 'S') then
+  begin
+    GParcelas.Canvas.Font.Color:= clGray;
+    GParcelas.DefaultDrawDataCell(Rect, GParcelas.columns[datacol].field, State);
+  end;
 end;
 
 {******************************************************************************}
