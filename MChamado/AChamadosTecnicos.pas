@@ -138,6 +138,7 @@ type
     N6: TMenuItem;
     EnviarEmailBoleto1: TMenuItem;
     AlteraCliente1: TMenuItem;
+    N2: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BCadastrarClick(Sender: TObject);

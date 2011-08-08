@@ -335,13 +335,13 @@ uses
   ACancelaContratos in 'ACancelaContratos.pas' {FCancelaContrato},
   AAlteraClienteVendedor in 'AAlteraClienteVendedor.pas' {FAlteraClienteVendedor},
   AEnvioEmarketing in 'AEnvioEmarketing.pas' {FEnvioEmarketing},
-  AConhecimentoTransporte in '..\mestoque\AConhecimentoTransporte.pas' {FConhecimentoTransporte},
   AFracaoFaccionista in '..\mestoque\AFracaoFaccionista.pas' {FFracaoFaccionista},
   ANovaFracaoFaccionista in '..\mestoque\ANovaFracaoFaccionista.pas' {FNovaFracaoFaccionista},
   ATerceiroFaccionista in '..\mestoque\ATerceiroFaccionista.pas' {FTerceiroFaccionista},
   ANovaFaccionista in '..\mestoque\ANovaFaccionista.pas' {FNovaFaccionista},
   AFaccionistas in '..\mestoque\AFaccionistas.pas' {FFaccionistas},
-  ARetornoFracaoFaccionista in '..\mestoque\ARetornoFracaoFaccionista.pas' {FRetornoFracaoFaccionista};
+  ARetornoFracaoFaccionista in '..\mestoque\ARetornoFracaoFaccionista.pas' {FRetornoFracaoFaccionista},
+  AConhecimentoTransporteEntrada in '..\mestoque\AConhecimentoTransporteEntrada.pas' {FConhecimentoTransporteEntrada};
 
 {$R *.res}
 

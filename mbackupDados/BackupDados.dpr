@@ -284,7 +284,14 @@ uses
   AReciboLocacao in '..\mpontaloja\AReciboLocacao.pas' {FReciboLocacao},
   ATipoTransferenciaCaixa in '..\mcaixa\ATipoTransferenciaCaixa.pas' {FTipoTransferenciaCaixa},
   ANovaTransferenciaExterna in '..\mcaixa\ANovaTransferenciaExterna.pas' {FNovaTransferenciaExterna},
-  ANovaTransferenciaCheques in '..\mcaixa\ANovaTransferenciaCheques.pas' {FNovaTransferenciaCheques};
+  ANovaTransferenciaCheques in '..\mcaixa\ANovaTransferenciaCheques.pas' {FNovaTransferenciaCheques},
+  AConhecimentoTransporteEntrada in '..\mestoque\AConhecimentoTransporteEntrada.pas' {FConhecimentoTransporteEntrada},
+  AFracaoFaccionista in '..\mestoque\AFracaoFaccionista.pas' {FFracaoFaccionista},
+  ANovaFracaoFaccionista in '..\mestoque\ANovaFracaoFaccionista.pas' {FNovaFracaoFaccionista},
+  ATerceiroFaccionista in '..\mestoque\ATerceiroFaccionista.pas' {FTerceiroFaccionista},
+  AFaccionistas in '..\mestoque\AFaccionistas.pas' {FFaccionistas},
+  ANovaFaccionista in '..\mestoque\ANovaFaccionista.pas' {FNovaFaccionista},
+  ARetornoFracaoFaccionista in '..\mestoque\ARetornoFracaoFaccionista.pas' {FRetornoFracaoFaccionista};
 
 {$R *.RES}
 

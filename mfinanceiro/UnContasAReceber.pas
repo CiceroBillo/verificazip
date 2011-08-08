@@ -1347,7 +1347,8 @@ begin
                                ' Where CAD.I_EMP_FIL = MOV.I_EMP_FIL ' +
                                ' AND CAD.I_LAN_REC = MOV.I_LAN_REC ' +
                                ' AND CAD.I_EMP_FIL = ' +IntToStr(VpaCodFilial)+
-                               ' AND CAD.I_LAN_ORC = ' + IntToStr(VpaLanOrcamento));
+                               ' AND CAD.I_LAN_ORC = ' + IntToStr(VpaLanOrcamento)+
+                               ' order by I_NRO_PAR');
   VpfDFilial := TRBDFilial.cria;
   Sistema.CarDFilial(VpfDFilial,VpaCodFilial);
   dtRave := TdtRave.create(nil);
@@ -1358,7 +1359,7 @@ begin
     dtRave.Promissoria.insert;
     dtRave.PromissoriaDesDuplicata.AsString := Tabela.FieldByName('C_NRO_DUP').AsString;
     dtRave.PromissoriaValDuplicata.AsFloat := Tabela.FieldByName('N_VLR_PAR').AsFloat;
-    dtRave.PromissoriaDesValorExtenso.AsString := Extenso(Tabela.FieldByName('N_VLR_PAR').AsFloat,'real','reais');
+    dtRave.PromissoriaDesValorExtenso.AsString := Extenso(Tabela.FieldByName('N_VLR_PAR').AsFloat,'reais','real');
     dtRave.PromissoriaDesLocaleData.AsString := varia.CidadeFilial+' '+ IntTostr(dia(date))+', de ' + TextoMes(date,false)+ ' de '+Inttostr(ano(date));
     dtRave.PromissoriaNumDiaVencimento.AsInteger := dia(Tabela.FieldByName('D_DAT_VEN').AsDateTime);
     dtRave.PromissoriaDesDiaVencimento.AsString := Extenso(dia(Tabela.FieldByName('D_DAT_VEN').AsDateTime),'dia','dias');
@@ -1368,7 +1369,7 @@ begin
     Tabela.Next;
   end;
   try
-    dtRave.ImprimePromissoria(true);
+    dtRave.ImprimePromissoria(VpaCodFilial, VpaDCliente,true);
   finally
     dtRave.Free;
   end;

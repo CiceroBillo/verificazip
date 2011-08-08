@@ -46,6 +46,7 @@ type TFuncoesCotacao = class(TLocalizaCotacao)
     VprMensagem : TidMessage;
     VprSMTP : TIdSMTP;
     FunVendedor : TRBFuncoesVendedor;
+    FunImprimeBoleto : TImpressaoBoleto;
     function RProximoLanOrcamento(VpaCodFilial : Integer) : Integer;
     function RProximoSeqParcialOrcamento(VpaCodFilial, VpaLanOrcamento : Integer) : Integer;
     function RProximoSeqEstagioOrcamento(VpaCodfilial,VpaLanOrcamento : integer) : Integer;
@@ -106,6 +107,7 @@ type TFuncoesCotacao = class(TLocalizaCotacao)
     function AgrupaRomaneioOrcamento(VpaCodFilial,VpaSeqRomaneio : Integer; VpaDRomaneioAgrupado : TRBDRomaneioOrcamento):string;
     function RMandaEmailEstagio(VpaDCodEstagio: integer): boolean;
     function DiminuiQtdProdutoCotacao(VpaCodFilial, VpaLanOrcamento, VpaSeqParcial : Integer):string;
+    procedure AnexaBoletosEmailCotacao(VpaMensagem : TidMessage;VpaDCotacao : TRBDOrcamento; VpaDCliente : TRBDCliente);
   public
     constructor Cria(VpaBaseDados : TSQLConnection);
     destructor Destroy;override;
@@ -327,6 +329,7 @@ end;
 constructor TFuncoesCotacao.Cria(VpaBaseDados : TSQLConnection);
 begin
   inherited create;
+  FunImprimeBoleto := TImpressaoBoleto.cria(VpaBaseDados);
   VprBaseDados := VpaBaseDados;
   Aux := TSQLQuery.Create(nil);
   Aux.SQLConnection := VpaBaseDados;
@@ -446,6 +449,7 @@ begin
   VprMensagem.free;
   VprSMTP.free;
   FunVendedor.free;
+  FunImprimeBoleto.free;
   inherited destroy;
 end;
 
@@ -4676,7 +4680,7 @@ begin
         FieldByName('C_DES_EMA').Asstring := DesEmail;
         FieldByName('C_DES_SER').Asstring := DesServico;
         FieldByName('L_OBS_ORC').Asstring := DeletaChars(DesObservacao.Text,#9);
-        FieldByName('C_OBS_FIS').Asstring := DeletaChars(DesObservacaoFiscal,#9);
+        FieldByName('C_OBS_FIS').Asstring := Copy(DeletaChars(DesObservacaoFiscal,#9),1,3900);
         FieldByName('I_COD_VEN').AsInteger := CodVendedor;
         if CodPreposto <> 0 then
           FieldByName('I_VEN_PRE').AsInteger := CodPreposto
@@ -5575,6 +5579,36 @@ begin
 end;
 
 {******************************************************************************}
+procedure TFuncoesCotacao.AnexaBoletosEmailCotacao(VpaMensagem: TidMessage;VpaDCotacao: TRBDOrcamento; VpaDCliente : TRBDCliente);
+var
+  VpfArquivoPDF : String;
+  Vpfbmppart : TIdAttachmentfile;
+begin
+  AdicionaSQLAbreTabela(Orcamento,'Select MOV.I_EMP_FIL, MOV.I_LAN_REC, MOV.I_NRO_PAR, MOV.I_COD_FRM ' +
+                                  ' FROM CADCONTASARECEBER CAD, MOVCONTASARECEBER MOV ' +
+                                  ' Where CAD.I_EMP_FIL = ' +IntToStr(VpaDCotacao.CodEmpFil)+
+                                  ' AND CAD.I_LAN_ORC = ' +IntToStr(VpaDCotacao.LanOrcamento)+
+                                  ' AND CAD.I_EMP_FIL =  MOV.I_EMP_FIL ' +
+                                  ' AND CAD.I_LAN_REC = MOV.I_LAN_REC ' +
+                                  ' ORDER BY MOV.I_NRO_PAR ');
+    while not Orcamento.Eof do
+    begin
+      if  (config.ImprimirBoletoFolhaBranco)and (varia.FormaPagamentoBoleto = Orcamento.FieldByName('I_COD_FRM').AsInteger) and
+          (config.EnviarBoletoNaNotaFiscal) then
+      begin
+        VpfArquivoPDF := FunImprimeBoleto.GeraPDFBoleto(Orcamento.FieldByName('I_EMP_FIL').AsInteger,Orcamento.FieldByName('I_LAN_REC').AsInteger,Orcamento.FieldByName('I_NRO_PAR').AsInteger,VpaDCliente);
+        Vpfbmppart := TIdAttachmentfile.Create(VpaMensagem.MessageParts,VpfArquivoPDF);
+        Vpfbmppart.ContentType := 'application/pdf';
+        Vpfbmppart.ContentDisposition := 'inline';
+        Vpfbmppart.DisplayName:=RetornaNomArquivoSemDiretorio(VpfArquivoPDF);
+        Vpfbmppart.ExtraHeaders.Values['content-id'] := RetornaNomArquivoSemDiretorio(VpfArquivoPDF);;
+        Vpfbmppart.DisplayName := RetornaNomArquivoSemDiretorio(VpfArquivoPDF);;
+      end;
+      Orcamento.Next;
+    end;
+end;
+
+{******************************************************************************}
 function TFuncoesCotacao.AprovaAmostra(VpaCodFilial, VpaLanOrcamento, VpaSeqMovimento: Integer): string;
 begin
   result := '';
@@ -5816,10 +5850,7 @@ end;
 
 {******************************************************************************}
 procedure TFuncoesCotacao.ImprimirBoletos(VpaCodFilial, VpaLanOrcamento : Integer;VpaDCliente : TRBDCliente;VpaImpressora : String);
-var
-  VpfFunImpressao : TImpressaoBoleto;
 begin
-  VpfFunImpressao := TImpressaoBoleto.cria(CotCadastro.ASQlConnection);
   AdicionaSQLAbreTabela(Orcamento,'Select MOV.I_EMP_FIL, MOV.I_COD_FRM, MOV.I_LAN_REC, MOV.I_NRO_PAR, CON.C_EMI_BOL '+
                                   ' from CADCONTASARECEBER CAD, MOVCONTASARECEBER MOV, CADCONTAS CON '+
                                   ' Where CAD.I_EMP_FIL = MOV.I_EMP_FIL '+
@@ -5832,11 +5863,10 @@ begin
   while not(Orcamento.Eof) and (Orcamento.FieldByName('C_EMI_BOL').AsString = 'T') do
   begin
     if (Orcamento.FieldByName('I_COD_FRM').AsInteger = varia.FormaPagamentoBoleto)then
-      VpfFunImpressao.ImprimeBoleto(VpaCodFilial,Orcamento.FieldByName('I_LAN_REC').AsInteger,Orcamento.FieldByName('I_NRO_PAR').AsInteger,
+      FunImprimeBoleto.ImprimeBoleto(VpaCodFilial,Orcamento.FieldByName('I_LAN_REC').AsInteger,Orcamento.FieldByName('I_NRO_PAR').AsInteger,
                                   VpaDCliente,false,VpaImpressora,False);
     Orcamento.Next;
   end;
-  VpfFunImpressao.free;
   orcamento.close;
 end;
 
@@ -6256,9 +6286,6 @@ begin
     result := 'Falta arquivo "'+varia.PathVersoes+'\efi.jpg'+'"';
   if result = '' then
   begin
-{    VpfEmailTexto := TIdText.Create(VprMensagem.MessageParts);
-    VpfEmailTexto.ContentType := 'text/plain';
-    MontaEmailCotacaoTexto(VpfEmailTexto.Body,VpaDCotacao,VpaDCliente);}
     Vpfbmppart := TIdAttachmentfile.Create(VprMensagem.MessageParts,varia.PathVersoes+'\'+inttoStr(VpaDCotacao.CodEmpFil)+'.jpg');
     Vpfbmppart.ContentType := 'image/jpg';
     Vpfbmppart.ContentDisposition := 'inline';
@@ -6302,6 +6329,7 @@ begin
     VpfPDF.ExtraHeaders.Values['content-id'] := VpfNomAnexo;
     VpfPDF.DisplayName := RetornaNomeSemExtensao(VpfNomAnexo)+'.pdf';
 
+    AnexaBoletosEmailCotacao(VprMensagem,VpaDCotacao,VpaDCliente);
 
     VpfEmailHTML := TIdText.Create(VprMensagem.MessageParts);
     VpfEmailHTML.ContentType := 'text/html';

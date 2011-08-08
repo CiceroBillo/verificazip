@@ -40,7 +40,7 @@ object FChamadoTecnico: TFChamadoTecnico
     Caption = '   Chamados T'#233'cnicos   '
     Font.Charset = ANSI_CHARSET
     Font.Color = clWhite
-    Font.Height = -24
+    Font.Height = -27
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
     ParentFont = False
@@ -1601,6 +1601,22 @@ object FChamadoTecnico: TFChamadoTecnico
       Caption = 'Altera Cliente'
       OnClick = AlteraCliente1Click
     end
+    object N2: TMenuItem
+      Caption = '-'
+    end
+    object EnviarEmailBoleto1: TMenuItem
+      Bitmap.Data = {
+        F6000000424DF600000000000000760000002800000010000000100000000100
+        04000000000080000000120B0000120B00001000000000000000000000000000
+        8000008000000080800080000000800080008080000080808000C0C0C0000000
+        FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00333333333333
+        33333333333333333333000000000000000007FFFFFFFFFFFF700F77FFFFFFFF
+        77F00FFF77FFFF77FFF00FFFFF0000FFFFF00FFF70EEEE07FFF00F707FFFFFF7
+        07F0007EEEEEEEEEE7000777777777777770307EEEEEEEEEE70333707FFFFFF7
+        07333333707EE707333333333370073333333333333333333333}
+      Caption = 'Enviar E-mail Cliente'
+      OnClick = EnviarEmailBoleto1Click
+    end
     object N6: TMenuItem
       Caption = '-'
     end
@@ -1637,10 +1653,6 @@ object FChamadoTecnico: TFChamadoTecnico
     object ConsultaRetornoProdutos1: TMenuItem
       Caption = 'Consulta Retorno Produtos'
       OnClick = ConsultaRetornoProdutos1Click
-    end
-    object EnviarEmailBoleto1: TMenuItem
-      Caption = 'Enviar E-mail Cliente'
-      OnClick = EnviarEmailBoleto1Click
     end
     object N7: TMenuItem
       Caption = '-'

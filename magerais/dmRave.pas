@@ -126,7 +126,7 @@ type
     procedure ImprimeConsumoSubmontagem(VpaCodFilial, VpaSeqOrdemProduccao, VpaSeqFracao : Integer;VpaSomenteAReservar, VpaConsumoExcluir : Boolean);
     procedure ImprimeRecibo(VpaCodFilial : Integer;VpaDCliente : TRBDCliente;VpaDesDuplicata, VpaValDuplicata,VpaValExtenso,VpaLocaleData, VpaNomEmitente : String);
     procedure ImprimePromissoria(VpaDFilial: TRBDFilial; VpaDCliente : TRBDCliente; VpaDesDuplicata, VpaValDuplicata,VpaValExtenso,VpaLocaleData, VpaDiaVencimento,VpaDiaVencExtenso,VpaAnoVencimento,VpaDesMesVencimento : String;VpaVisualizar : Boolean);overload;
-    procedure ImprimePromissoria(VpaVisualizar : Boolean);overload;
+    procedure ImprimePromissoria(VpaCodFilial : Integer;VpaDCliente : TRBDCliente; VpaVisualizar : Boolean);overload;
     procedure ImprimeDevolucoesPendente(VpaCodFilial,VpaCodCliente,VpaCodTransportadora,VpaCodEstagio,VpaCodVendedor, VpaCodProduto : Integer; VpaData : TDatetime;VpaCaminhoRelatorio,VpaNomFilial,VpaNomCliente,VpaNomTranportadora,VpaNomEstagio, VpaNomVendedor, VpaNomProduto : String);
     procedure ImprimeEstoqueFiscal(VpaCodFilial,VpaSeqProduto : integer;VpaCaminhoRelatorio,VpaNomFilial, VpaNomProduto : String);
     procedure ImprimeNotaFiscalEntrada(VpaCodFilial,VpaSeqNota : integer;VpaVisualizar : Boolean);
@@ -817,12 +817,32 @@ begin
 end;
 
 {******************************************************************************}
-procedure TdtRave.ImprimePromissoria(VpaVisualizar: Boolean);
+procedure TdtRave.ImprimePromissoria(VpaCodFilial : Integer; VpaDCliente : TRBDCliente; VpaVisualizar: Boolean);
+var
+   VpfComplemento: String;
 begin
   Rave.close;
+  Promissoria.Close;
+  Promissoria.open;
   RvSystem1.SystemPrinter.Title := 'Eficácia - Promissória';
   Rave.projectfile := varia.PathRelatorios+'\Financeiro\XX_Promissorias.rav';
   Rave.clearParams;
+  Sistema.CarDFilial(VprDFilial,VpaCodFilial);
+  FunRave.EnviaParametrosFilial(Rave,VprDFilial);
+  if deletaespaco(VpaDCliente.DesComplementoEndereco) = '' then
+    VpfComplemento := ''
+  else
+    VpfComplemento := ' - '+VpaDCliente.DesComplementoEndereco;
+  Rave.SetParam('CODCLIENTE',IntToStr(VpaDCliente.CodCliente));
+  Rave.SetParam('NOMCLIENTE',VpaDCliente.NomCliente);
+  Rave.SetParam('ENDCLIENTE',VpaDCliente.DesEndereco+', '+VpaDCliente.NumEndereco+ VpfComplemento);
+  Rave.SetParam('BAICLIENTE',VpaDCliente.DesBairro);
+  Rave.SetParam('CEPCLIENTE',VpaDCliente.CepCliente);
+  Rave.SetParam('CIDCLIENTE',VpaDCliente.DesCidade);
+  Rave.SetParam('UFCLIENTE',VpaDCliente.DesUF);
+  Rave.SetParam('CONCLIENTE',VpaDCliente.NomContato);
+  Rave.SetParam('CPFCLIENTE',VpaDCliente.CGC_CPF);
+
   if VpaVisualizar then
     RvSystem1.defaultDest := rdPreview
   else
@@ -2617,7 +2637,7 @@ begin
     Rave.SetParam('DATAFIM', DateToStr(VpaDataFim));
   end;
 
-  if VpaCodProduto <> 0 then
+  if VpaSeqProduto <> 0 then
   begin
     AdicionaSqlTabeLa(Principal,' AND MOV.I_SEQ_PRO = ' + IntToStr(VpaSeqProduto));
     Rave.SetParam('CODPRODUTO', IntToStr(VpaCodProduto));
@@ -5776,5 +5796,6 @@ end;
 
 
 end.
+
 
 
