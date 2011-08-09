@@ -281,7 +281,8 @@ uses APrincipal, FunSql, funData, UnCrystal, Constantes, FunObjeto,
   ANovaOrdemProducaoGenerica, ConstMsg, ANovoProdutoPro,
   ABaixaConsumoProduto, ASolicitacaoCompras, APedidoCompra, ARelOrdemSerra,
   AGerarFracaoOPMaquinasCorte, AAlteraEstagioFracaoOP,
-  AConsultaLogSeparacaoConsumo, dmRave, ANovaSolicitacaoCompra;
+  AConsultaLogSeparacaoConsumo, dmRave, ANovaSolicitacaoCompra,
+  AOrdemProdutoEstoque;
 
 {$R *.DFM}
 
@@ -1014,6 +1015,9 @@ var
 begin
   VpfProdutosOrcamento := TList.create;
   AdicionaFracoesOrcamentoCompras(VpfProdutosOrcamento);
+  {FOrdemProdutoEstoque := TFOrdemProdutoEstoque.CriarSDI(self,'',FPrincipal.VerificaPermisao('FOrdemProdutoEstoque'));
+  FOrdemProdutoEstoque.CarListaProdutoEstoque(VpfProdutosOrcamento, VprDFracaoOp);
+  FOrdemProdutoEstoque.free;}
   FNovaSolicitacaoCompras := TFNovaSolicitacaoCompras.CriarSDI(self,'',FPrincipal.VerificaPermisao('FNovoOrcamentoCompras'));
   FNovaSolicitacaoCompras.NovoOrcamentoConsumo(EFilial.AInteiro,OrdemProducaoSEQORD.AsInteger,OrdemProducaoSEQFRACAO.AsInteger,VpfProdutosOrcamento);
   FNovaSolicitacaoCompras.free;
