@@ -124,8 +124,8 @@ object FProdutosCliente: TFProdutosCliente
       OnCarregaItemGrade = GradeCarregaItemGrade
       ColWidths = (
         7
-        75
-        210
+        115
+        314
         35
         85
         87
@@ -169,7 +169,7 @@ object FProdutosCliente: TFProdutosCliente
     Caption = '   Produtos Cliente   '
     Font.Charset = ANSI_CHARSET
     Font.Color = clWhite
-    Font.Height = -27
+    Font.Height = -24
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
     ParentFont = False

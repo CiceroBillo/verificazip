@@ -74,6 +74,7 @@ object FOrdemProducaoGenerica: TFOrdemProducaoGenerica
           OnDblClick = BConsultarClick
           OnKeyDown = GridIndice1KeyDown
           ACorFoco = FPrincipal.CorFoco
+          AColunasOrdem = <>
           AListaIndice.Strings = (
             '0'
             '1'
@@ -615,7 +616,7 @@ object FOrdemProducaoGenerica: TFOrdemProducaoGenerica
     Caption = '   Ordens de Produ'#231#227'o   '
     Font.Charset = ANSI_CHARSET
     Font.Color = clWhite
-    Font.Height = -24
+    Font.Height = -27
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
     ParentFont = False
@@ -2100,7 +2101,7 @@ object FOrdemProducaoGenerica: TFOrdemProducaoGenerica
     Left = 416
     Top = 8
     Bitmap = {
-      494C010107000900600010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010107000900640010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002000000001002000000000000020
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

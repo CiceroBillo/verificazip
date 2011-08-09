@@ -587,6 +587,7 @@ begin
   if VprDBaixaCR.CodFormaPagamento <> EFormaPagamento.AInteiro then
   begin
     AssociaPerDescontoFormaPagamento(EFormaPagamento.AInteiro);
+    VprDBaixaCR.CodFormaPagamento := EFormaPagamento.AInteiro;
   end;
 end;
 

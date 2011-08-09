@@ -4839,7 +4839,8 @@ begin
         result := GravaDCompose(VpaDCotacao);
         if result = '' then
         begin
-          result := FunClientes.CadastraProdutosCliente(VpaDCotacao);
+          if VpaDCotacao.IndCadastrarProdutoCliente then
+            result := FunClientes.CadastraProdutosCliente(VpaDCotacao);
           if result = '' then
           begin
             result := FunClientes.CadastraReferenciaCliente(VpaDCotacao);

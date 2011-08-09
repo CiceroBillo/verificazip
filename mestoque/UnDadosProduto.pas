@@ -2094,6 +2094,7 @@ Type
       IndProcessamentoFrio,
       IndValoresAlterados,
       IndRevenda,
+      IndCadastrarProdutoCliente,
       OPImpressa,
       IndNumeroBaixado : Boolean;
       CodTransportadora,
@@ -4013,6 +4014,7 @@ begin
   IndCancelado := false;
   IndValoresAlterados := false;
   IndSinalPagamentoGerado := false;
+  IndCadastrarProdutoCliente := true;
 end;
 
 {******************************************************************************}

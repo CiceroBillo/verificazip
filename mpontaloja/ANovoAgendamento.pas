@@ -135,17 +135,17 @@ begin
   else
   begin
     EDatCadastro.Text := FormatDateTime('DD/MM/YYY HH:MM',VprDTarefa.DatTarefa);
-    //ECliente.AInteiro := VprDTarefa.CodCliente;
+    ECliente.AInteiro := VprDTarefa.CodCliente;
     ECliente.Atualiza;
-   // EUsuario.AInteiro := VprDTarefa.CodUsuario;
+    EUsuario.AInteiro := VprDTarefa.CodUsuario;
     EUsuario.Atualiza;
-   // ETipoAgendamento.AInteiro := VprDTarefa.CodTipo;
+    ETipoAgendamento.AInteiro := VprDTarefa.CodTipo;
     ETipoAgendamento.Atualiza;
     EDatAgendamento.DateTime := VprDTarefa.DatTarefa;
     EHorInicio.Text := FormatDateTime('HH:MM',VprDTarefa.DatTarefa);
-    //EHorFim.Text := FormatDateTime('HH:MM',VprDTarefa.DatFim);
+    EHorFim.Text := FormatDateTime('HH:MM',VprDTarefa.DatFim);
     ETitulo.Text := VprDTarefa.DesTitulo;
-   // EObservacoes.Lines.Text := VprDTarefa.DesObservacoes;
+    EObservacoes.Lines.Text := VprDTarefa.DesObservacoes;
   end;
 end;
 
@@ -173,18 +173,18 @@ begin
   begin
     with VprDTarefa do
     begin
-      {CodCliente := ECliente.AInteiro;
+      CodCliente := ECliente.AInteiro;
       CodUsuario := EUsuario.AInteiro;
-      CodTipoAgendamento := ETipoAgendamento.AInteiro;
+      CodTipo := ETipoAgendamento.AInteiro;
+      DatTarefa := MontaData(dia(EDatAgendamento.Date),mes(EDatAgendamento.Date),ano(EDatAgendamento.Date)) + StrToTime(EHorInicio.Text);
+      DatFim := MontaData(dia(EDatAgendamento.Date),mes(EDatAgendamento.Date),ano(EDatAgendamento.Date)) + StrToTime(EHorFim.Text);
       DesTitulo := ETitulo.Text;
       DesObservacoes := EObservacoes.Lines.Text;
-      DatInicio := MontaData(dia(EDatAgendamento.Date),mes(EDatAgendamento.Date),ano(EDatAgendamento.Date)) + StrToTime(EHorInicio.Text);
-      DatFim := MontaData(dia(EDatAgendamento.Date),mes(EDatAgendamento.Date),ano(EDatAgendamento.Date)) + StrToTime(EHorFim.Text);
-      IndRealizado := CRealizado.Checked;
-    if DatTarefa > DatFim then
-    begin
-      aviso('HORA FINAL INVÁLIDA!!!!'#13'A hora final não pode ser menor que a hora inicial.');
-      result := false;                   }
+      if DatTarefa > DatFim then
+      begin
+        aviso('HORA FINAL INVÁLIDA!!!!'#13'A hora final não pode ser menor que a hora inicial.');
+        result := false;
+      end;
     end;
   end;
 end;
@@ -337,7 +337,12 @@ var
   VpfResultado : String;
 begin
   if CarDClasse then
-    VpfResultado := FunClientes.GravaDAgenda(VprDAgenda);
+  begin
+    if VprDTarefa = nil then
+      VpfResultado := FunClientes.GravaDAgenda(VprDAgenda)
+    else
+      VpfResultado := FunClientes.GravaDTarefa(VprDTarefa);
+  end;
   if VpfResultado <> '' then
     aviso(VpfResultado)
   else

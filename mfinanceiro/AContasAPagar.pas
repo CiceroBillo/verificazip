@@ -535,7 +535,7 @@ procedure TFContasaPagar.GParcelasDrawColumnCell(Sender: TObject;
 begin
   if (MovParcelasC_IND_CAD.AsString = 'S') then
   begin
-    GParcelas.Canvas.Font.Color:= clGray;
+    GParcelas.Canvas.Font.Color:= clBlue;
     GParcelas.DefaultDrawDataCell(Rect, GParcelas.columns[datacol].field, State);
   end;
 end;

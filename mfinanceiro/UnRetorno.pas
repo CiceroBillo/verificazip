@@ -378,7 +378,8 @@ begin
     end;
     if not aux.eof then
     begin
-      if (VpaDItem.DatVencimento = Aux.FieldByName('D_DAT_VEN').AsDateTime) then
+      if (VpaDItem.DatVencimento = Aux.FieldByName('D_DAT_VEN').AsDateTime) or
+         (VpaDItem.DatVencimento < MontaData(1,1,1900))  then
       begin
         VpaDItem.CodFilialRec := Aux.FieldByName('I_EMP_FIL').AsInteger;
         VpaDItem.LanReceber := Aux.FieldByName('I_LAN_REC').AsInteger;

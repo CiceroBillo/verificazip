@@ -5,7 +5,7 @@ Unit UnClientes;
 Interface
 
 Uses Classes, DBTables, UnDados, UnDadosProduto, SysUtils,ComCtrls, UnTelemarketing, UnDadosCR,
-     SQLExpr, Tabela,db, StdCtrls,DBClient, FunData;
+     SQLExpr, Tabela,db, StdCtrls,DBClient, FunData, CAgenda;
 
 //classe localiza
 Type TRBLocalizaClientes = class
@@ -107,6 +107,7 @@ Type TRBFuncoesClientes = class(TRBLocalizaClientes)
     function GravaDProdutoClientePeca(VpaDProdutoCliente: TRBDProdutoCliente): String;
     function AdicionaProdutoCliente(VpaCodCliente,VpaSeqProduto : Integer;VpaCodProduto, VpaUM : String):string;
     function GravaDAgenda(VpaDAgenda : TRBDAgendaSisCorp): String;
+    function GravaDTarefa(VpaDTarefa : TRBDTarefa): String;
     function GravaDAgendaCliente(VpaDAgendaCliente: TRBDAgendaCliente): String;
     function GravaDParentes(VpaCodCliente : Integer;VpaParentes : TList):String;
     function GravaDDigitacaoProspect(VpaDDigProspect : TRBDDigitacaoProspect) :string;
@@ -671,6 +672,65 @@ begin
     on e : exception do result := 'ERRO NA GRAVAÇÃO DO SUPECT!!!'#13+e.message;
   end;
   CliCadastro.Close;
+end;
+
+{******************************************************************************}
+function TRBFuncoesClientes.GravaDTarefa(VpaDTarefa: TRBDTarefa): String;
+begin
+  result := '';
+  if VpaDTarefa.SeqAgenda <> 0 then
+  begin
+    if VpaDTarefa.CodUsuario <>VpaDTarefa.CodUsuarioAnterior then
+    begin
+      ExecutaComandoSql(CliAux,'Delete from AGENDA '+
+                                    ' Where CODUSUARIO = '+IntToStr(VpaDTarefa.CodUsuarioAnterior)+
+                                    ' and SEQAGENDA = '+IntToStr(VpaDTarefa.SeqAgenda));
+      VpaDTarefa.SeqAgenda := 0;
+    end;
+  end;
+  AdicionaSQLAbreTabela(CliCadastro,'Select * from AGENDA '+
+                                    ' Where CODUSUARIO = '+IntToStr(VpaDTarefa.CodUsuario)+
+                                    ' and SEQAGENDA = '+IntToStr(VpaDTarefa.SeqAgenda));
+  if VpaDTarefa.SeqAgenda = 0 then
+    CliCadastro.Insert
+  else
+    CliCadastro.Edit;
+
+  CliCadastro.FieldByName('CODUSUARIO').AsInteger := VpaDTarefa.CodUsuario;
+  if VpaDTarefa.CodCliente <> 0 then
+    CliCadastro.FieldByName('CODCLIENTE').AsInteger := VpaDTarefa.CodCliente
+  else
+    CliCadastro.FieldByName('CODCLIENTE').clear;
+  CliCadastro.FieldByName('DATCADASTRO').AsDateTime := VpaDTarefa.DatCadastro;
+  CliCadastro.FieldByName('DATINICIO').AsDateTime := VpaDTarefa.DatTarefa;
+  CliCadastro.FieldByName('DATFIM').AsDateTime := VpaDTarefa.DatFim;
+  CliCadastro.FieldByName('CODTIPOAGENDAMENTO').AsInteger := VpaDTarefa.CodTipo;
+  CliCadastro.FieldByName('CODUSUARIOAGENDOU').AsInteger := VpaDTarefa.CodUsuarioAgendou;
+  CliCadastro.FieldByName('DESTITULO').AsString := VpaDTarefa.DesTitulo;
+  CliCadastro.FieldByName('DESOBSERVACAO').AsString := VpaDTarefa.DesObservacoes;
+  if VpaDTarefa.IndConcluida then
+    CliCadastro.FieldByName('INDREALIZADO').AsString := 'S'
+  else
+    CliCadastro.FieldByName('INDREALIZADO').AsString := 'N';
+  if VpaDTarefa.IndCancelada then
+    CliCadastro.FieldByName('INDCANCELADO').AsString := 'S'
+  else
+    CliCadastro.FieldByName('INDCANCELADO').AsString := 'N';
+  if VpaDTarefa.CodFilialCompra <> 0 then
+    CliCadastro.FieldByName('CODFILIALCOMPRA').AsInteger := VpaDTarefa.CodFilialCompra
+  else
+    CliCadastro.FieldByName('CODFILIALCOMPRA').Clear;
+  if VpaDTarefa.SeqPedidoCompra <> 0 then
+    CliCadastro.FieldByName('SEQPEDIDOCOMPRA').AsInteger := VpaDTarefa.SeqPedidoCompra
+  else
+    CliCadastro.FieldByName('SEQPEDIDOCOMPRA').Clear;
+
+  if VpaDTarefa.SeqAgenda = 0 then
+    VpaDTarefa.SeqAgenda := RSeqAgendaDisponivel(VpaDTarefa.CodUsuario);
+  CliCadastro.FieldByName('SEQAGENDA').AsInteger := VpaDTarefa.SeqAgenda;
+  CliCadastro.post;
+  Result := CliCadastro.AMensagemErroGravacao;
+  CliCadastro.close;
 end;
 
 {******************************************************************************}

@@ -575,7 +575,7 @@ object dtRave: TdtRave
     Active = True
     Aggregates = <>
     Params = <>
-    Left = 536
+    Left = 608
     Top = 248
     Data = {
       1C0100009619E0BD0100000018000000080000000000030000001C010C446573
@@ -618,7 +618,7 @@ object dtRave: TdtRave
   object RvPromissoria: TRvDataSetConnection
     RuntimeVisibility = rtDeveloper
     DataSet = Promissoria
-    Left = 512
-    Top = 320
+    Left = 608
+    Top = 296
   end
 end

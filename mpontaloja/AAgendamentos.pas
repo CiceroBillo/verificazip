@@ -93,6 +93,8 @@ type
     RBAgenda: TRBAgenda;
     AgendamentosI_COR_AGE: TFMTBCDField;
     AgendamentosDESTITULO: TWideStringField;
+    AgendamentosCODFILIALCOMPRA: TFMTBCDField;
+    AgendamentosSEQPEDIDOCOMPRA: TFMTBCDField;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure EUsuarioFimConsulta(Sender: TObject);
@@ -176,6 +178,7 @@ begin
                        ' AGE.DATINICIO, AGE.DATINICIO HORAINI, AGE.DATFIM, AGE.CODTIPOAGENDAMENTO,'+
                        ' AGE.INDREALIZADO, AGE.DATREALIZADO, AGE.INDCANCELADO, '+
                        ' AGE.DESOBSERVACAO,AGE.CODUSUARIOAGENDOU, AGE.DESTITULO, '+
+                       ' AGE.CODFILIALCOMPRA, AGE.SEQPEDIDOCOMPRA, '+
                        ' USU.C_NOM_USU, USU.I_COR_AGE, '+
                         ' TIP.NOMTIPOAGENDAMENTO, '+
                        ' CLI.C_NOM_CLI, CLI.C_CID_CLI, '+
@@ -349,8 +352,12 @@ begin
   while not Agendamentos.Eof do
   begin
     VpfDTarefa := RBAgenda.ADAgenda.addTarefa(AgendamentosDATINICIO.AsDateTime);
+    VpfDTarefa.SeqAgenda := AgendamentosSEQAGENDA.AsInteger;
+    VpfDTarefa.DatCadastro := AgendamentosDATCADASTRO.AsDateTime;
+    VpfDTarefa.CodUsuarioAgendou := AgendamentosCODUSUARIOAGENDOU.AsInteger;
     VpfDTarefa.CodCliente := AgendamentosCODCLIENTE.AsInteger;
     VpfDTarefa.CodUsuario := AgendamentosCODUSUARIO.AsInteger;
+    VpfDTarefa.CodUsuarioAnterior := AgendamentosCODUSUARIO.AsInteger;
     VpfDTarefa.CodTipo := AgendamentosCODTIPOAGENDAMENTO.AsInteger;
     VpfDTarefa.DesTitulo := AgendamentosDESOBSERVACAO.AsString;
     VpfDTarefa.DatTarefa := AgendamentosDATINICIO.AsDateTime;
@@ -358,6 +365,11 @@ begin
     VpfDTarefa.DesTitulo := AgendamentosDESTITULO.AsString;
     VpfDTarefa.DesObservacoes := AgendamentosDESOBSERVACAO.AsString;
     VpfDTarefa.CorUsuario := AgendamentosI_COR_AGE.AsInteger;
+    VpfDTarefa.CodFilialCompra := AgendamentosCODFILIALCOMPRA.AsInteger;
+    VpfDTarefa.SeqPedidoCompra := AgendamentosSEQPEDIDOCOMPRA.AsInteger;
+    VpfDTarefa.DatRealizado := AgendamentosDATREALIZADO.AsDateTime;
+    VpfDTarefa.IndCancelada := AgendamentosINDCANCELADO.AsString ='S';
+    VpfDTarefa.IndConcluida := AgendamentosINDREALIZADO.AsString ='S';
     Agendamentos.Next;
   end;
 end;

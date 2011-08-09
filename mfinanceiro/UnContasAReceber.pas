@@ -112,6 +112,7 @@ type
     function ExcluiParcelasSinalPagamentoPagas(VpaDNovaCR : TRBDContasCR):string;
     function RUltimaParcelaemAberto(VpaCodFilial, VpaLanReceber : Integer): Integer;
     function RQtdParcelasEmAberto(VpaCodFilial, VpaLanReceber : Integer): Integer;
+    procedure CarTabelaPromissoria(VpaTabela : TSQlQuery);
   public
     // inicializa
     constructor cria(VpaBaseDados : TSqlConnection);
@@ -267,7 +268,8 @@ type
     function DuplicaParcelaemAberto(VpaCodFilial, VpaLanReceber : Integer) : string;
     function DivideValoresParcelasEmAberto(VpaValor : Double; VpaCodFilial, VpaLanReceber : Integer) : string;
     function ExportaPagamentosSCI(VpaDatInicio, VpaDatFim : TDateTime):string;
-    procedure ImprimePromissoria(VpaCodFilial,VpaLanOrcamento : Integer;VpaDCliente : TRBDCliente);
+    procedure ImprimePromissoria(VpaCodFilial,VpaLanOrcamento : Integer;VpaDCliente : TRBDCliente);overload;
+    procedure ImprimePromissoria(VpaCodFilial,VpaLanReceber,VpaNumParcela : Integer;VpaDCliente : TRBDCliente);overload;
   end;
 
 Var
@@ -1339,8 +1341,6 @@ end;
 
 {******************************************************************************}
 procedure TFuncoesContasAReceber.ImprimePromissoria(VpaCodFilial,VpaLanOrcamento: Integer;VpaDCliente : TRBDCliente);
-Var
-  VpfDFilial : TRBDFilial;
 begin
   AdicionaSQLAbreTabela(Tabela,'Select MOV.C_NRO_DUP, MOV.N_VLR_PAR, MOV.D_DAT_VEN '+
                                ' from MOVCONTASARECEBER MOV, CADCONTASARECEBER CAD  ' +
@@ -1349,31 +1349,48 @@ begin
                                ' AND CAD.I_EMP_FIL = ' +IntToStr(VpaCodFilial)+
                                ' AND CAD.I_LAN_ORC = ' + IntToStr(VpaLanOrcamento)+
                                ' order by I_NRO_PAR');
-  VpfDFilial := TRBDFilial.cria;
-  Sistema.CarDFilial(VpfDFilial,VpaCodFilial);
   dtRave := TdtRave.create(nil);
-  dtRave.Promissoria.close;
-  dtRave.Promissoria.open;
-  while not Tabela.Eof do
-  begin
-    dtRave.Promissoria.insert;
-    dtRave.PromissoriaDesDuplicata.AsString := Tabela.FieldByName('C_NRO_DUP').AsString;
-    dtRave.PromissoriaValDuplicata.AsFloat := Tabela.FieldByName('N_VLR_PAR').AsFloat;
-    dtRave.PromissoriaDesValorExtenso.AsString := Extenso(Tabela.FieldByName('N_VLR_PAR').AsFloat,'reais','real');
-    dtRave.PromissoriaDesLocaleData.AsString := varia.CidadeFilial+' '+ IntTostr(dia(date))+', de ' + TextoMes(date,false)+ ' de '+Inttostr(ano(date));
-    dtRave.PromissoriaNumDiaVencimento.AsInteger := dia(Tabela.FieldByName('D_DAT_VEN').AsDateTime);
-    dtRave.PromissoriaDesDiaVencimento.AsString := Extenso(dia(Tabela.FieldByName('D_DAT_VEN').AsDateTime),'dia','dias');
-    dtRave.PromissoriaNumAnoVencimento.AsInteger := Ano(Tabela.FieldByName('D_DAT_VEN').AsDateTime);
-    dtRave.PromissoriaDesMesVencimto.AsString := TextoMes(Tabela.FieldByName('D_DAT_VEN').AsDateTime,false);
-    dtRave.Promissoria.Post;
-    Tabela.Next;
-  end;
+  CarTabelaPromissoria(Tabela);
   try
     dtRave.ImprimePromissoria(VpaCodFilial, VpaDCliente,true);
   finally
     dtRave.Free;
   end;
 
+  Tabela.Close;
+end;
+
+{******************************************************************************}
+procedure TFuncoesContasAReceber.ImprimePromissoria(VpaCodFilial, VpaLanReceber,VpaNumParcela: Integer; VpaDCliente: TRBDCliente);
+Var
+  VpfIndClienteCriado : Boolean;
+begin
+  VpfIndClienteCriado := false;
+  AdicionaSQLAbreTabela(Tabela,'Select MOV.C_NRO_DUP, MOV.N_VLR_PAR, MOV.D_DAT_VEN, '+
+                               ' CAD.I_COD_CLI '+
+                               ' from MOVCONTASARECEBER MOV, CADCONTASARECEBER CAD ' +
+                               ' Where MOV.I_EMP_FIL = ' +IntToStr(VpaCodFilial)+
+                               ' AND MOV.I_LAN_REC = ' + IntToStr(VpaLanReceber)+
+                               ' AND MOV.I_NRO_PAR = ' + IntToStr(VpaNumParcela)+
+                               ' AND CAD.I_EMP_FIL = MOV.I_EMP_FIL ' +
+                               ' AND CAD.I_LAN_REC = MOV.I_LAN_REC ' +
+                               ' order by I_NRO_PAR');
+  if VpaDCliente = nil then
+  begin
+    VpaDCliente := TRBDCliente.cria;
+    VpaDCliente.CodCliente := Tabela.FieldByName('I_COD_CLI').AsInteger;
+    FunClientes.CarDCliente(VpaDCliente);
+    VpfIndClienteCriado := true;
+  end;
+  dtRave := TdtRave.create(nil);
+  CarTabelaPromissoria(Tabela);
+  try
+    dtRave.ImprimePromissoria(VpaCodFilial, VpaDCliente,true);
+  finally
+    dtRave.Free;
+  end;
+  if VpfIndClienteCriado  then
+    VpaDCliente.Free;
   Tabela.Close;
 end;
 
@@ -1716,6 +1733,27 @@ begin
     CadContas.next;
   end;
   CadContas.close;
+end;
+
+{******************************************************************************}
+procedure TFuncoesContasAReceber.CarTabelaPromissoria(VpaTabela: TSQlQuery);
+begin
+  dtRave.Promissoria.close;
+  dtRave.Promissoria.open;
+  while not VpaTabela.Eof do
+  begin
+    dtRave.Promissoria.insert;
+    dtRave.PromissoriaDesDuplicata.AsString := VpaTabela.FieldByName('C_NRO_DUP').AsString;
+    dtRave.PromissoriaValDuplicata.AsFloat := VpaTabela.FieldByName('N_VLR_PAR').AsFloat;
+    dtRave.PromissoriaDesValorExtenso.AsString := Extenso(VpaTabela.FieldByName('N_VLR_PAR').AsFloat,'reais','real');
+    dtRave.PromissoriaDesLocaleData.AsString := varia.CidadeFilial+' '+ IntTostr(dia(date))+', de ' + TextoMes(date,false)+ ' de '+Inttostr(ano(date));
+    dtRave.PromissoriaNumDiaVencimento.AsInteger := dia(VpaTabela.FieldByName('D_DAT_VEN').AsDateTime);
+    dtRave.PromissoriaDesDiaVencimento.AsString := Extenso(dia(VpaTabela.FieldByName('D_DAT_VEN').AsDateTime),'dia','dias');
+    dtRave.PromissoriaNumAnoVencimento.AsInteger := Ano(VpaTabela.FieldByName('D_DAT_VEN').AsDateTime);
+    dtRave.PromissoriaDesMesVencimto.AsString := TextoMes(VpaTabela.FieldByName('D_DAT_VEN').AsDateTime,false);
+    dtRave.Promissoria.Post;
+    VpaTabela.Next;
+  end;
 end;
 
 {******************************************************************************}
@@ -3112,7 +3150,6 @@ begin
 
     if (VpaDParcela.NumDiasAtraso > 0)and (VpaDParcela.NumDiasAtraso > VpaDParcela.DiasCarencia) then
     begin
-      if Config.BaixaContasReceberCalcularJuros then
       begin
         if Config.JurosMultaDoDia then
         begin
@@ -3125,11 +3162,15 @@ begin
           VpfPerJuros := VpaDParcela.PerJuros;
         end;
 
+        if VpaDParcela.PerMulta <> 0 then
+          VpaDParcela.ValAcrescimo := ((VpaDParcela.Valor * VpaDParcela.PerMulta) / 100 );
+
         if VpfPerMora <> 0 then
           VpaDParcela.ValAcrescimo := VpaDParcela.ValAcrescimo + ((((VpaDParcela.Valor * VpfPerMora) / 100 ) * VpaDParcela.NumDiasAtraso)/30)
         else
           if VpfPerJuros <> 0 then
             VpaDParcela.ValAcrescimo := VpaDParcela.ValAcrescimo + ((((VpaDParcela.Valor * VpfPerJuros) / 100 ) * VpaDParcela.NumDiasAtraso)/30);
+
         VpaDParcela.ValAcrescimo := ArredondaDecimais(VpaDParcela.ValAcrescimo,2);
       end;
     end;

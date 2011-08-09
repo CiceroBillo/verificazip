@@ -678,11 +678,11 @@ begin
   MovParcelas.sql.clear;
   MovParcelas.sql.add('Select ' );
   MovParcelas.sql.add(' CR.I_EMP_FIL, CR.I_LAN_REC, CR.C_CLA_PLA, MCR.L_OBS_REC, CR.I_SEQ_NOT,' +
-                           ' CR.I_COD_CLI, CR.I_NRO_NOT, CR.D_DAT_EMI, CR.C_IND_CAD, CR.C_IND_SIN, '+
+                           ' CR.I_COD_CLI, CR.I_NRO_NOT, CR.D_DAT_EMI, CR.C_IND_SIN, '+
                            ' MCR.I_NRO_PAR, MCR.D_PRO_LIG, MCR.C_IND_RET, MCR.C_FUN_PER,' +
                            ' MCR.D_DAT_VEN, MCR.N_DES_VEN, MCR.C_DUP_DES, CR.D_DAT_EMI,' +
                            ' MCR.I_COD_FRM, MCR.D_ENV_CAR, '+SQLTextoIsNull('MCR.C_MOS_FLU','''S''')+' C_MOS_FLU ,'+
-                           ' MCR.D_DAT_PRO, MCR.N_SIN_BAI, '+
+                           ' MCR.D_DAT_PRO, MCR.N_SIN_BAI, MCR.C_IND_CAD, '+
                            ' CR.C_IND_CON, '+
                            ' (MCR.N_VLR_PAR) as N_VLR_PAR, MCR.D_DAT_PAG,' +
                            ' (MCR.N_VLR_PAG) as N_VLR_PAG, '+
@@ -1505,26 +1505,8 @@ end;
 
 {******************************************************************************}
 procedure TFContasaReceber.ImprimePromissoria;
-var
-  VpfDCliente : TRBDCliente;
-  VpfDFilial  : TRBDFilial;
-  VpfDia, VpfMes, VpfAno: Word;
 begin
-  VpfDCliente := TRBDCliente.cria;
-  VpfDCliente.CodCliente := MovParcelasI_COD_CLI.AsInteger;
-  FunClientes.CarDCliente(VpfDCliente);
-  dtRave := TdtRave.create(self);
-  DecodeDate(MovParcelasD_DAT_VEN.AsDateTime, VpfAno, VpfMes, VpfDia);
-  VpfDFilial := TRBDFilial.cria;
-  CarDRepresentanteFilial(VpfDFilial);
-  dtRave.ImprimePromissoria(VpfDFilial,VpfDCliente,MovParcelasC_NRO_DUP.AsString,
-        FormatFloat('#,###,##0.00',MovParcelasN_VLR_PAR.AsFloat),
-            Extenso(MovParcelasN_VLR_PAR.AsFloat,'real','reais'),
-            varia.CidadeFilial+' '+ IntTostr(dia(date))+', de ' + TextoMes(date,false)+ ' de '+Inttostr(ano(date)),
-            IntToStr(VpfDia),Extenso(VpfDia,'dia','dias'), IntToStr(VpfAno),TextoMes(MovParcelasD_DAT_VEN.AsDateTime,false),true);
-  VpfDFilial.Free;
-  dtRave.free;
-  VpfDCliente.free;
+  FunContasAReceber.ImprimePromissoria(MovParcelasI_EMP_FIL.AsInteger,MovParcelasI_LAN_REC.AsInteger,MovParcelasI_NRO_PAR.AsInteger,nil);
 end;
 
 {******************************************************************************}
@@ -1825,7 +1807,7 @@ begin
   end
   else
   begin
-    PanelColor3.Height := EFormaPagamento.Top + EFormaPagamento.Height + 5;
+    PanelColor3.Height := EDuplicata.Top + EDuplicata.Height + 5;
     BFiltros.Caption := '>>';
   end;
 
@@ -1889,22 +1871,25 @@ procedure TFContasaReceber.GParcelasDrawColumnCell(Sender: TObject;
   const Rect: TRect; DataCol: Integer; Column: TColumn;
   State: TGridDrawState);
 begin
-  if MovParcelasC_FUN_PER.AsString = 'S' then
+  if ([gdSelected] <> State)then
   begin
-    GParcelas.Canvas.brush.Color:= clred; // coloque aqui a cor desejada
-    GParcelas.Canvas.Font.Color:= clWhite;
-    GParcelas.DefaultDrawDataCell(Rect, GParcelas.columns[datacol].field, State);
-  end
-  else
-    if (MovParcelasC_IND_SIN.AsString = 'S') AND (MovParcelasN_VLR_PAR.AsFloat > MovParcelasN_SIN_BAI.AsFloat) then
+    if MovParcelasC_FUN_PER.AsString = 'S' then
     begin
-     GParcelas.Canvas.Font.Color:= $FFD700;
+      GParcelas.Canvas.brush.Color:= clred; // coloque aqui a cor desejada
+      GParcelas.Canvas.Font.Color:= clWhite;
+      GParcelas.DefaultDrawDataCell(Rect, GParcelas.columns[datacol].field, State);
+    end
+    else
+      if (MovParcelasC_IND_SIN.AsString = 'S') AND (MovParcelasN_VLR_PAR.AsFloat > MovParcelasN_SIN_BAI.AsFloat) then
+      begin
+       GParcelas.Canvas.Font.Color:= $FFD700;
+        GParcelas.DefaultDrawDataCell(Rect, GParcelas.columns[datacol].field, State);
+      end;
+    if (MovParcelasC_IND_CAD.AsString = 'S') then
+    begin
+      GParcelas.Canvas.Font.Color:= clblue;
       GParcelas.DefaultDrawDataCell(Rect, GParcelas.columns[datacol].field, State);
     end;
-  if (MovParcelasC_IND_CAD.AsString = 'S') then
-  begin
-    GParcelas.Canvas.Font.Color:= clGray;
-    GParcelas.DefaultDrawDataCell(Rect, GParcelas.columns[datacol].field, State);
   end;
 end;
 

@@ -2736,6 +2736,7 @@ begin
     VpfDCotacao.IndNotaGerada := true;
     VpfDCotacao.IndCancelado := False;
     VpfDCotacao.IndImpresso := true;
+    VpfDCotacao.IndCadastrarProdutoCliente := false;
     result :=  FunCotacao.GravaDCotacao(VpfDCotacao,nil);
     if result = '' then
     begin
