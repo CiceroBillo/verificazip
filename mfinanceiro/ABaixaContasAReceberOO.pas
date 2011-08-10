@@ -7,7 +7,7 @@ uses
   formularios, Componentes1, ExtCtrls, PainelGradiente, StdCtrls, DBCtrls,
   Tabela, Grids, DBGrids, DBKeyViolation, Buttons, Mask, numericos, ComCtrls,
   Localizacao, Db, DBTables, CGrades, UnDadoscr, UnContasAReceber, UnSistema,
-  Menus, UnClassesImprimir,UnImpressao, sqlexpr;
+  Menus, UnClassesImprimir,UnImpressao, sqlexpr, UnDados;
 
 type
   TFBaixaContasaReceberOO = class(TFormularioPermissao)
@@ -99,7 +99,7 @@ var
 implementation
 uses
   APrincipal, AFormasPagamento, FunObjeto, Constantes, FunData, ConstMsg, FunString,
-  AChequesOO, funNumeros, UnCaixa, UnClientes;
+  AChequesOO, funNumeros, UnCaixa, UnClientes, dmRave;
 
 {$R *.DFM}
 
@@ -344,6 +344,7 @@ procedure TFBaixaContasaReceberOO.BOkClick(Sender: TObject);
 var
   VpfResultado: String;
   VpfDRecibo : TDadosRecibo;
+  VpfDCliente : TRBDCliente;
 begin
   VpfResultado:= DadosValidos;
   if VpfResultado = '' then
@@ -360,7 +361,15 @@ begin
     begin
       VpfDRecibo := TDadosRecibo.Create;
       CarDRecibo(VpfDRecibo);
-      FunImpressao.ImprimirRecibo(VpfDRecibo);
+      VpfDCliente := TRBDCliente.cria;
+      VpfDCliente.CodCliente := TRBDParcelaBaixaCR(VprDBaixaCR.Parcelas.Items[0]).CodCliente;
+      FunClientes.CarDCliente(VpfDCliente);
+      try
+        dtRave := TdtRave.create(self);
+        dtRave.ImprimeRecibo(varia.CodigoEmpFil,VpfDCliente,VpfDRecibo.DescReferente1+VpfDRecibo.DescReferente2,FormatFloat('#,###,##0.00',VpfDRecibo.Valor),Extenso(VpfDRecibo.Valor,'reais','real'),varia.CidadeFilial+' '+ IntTostr(dia(date))+', de ' + TextoMes(date,false)+ ' de '+Inttostr(ano(date)),varia.NomeFilial);
+      finally
+        dtRave.free;
+      end;
       VpfDRecibo.free;
     end;
     Close;

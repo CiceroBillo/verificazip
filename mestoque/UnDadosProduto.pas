@@ -2228,7 +2228,8 @@ Type
       CodPrincipioAtivo,
       QtdEtiquetas,
       SeqEstoqueBarra,
-      CodCFOP   :Integer;
+      CodCFOP,
+      NumOrigemProduto   :Integer;
       CodProduto,
       CodClassificacaoFiscal,
       CodClassificacaoFiscalOriginal,
@@ -2261,6 +2262,7 @@ Type
       PerAcrescimoST,
       PerIPI,
       PerICMS,
+      PerICMSCadatroProduto,
       PerReducaoBaseICMS,
       PerMVAAnterior,
       PerMVA,
@@ -2311,7 +2313,8 @@ Type
       ValOutrasDespesas,
       PerICMSSuperSimples,
       PerComissao,
-      PerDesconto : Double;
+      PerDesconto,
+      PerICMSPadrao : Double;
       IndNotaDevolucao,
       IndFreteEmitente,
       IndGerouEstoqueChapa,

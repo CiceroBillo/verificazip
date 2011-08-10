@@ -94,6 +94,7 @@ Type
     procedure VerificaDataBackup;
     function PodeDivulgarEficacia : Boolean;
     function AnexaArquivoEmail(VpaNomArquivo : String;VpaMensagem : TIdMessage):string;
+    function RMVAAjustado(VpaMVAOriginal, VpaICMSOrigem, VpaICMSDestino : Double) :double;
 end;
 
 Var
@@ -858,6 +859,20 @@ begin
                                ' Where I_EMP_FIL = '+IntTostr(VpaCodFilial));
   result := Sisaux.FieldByName('I_COD_EMP').AsInteger;
   SisAux.Close;
+end;
+
+{******************************************************************************}
+function TRBFuncoesSistema.RMVAAjustado(VpaMVAOriginal, VpaICMSOrigem,VpaICMSDestino: Double): double;
+Var
+  VpfA, VpfB : Double;
+begin
+  result := VpaMVAOriginal;
+  if VpaICMSOrigem <> VpaICMSDestino then
+  begin
+    VpfA := 1+(VpaMVAOriginal/100);
+    VpfB := (1-(VpaICMSOrigem/100))/((1-(VpaICMSDestino/100)));
+    result := ((VpfA*VpfB)-1)*100;
+  end;
 end;
 
 {******************************************************************************}

@@ -62,7 +62,7 @@ type
     function LocalizaProduto( var codigoProduto, ClaFis, Unidade, SequencialProduto : string; LocalizarF3 : Boolean;
                              corForm : TCorForm; CorFoco : TCorFoco; PainelGra : TCorPainelGra) : Boolean;
     procedure CalculaNota(VpaDNotaFor : TRBDNotaFiscalFor );
-    function ExisteProduto(VpaCodProduto : String;VpaDItemNota : TRBDNotaFiscalForItem):Boolean;
+    function ExisteProduto(VpaCodProduto : String; VpaDNota : TRBDNotaFiscalFor; VpaDItemNota : TRBDNotaFiscalForItem):Boolean;
     function ExisteServico(VpaCodServico : String;VpaDNotaFor : TRBDNotaFiscalFor; VpaDServicoNota : TRBDNotaFiscalForServico):Boolean;
     procedure DeletaNotaFiscalFor(VpaCodFilial, VpaSeqNota : Integer );
     procedure EstornaEstoqueFiscal(VpaDNota : TRBDNotaFiscalFor);
@@ -85,7 +85,9 @@ type
     procedure GeraNotadosPedidos(VpaListaPedidos: TList; VpaDNota: TRBDNotaFiscalFor);
     procedure PreencheProdutosNotaPedido(VpaListaPedidos: TList; VpaDNota: TRBDNotaFiscalFor);
     procedure CarUltimaNotafiscalProduto(VpaDatVenda : TDateTime;VpaCodFilial, VpaSeqProduto : Integer;VpadNotaFiscal : TRBDNotaFiscalFor);
-    function RCSTICMSProduto(VpaDCliente : TRBDCliente;VpaDProduto : TRBDProduto;VpaDNatureza : TRBDNaturezaOperacao) : string;
+    function RCSTICMSProduto(VpaDCliente : TRBDCliente;VpaDNatureza : TRBDNaturezaOperacao;VpaDItemNota : TRBDNotaFiscalForItem) : string;
+    function CarMVAAjustado(VpaDNota : TRBDNotaFiscalFor;VpaDItemNota : TRBDNotaFiscalForItem;VpaDFornecedor : TRBDCliente):string;
+    function RMVAOriginal(VpaMVAAjustada : Double; VpaDNota : TRBDNotaFiscalFor;VpaDItemNota : TRBDNotaFiscalForItem;VpaDFornecedor : TRBDCliente):double;
   end;
 
 implementation
@@ -457,6 +459,7 @@ begin
                                ' MOV.N_VLR_MVA, MOV.N_VLR_BST, MOV.N_VLR_TST, MOV.N_PER_ACU, MOV.N_VLR_BIC, MOV.N_VLR_ICM, ' +
                                ' MOV.N_VLR_DES, MOV.N_OUT_DES, MOV.N_VLR_FRE, MOV.N_RED_BAS, N_MVA_AJU, '+
                                ' PRO.C_COD_PRO, PRO.C_NOM_PRO, PRO.C_COD_UNI UNIORIGINAL, PRO.N_DEN_VOL, PRO.N_ESP_ACO, PRO.C_ATI_PRO, '+
+                               ' PRO.I_ORI_PRO, PRO.C_CLA_FIS, PRO.N_PER_SUT, PRO.N_PER_ICM ICMSPRODUTO,'+
                                ' TAM.NOMTAMANHO '+
                                ' from MOVNOTASFISCAISFOR MOV, CADPRODUTOS PRO, TAMANHO TAM'+
                                ' Where MOV.I_EMP_FIL = '+ IntToStr(VpaDNotaFor.CodFilial)+
@@ -494,6 +497,7 @@ begin
     VpfDItemNota.ValBaseIcms:= Tabela.FieldByName('N_VLR_BIC').AsFloat;
     VpfDItemNota.ValICMS:= Tabela.FieldByName('N_VLR_ICM').AsFloat;
     VpfDItemNota.PerICMS := Tabela.FieldByName('N_PER_ICM').AsFloat;
+    VpfDItemNota.PerICMSCadatroProduto := Tabela.FieldByName('ICMSPRODUTO').AsFloat;
     VpfDItemNota.PerMVA := Tabela.FieldByName('N_VLR_MVA').AsFloat;
     VpfDItemNota.PerMVAAjustado := Tabela.FieldByName('N_MVA_AJU').AsFloat;
     VpfDItemNota.ValBaseST := Tabela.FieldByName('N_VLR_BST').AsFloat;
@@ -514,6 +518,9 @@ begin
     VpfDItemNota.PerReducaoBaseICMS := Tabela.FieldByName('N_RED_BAS').AsFloat;
     VpfDItemNota.QtdEtiquetas := ArredondaPraMaior(VpfDItemNota.QtdProduto);
     VpfDItemNota.IndProdutoAtivo := Tabela.FieldByName('C_ATI_PRO').AsString = 'S';
+    VpfDItemNota.NumOrigemProduto := Tabela.FieldByName('I_ORI_PRO').AsInteger;
+    VpfDItemNota.PerMVAAnterior := Tabela.FieldByName('N_PER_SUT').AsFloat;
+    VpfDItemNota.CodClassificacaoFiscalOriginal := Tabela.FieldByName('C_CLA_FIS').AsString;
     Tabela.Next;
   end;
   Tabela.close;
@@ -773,12 +780,12 @@ begin
     if FunProdutos.ProdutoDestacaST(VpfDItemNota.CodCST) then
     begin
       VpfDItemNota.ValBaseST := VpfDItemNota.ValBaseIcms + (( VpfDItemNota.ValBaseIcms * VpfDItemNota.PerIPI)/100);
-      VpfDItemNota.ValBaseST := VpfDItemNota.ValBaseST + (( VpfDItemNota.ValBaseST * VpfDItemNota.PerMVA)/100);
+      VpfDItemNota.ValBaseST := VpfDItemNota.ValBaseST + (( VpfDItemNota.ValBaseST * VpfDItemNota.PerMVAAjustado)/100);
       VpfDItemNota.ValBaseST := ArredondaDecimais(VpfDItemNota.ValBaseST,2);
-      VpfDItemNota.ValST := ((VpfDItemNota.ValBaseST * VpfDItemNota.PerICMS)/100) - ((VpfDItemNota.ValBaseIcms * VpfDItemNota.PerICMS)/100);
+      VpfDItemNota.ValST := ((VpfDItemNota.ValBaseST * varia.PerICMS)/100) - ((VpfDItemNota.ValBaseIcms * VpfDItemNota.PerICMS)/100);
       VpfDItemNota.ValST := ArredondaDecimais(VpfDItemNota.ValST,2);
       if VpfDItemNota.ValBaseST > 0 then
-        VpfDItemNota.PerAcrescimoST := ((VpfDItemNota.ValBaseIcms + VpfDItemNota.ValST) *100) /VpfDItemNota.ValBaseIcms;
+        VpfDItemNota.PerAcrescimoST :=(((VpfDItemNota.ValBaseIcms + VpfDItemNota.ValST) *100) /VpfDItemNota.ValBaseIcms) - 100;
 
       VpaDNotaFor.ValICMSSubstituicao := VpaDNotaFor.ValICMSSubstituicao + VpfDItemNota.ValST;
       VpaDNotaFor.ValBaseICMSSubstituicao := VpaDNotaFor.ValBaseICMSSubstituicao + VpfDItemNota.ValBaseST;
@@ -854,7 +861,7 @@ begin
 end;
 
 {******************************************************************************}
-function TFuncoesNFFor.ExisteProduto(VpaCodProduto : String;VpaDItemNota : TRBDNotaFiscalForItem):Boolean;
+function TFuncoesNFFor.ExisteProduto(VpaCodProduto : String; VpaDNota : TRBDNotaFiscalFor; VpaDItemNota : TRBDNotaFiscalForItem):Boolean;
 begin
   result := false;
   if VpaCodProduto <> '' then
@@ -862,7 +869,8 @@ begin
     AdicionaSQLAbreTabela(Tabela,'Select pro.I_Seq_Pro, '+varia.CodigoProduto +
                                   ', Pro.C_Cod_Uni, Pro.C_Kit_Pro, PRO.C_FLA_PRO,PRO.C_NOM_PRO, '+
                                   ' PRO.C_CLA_FIS, PRO.I_PRI_ATI, C_REG_MSM, PRE.N_VLR_VEN, PRE.N_VLR_REV,'+
-                                  ' PRO.N_DEN_VOL, PRO.N_ESP_ACO, PRO.C_ATI_PRO, PRO.N_PER_SUT ' +
+                                  ' PRO.N_DEN_VOL, PRO.N_ESP_ACO, PRO.C_ATI_PRO, PRO.N_PER_SUT, PRO.I_ORI_PRO, '+
+                                  ' PRO.N_PER_ICM ' +
                                   ' from CADPRODUTOS PRO, MOVQDADEPRODUTO Qtd, MOVTABELAPRECO PRE ' +
                                   ' Where '+Varia.CodigoProduto +' = ''' + VpaCodProduto +''''+
                                   ' and Qtd.I_Emp_Fil =  ' + IntTostr(Varia.CodigoEmpFil)+
@@ -897,7 +905,10 @@ begin
         CodPrincipioAtivo := Tabela.FieldByName('I_PRI_ATI').AsInteger;
         DensidadeVolumetricaAco := Tabela.FieldByName('N_DEN_VOL').AsFloat;
         EspessuraAco := Tabela.FieldByName('N_ESP_ACO').AsFloat;
+        PerICMS := VpaDNota.PerICMSPadrao;
+        PerICMSCadatroProduto := Tabela.FieldByName('N_PER_ICM').AsFloat;
         IndProdutoAtivo := Tabela.FieldByName('C_ATI_PRO').AsString = 'S';
+        NumOrigemProduto := Tabela.FieldByName('I_ORI_PRO').AsInteger;
         if config.Farmacia then
           IndMedicamentoControlado := FunProdutos.PrincipioAtivoControlado(CodPrincipioAtivo);
       end;
@@ -1071,7 +1082,7 @@ begin
     begin
       VpfDProNota := TRBDNotaFiscalProduto(VpfDNota.Produtos.Items[VpfLacoProduto]);
       VpfDProNotaFor := VpaDNotafor.AddNotaItem;
-      ExisteProduto(VpfDProNota.CodProduto,VpfDProNotaFor);
+      ExisteProduto(VpfDProNota.CodProduto,VpaDNotafor,VpfDProNotaFor);
       VpfDProNotaFor.SeqProduto := VpfDProNota.SeqProduto;
       VpfDProNotaFor.CodCor := VpfDProNota.CodCor;
       VpfDProNotaFor.UM := VpfDProNota.UM;
@@ -1150,11 +1161,32 @@ begin
   VpaDNotaFor.IndNotaDevolucao :=(Tabela.FieldByName('C_IND_DEV').AsString = 'S');
   VpaDNotaFor.IndOrigemPedidoCompra :=(Tabela.FieldByName('C_ORI_PEC').AsString = 'S');
   VpaDNotaFor.CodVendedor := Tabela.FieldByName('I_COD_VEN').AsInteger;
+  VpaDNotaFor.CodUsuario := Tabela.FieldByName('I_COD_USU').AsInteger;
   VpaDNotaFor.PerComissao := Tabela.FieldByName('N_PER_COM').AsFloat;
   VpaDNotaFor.CodModeloDocumento := Tabela.FieldByName('C_MOD_DOC').AsString;
+  VpaDNotaFor.PerICMSPadrao := Tabela.FieldByName('N_PER_ICM').AsFloat;
   Tabela.close;
   CarDItemNotaFor(VpaDNotaFor);
   CarDItemServicoNotaFor(VpaDNotaFor);
+end;
+
+{******************************************************************************}
+function TFuncoesNFFor.CarMVAAjustado(VpaDNota: TRBDNotaFiscalFor;VpaDItemNota: TRBDNotaFiscalForItem;VpaDFornecedor : TRBDCliente): string;
+Var
+  VpfICMSDestino : Double;
+begin
+  VpaDItemNota.PerMVAAjustado := VpaDItemNota.PerMVA;
+  if VpaDFornecedor.DesUF <> Varia.UFFilial then
+  begin
+    if VpaDItemNota.PerICMSCadatroProduto <> 0 then
+      VpfICMSDestino := VpaDItemNota.PerICMSCadatroProduto
+    else
+      VpfICMSDestino := varia.PerICMS;
+
+    if VpfICMSDestino <> VpaDNota.PerICMSPadrao then
+      VpaDItemNota.PerMVAAjustado := Sistema.RMVAAjustado(VpaDItemNota.PerMVA,VpaDNota.PerICMSPadrao,VpfICMSDestino);
+  end;
+
 end;
 
 {******************************************************************************}
@@ -1260,6 +1292,7 @@ begin
 
   if VpaDNotaFor.SeqNota = 0 then
     VpaDNotaFor.SeqNota := RSeqNotaDisponivel(IntToStr(VpaDNotaFor.CodFilial));
+  NotCadastro.FieldByName('N_PER_ICM').AsFloat := VpaDNotaFor.PerICMSPadrao;
 
   NotCadastro.FieldByName('I_SEQ_NOT').AsInteger := VpaDNotaFor.SeqNota;
   NotCadastro.FieldByName('I_COD_USU').AsInteger:= VpaDNotaFor.CodUsuario;
@@ -1661,7 +1694,7 @@ begin
           VpfDNotaItem:= VpaDNota.AddNotaItem;
 
           VpfDNotaItem.CodProduto:= VpfDProdutoPedido.CodProduto;
-          ExisteProduto(VpfDProdutoPedido.CodProduto,VpfDNotaItem);
+          ExisteProduto(VpfDProdutoPedido.CodProduto,VpaDNota ,VpfDNotaItem);
           VpfDNotaItem.SeqProduto:= VpfDProdutoPedido.SeqProduto;
           VpfDNotaItem.CodCor:= VpfDProdutoPedido.CodCor;
           VpfDNotaItem.NomProduto:= VpfDProdutoPedido.NomProduto;
@@ -1691,12 +1724,12 @@ begin
 end;
 
 {******************************************************************************}
-function TFuncoesNFFor.RCSTICMSProduto(VpaDCliente: TRBDCliente;VpaDProduto: TRBDProduto; VpaDNatureza: TRBDNaturezaOperacao): string;
+function TFuncoesNFFor.RCSTICMSProduto(VpaDCliente: TRBDCliente;VpaDNatureza: TRBDNaturezaOperacao;VpaDItemNota : TRBDNotaFiscalForItem): string;
 begin
-  result := IntToStr(VpaDProduto.NumOrigemProduto);
+  result := IntToStr(VpaDItemNota.NumOrigemProduto);
   if (VpaDNatureza.IndCalcularICMS) then
   begin
-    if (VpaDProduto.IndSubstituicaoTributaria or (VpaDProduto.PerSubstituicaoTributaria > 0) ) and VpaDCliente.IndUFConvenioSubstituicaoTributaria then
+    if (VpaDItemNota.PerMVA  > 0) then
     begin
       result := result +'10'
     end
@@ -1704,9 +1737,6 @@ begin
       if VpaDCliente.IndSimplesNacional then
         result :=  result+'41'
       else
-        if (VpaDProduto.PerReducaoICMS <> 0) or (VpaDProduto.IndDescontoBaseICMSConfEstado) then
-          result :=result +'20'
-        else
           if not VpaDCliente.IndDestacarICMSNota  then
             result := result + '51'
           else
@@ -1717,6 +1747,27 @@ begin
   else
   begin
     result := result +   VpaDNatureza.CodCST;
+  end;
+
+end;
+
+{******************************************************************************}
+function TFuncoesNFFor.RMVAOriginal(VpaMVAAjustada: Double;VpaDNota: TRBDNotaFiscalFor; VpaDItemNota: TRBDNotaFiscalForItem;VpaDFornecedor: TRBDCliente): double;
+Var
+  VpfA, VpfB, VpfX : Double;
+begin
+  VpaDItemNota.PerMVAAjustado := VpaDItemNota.PerMVA;
+  if VpaDFornecedor.DesUF <> Varia.UFFilial then
+  begin
+    if varia.PerICMS <> VpaDNota.PerICMSPadrao then
+    begin
+      VpfA := 1+(VpaDItemNota.PerMVA/100);
+      VpfB := (1-(VpaDNota.PerICMSPadrao/100))/((1-(Varia.PerICMS/100)));
+      VpfX := (VpaMVAAjustada / 100) + 1;
+      VpfX := VpfX /VpfB;
+      VpfX := (VpfX -1) * 100;
+      result :=  VpfX;
+    end;
   end;
 
 end;

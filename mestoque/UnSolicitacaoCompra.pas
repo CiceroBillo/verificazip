@@ -1041,11 +1041,8 @@ begin
   Cadastro.FieldByname('CODFILIAL').AsInteger := VpaDProposta.CodFilial;
   Cadastro.FieldByname('SEQPROPOSTA').AsInteger := VpaDProposta.SeqProposta;
   Cadastro.FieldByname('SEQSOLICITACAO').AsInteger := VpaDOrcamentoCompra.SeqSolicitacao;
-  try
-    Cadastro.post;
-  except
-    on e : Exception do result := 'ERRO NA GRAVAÇÃO DA PROPOSTA SOLICITACAO COMPRA!!!'#13+e.message;
-  end;
+  Cadastro.post;
+  result := cadastro.AMensagemErroGravacao;
   Cadastro.close;
 end;
 

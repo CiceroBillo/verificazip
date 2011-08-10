@@ -26,7 +26,7 @@ object FAlteraEstagioCotacao: TFAlteraEstagioCotacao
     Caption = '  Altera Est'#225'gio   '
     Font.Charset = ANSI_CHARSET
     Font.Color = clWhite
-    Font.Height = -27
+    Font.Height = -24
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
     ParentFont = False

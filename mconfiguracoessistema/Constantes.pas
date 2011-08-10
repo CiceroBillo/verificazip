@@ -165,6 +165,7 @@ type
       EMailFilial,
       SiteFilial,
       CodCNAE : String;
+      PerICMS : Double;
       CodigoFilial : integer;
       CodigoEmpFil : integer;
       AcaoCancela : boolean;
@@ -991,7 +992,7 @@ var
 implementation
 
 uses
-   FunSql, FunArquivos, funData, UnProdutos;
+   FunSql, FunArquivos, funData, UnProdutos, UnClientes;
 
 {******************************************************************************}
 constructor TVariaveis.cria(VpaBaseDados : TSQLConnection);
@@ -1525,6 +1526,7 @@ begin
         BairroFilial := VpfTabela.FieldByName('C_BAI_FIL').AsString;
         CidadeFilial := VpfTabela.FieldByName('C_CID_FIL').AsString;
         UFFilial := VpfTabela.FieldByName('C_EST_FIL').AsString;
+        PerICMS := FunClientes.RPerICMSUF(UFFilial);
         CNPJFilial := VpfTabela.FieldByName('C_CGC_FIL').AsString;
         IEFilial := VpfTabela.FieldByName('C_INS_FIL').AsString;
         InscricaoMunicipal := VpfTabela.FieldByName('C_INS_MUN').AsString;

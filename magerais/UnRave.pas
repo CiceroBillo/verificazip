@@ -494,16 +494,23 @@ begin
      SetTab(NA,pjCenter,1,0.2,BOXLINENONE,0); // %IPI
      SetTab(NA,pjCenter,1.5,0.2,BOXLINENONE,0); // ICMS
      SetTab(NA,pjCenter,1,0.2,BOXLINENONE,0); // MVA
-     SetTab(NA,pjCenter,4,0.2,BOXLINENONE,0); // Classificacao fiscal
+     SetTab(NA,pjCenter,2,0.2,BOXLINENONE,0); // Classificacao fiscal
      SetTab(NA,pjCenter,1.5,0.2,BOXLINENONE,0); // %ST
-     SetTab(NA,pjCenter,3,0.2,BOXLINENONE,0); // Ultima compra
+     SetTab(NA,pjCenter,2,0.2,BOXLINENONE,0); // %ST
+     SetTab(NA,pjCenter,2,0.2,BOXLINENONE,0); // Ultima compra
      SetTab(NA,pjLeft,3,0.2,BOXLINENONE,0); // Referencia
      SaveTabs(1);
 
      clearTabs;
      SetTab(1,pjLeft,1.5,0.1,BOXLINENONE,0); //Codigo
-     SetTab(NA,pjLeft,10.5,0,BOXLINENONE,0); //Fornecedor
+     SetTab(NA,pjLeft,20.5,0,BOXLINENONE,0); //Fornecedor
+     SetTab(NA,pjLeft,4,0,BOXLINENONE,0); //Fornecedor
      SaveTabs(2);
+
+     clearTabs;
+     SetTab(15,pjLeft,3,0.1,BOXLINENONE,0); //Codigo
+     SetTab(NA,pjLeft,3,0,BOXLINENONE,0); //Fornecedor
+     SaveTabs(3);
    end;
 end;
 
@@ -3472,9 +3479,10 @@ begin
       PrintTab(' %IPI ');
       PrintTab(' ICMS ');
       PrintTab(' MVA ');
-      PrintTab(' Classificação Fiscal ');
+      PrintTab(' NCM ');
       PrintTab(' %ST ');
-      PrintTab(' Última Compra ');
+      PrintTab(' Val Final ');
+      PrintTab(' Últ Compra ');
       PrintTab(' Referencia ');
       bold := false;
       newline;
@@ -7146,44 +7154,75 @@ end;
 {******************************************************************************}
 procedure TRBFunRave.ImprimeRelProdutoFornecedor(VpaObjeto: TObject);
 var
-  VpfNomfornecedorAnterior : String;
+  VpfCodClienteAnterior, VpfQtdProdutosFornecedor : Integer;
+  VpfPerICMS, vpfPerMVAAjustado,VpfPerAcrescimo,VpfValFinal, VpfValST, VpfBaseST : Double;
 begin
-  VpfNomfornecedorAnterior := '';
+  VpfCodClienteAnterior := 0;
+  VpfQtdProdutosFornecedor := 0;
   with RVSystem.BaseReport do
   begin
     while not Tabela.Eof do
     begin
-      if VpfNomfornecedorAnterior <> Tabela.FieldByName('C_NOM_CLI').AsString then
+      if VpfCodClienteAnterior <> Tabela.FieldByName('I_COD_CLI').AsInteger then
       begin
+        if VpfCodClienteAnterior <> 0 then
+        begin
+          restoretabs(3);
+          bold:= true;
+          PrintTab('Total Produtos');
+          PrintTab(IntToStr(VpfQtdProdutosFornecedor));
+          NewLine;
+          if LinesLeft<=1 Then
+            NewPage;
+        end;
+
         NewLine;
         if LinesLeft<=1 Then
           NewPage;
         restoretabs(2);
-        bold:= true;
         PrintTab(Tabela.FieldByName('I_COD_CLI').AsString);
         PrintTab(Tabela.FieldByName('C_NOM_CLI').AsString);
+        if Tabela.FieldByName('C_OPT_SIM').AsString = 'S' then
+          PrintTab('SIMPLES NACIONAL')
+        else
+          PrintTab('EMPRESA NORMAL');
         bold:= false;
         NewLine;
         if LinesLeft<=1 Then
         NewPage;
         ImprimeCabecalhoProdutoFornecedor;
+        VpfCodClienteAnterior := Tabela.FieldByName('I_COD_CLI').AsInteger;
+        VpfPerICMS := FunClientes.RPerICMSUF(Tabela.FieldByName('C_EST_CLI').AsString);
+        VpfQtdProdutosFornecedor := 0;
       end;
       restoretabs(1);
+      inc(VpfQtdProdutosFornecedor);
       PrintTab(Tabela.FieldByName('C_COD_PRO').AsString);
       PrintTab(Tabela.FieldByName('C_NOM_PRO').AsString);
       PrintTab(FormatFloat('#,###,###,##0.00', Tabela.FieldByName('VALUNITARIO').AsFloat)+' ');
       PrintTab(FormatFloat('#,###,###,##0.00', Tabela.FieldByName('PERIPI').AsFloat)+' ');
-      PrintTab(' ');
-      PrintTab(' ');
-      PrintTab(' ');
-      PrintTab(' ');
-//      PrintTab(FormatFloat('#,###,###,##0.00', Tabela.FieldByName('ICMS').AsFloat)+' ');
-//      PrintTab(FormatFloat('#,###,###,##0.00', Tabela.FieldByName('MVA').AsFloat)+' ');
-//      PrintTab(Tabela.FieldByName('CLASSIFICACAOFISCAL').AsString);
-//      PrintTab(FormatFloat('#,###,###,##0.00', Tabela.FieldByName('CST').AsFloat)+' ');
+      PrintTab(FormatFloat('#,##0.00%',VpfPerICMS));
+      vpfPerMVAAjustado := sistema.RMVAAjustado(Tabela.FieldByName('N_PER_SUT').AsFloat,VpfPerICMS,Varia.PerICMS);
+      if Tabela.FieldByName('C_OPT_SIM').AsString = 'S' then
+        VpfValFinal := Tabela.FieldByName('VALUNITARIO').AsFloat
+      else
+        VpfValFinal := Tabela.FieldByName('VALUNITARIO').AsFloat - ((Tabela.FieldByName('VALUNITARIO').AsFloat*VpfPerICMS) /100);
+      if vpfPerMVAAjustado <> 0 then
+      begin
+        VpfBaseST := Tabela.FieldByName('VALUNITARIO').AsFloat +(Tabela.FieldByName('VALUNITARIO').AsFloat * vpfPerMVAAjustado)/100;
+        VpfValST := ((VpfBaseST * Varia.PerICMS)/100) - ((Tabela.FieldByName('VALUNITARIO').AsFloat * VpfPerICMS)/100);
+        VpfValFinal := VpfValFinal + VpfValST;
+      end;
+      if Tabela.FieldByName('VALUNITARIO').AsFloat > 0 then
+        VpfPerAcrescimo := (VpfValST * 100) / Tabela.FieldByName('VALUNITARIO').AsFloat
+      else
+        VpfPerAcrescimo := 0;
+      PrintTab(FormatFloat('#,##0.00%',vpfPerMVAAjustado));
+      PrintTab(Tabela.FieldByName('C_CLA_FIS').AsString);
+      PrintTab(FormatFloat('#,##0.00%',VpfPerAcrescimo));
+      PrintTab(FormatFloat('#,###,###,##0.00', VpfValFinal)+' ');
       PrintTab(DateToStr(Tabela.FieldByName('DATULTIMACOMPRA').AsDateTime));
       PrintTab(Tabela.FieldByName('DESREFERENCIA').AsString);
-      VpfNomfornecedorAnterior := Tabela.FieldByName('C_NOM_CLI').AsString;
       Tabela.Next;
       NewLine;
       if LinesLeft<=1 Then
@@ -7192,10 +7231,16 @@ begin
     NewLine;
     if LinesLeft<=1 Then
       NewPage;
-    ImprimeCabecalhoTotalFreteNotaXValorConhecimento;
-    NewLine;
-    if LinesLeft<=1 Then
-      NewPage;
+    if VpfCodClienteAnterior <> 0 then
+    begin
+      restoretabs(3);
+      bold:= true;
+      PrintTab('Total Produtos');
+      PrintTab(IntToStr(VpfQtdProdutosFornecedor));
+      NewLine;
+      if LinesLeft<=1 Then
+        NewPage;
+    end;
   end;
 end;
 
@@ -12786,9 +12831,11 @@ procedure TRBFunRave.ImprimeProdutoFornecedor(VpaCodFornecedor: integer;
 begin
   RvSystem.Tag := 51;
   LimpaSQlTabela(Tabela);
-  AdicionaSqltabela(Tabela, ' SELECT PRO.C_COD_PRO, PRO.C_NOM_PRO,  ' +
+  AdicionaSqltabela(Tabela, ' SELECT PRO.C_COD_PRO, PRO.C_NOM_PRO, PRO.N_PER_SUT, PRO.C_CLA_FIS,' +
                             ' PFO.VALUNITARIO, PFO.PERIPI, PFO.DATULTIMACOMPRA, PFO.NUMDIAENTREGA, PFO.DESREFERENCIA, ' +
-                            ' CLI.I_COD_CLI, CLI.C_NOM_CLI, CLI.C_NOM_REP, CLI.C_FON_REP, CLI.C_COM_END, TRA.C_NOM_CLI C_NOM_TRA  ' +
+                            ' CLI.I_COD_CLI, CLI.C_NOM_CLI, CLI.C_CON_COM, CLI.C_FON_COM, CLI.C_COM_END, CLI.C_OPT_SIM, '+
+                            ' CLI.C_EST_CLI, '+
+                            ' TRA.C_NOM_CLI C_NOM_TRA  ' +
                             ' FROM PRODUTOFORNECEDOR PFO, CADPRODUTOS PRO, CADCLIENTES CLI, CADCLIENTES TRA ' +
                             ' WHERE PFO.SEQPRODUTO = PRO.I_SEQ_PRO ' +
                             ' AND PFO.CODCLIENTE = CLI.I_COD_CLI ' +
@@ -12813,8 +12860,8 @@ begin
   begin
     VprCabecalhoEsquerdo.add('Fornecedor : ' +VpaNomFornecedor);
     VprCabecalhoDireito.Clear;
-    VprCabecalhoDireito.add('Representante : ' + Tabela.FieldByName('C_NOM_REP').AsString);
-    VprCabecalhoDireito.add('Fone : ' + Tabela.FieldByName('C_FON_REP').AsString);
+    VprCabecalhoDireito.add('Contato : ' + Tabela.FieldByName('C_CON_COM').AsString+'    ');
+    VprCabecalhoDireito.add('Fone : ' + Tabela.FieldByName('C_FON_COM').AsString+'    ');
   end;
 
   ConfiguraRelatorioPDF;

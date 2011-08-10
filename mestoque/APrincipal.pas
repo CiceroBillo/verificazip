@@ -223,6 +223,9 @@ type
     ConsultaProdutosporNmerodeSrie1: TMenuItem;
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
+    BitBtn3: TBitBtn;
+    BaseMVA: TSQLConnection;
+    TabelaMVA: TSQL;
     procedure MostraHint(Sender : TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -235,6 +238,7 @@ type
     procedure CortePendente1Click(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
+    procedure BitBtn3Click(Sender: TObject);
   private
     UnPri : TFuncoesPrincipal;
     FunImpressaoRel : TImpressaoRelatorio;
@@ -579,6 +583,25 @@ begin
   if VpfResultado <> '' then
     aviso(VpfResultado);
   exit;
+end;
+
+procedure TFPrincipal.BitBtn3Click(Sender: TObject);
+begin
+  AdicionaSQLAbreTabela(Tabela,'Select * from CADPRODUTOS ' +
+                               'WHERE N_PER_SUT = 0 ');
+  while not Tabela.Eof do
+  begin
+    AdicionaSQLAbreTabela(TabelaMVA,'Select N_PER_SUT from CADPRODUTOS ' +
+                                    ' WHERE I_SEQ_PRO = ' +IntToStr(TABELA.FieldByName('I_SEQ_PRO').AsInteger));
+    if TabelaMVA.FieldByName('N_PER_SUT').AsFloat > 0 then
+    Begin
+      Tabela.Edit;
+      Tabela.FieldByName('N_PER_SUT').AsFloat := TabelaMVA.FieldByName('N_PER_SUT').AsFloat;
+      tabela.Post;
+    End;
+    Tabela.Next;
+  end;
+  Tabela.Close;
 end;
 
 // -------------Quando é enviada a menssagem de criação de um formulario------------- //

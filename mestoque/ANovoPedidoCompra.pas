@@ -662,6 +662,8 @@ begin
   VprDPedidoCorpo.DatRenegociadoInicial:= 0;
   VprDPedidoCorpo.DatPrevista:= 0;
   VprDPedidoCorpo.DatEntrega:= 0;
+  VprDPedidoCorpo.CodEstagio := varia.EstagioInicialCompras;
+  VprDPedidoCorpo.CodUsuario := varia.CodigoUsuario;
   FunPedidoCompra.ZeraQtdBaixada(VprDPedidoCorpo);
   CarDTela;
   EstadoBotoes(false);

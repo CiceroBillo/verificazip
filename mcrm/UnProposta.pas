@@ -4160,11 +4160,8 @@ begin
   Cadastro.FieldByName('CODFILIAL').AsInteger := VpaCodFilial;
   Cadastro.FieldByName('SEQPROPOSTA').AsInteger := VpaSeqProposta;
   Cadastro.FieldByName('NUMCHAMADO').AsInteger := VpaNumChamado;
-  try
-    Cadastro.post;
-  except
-    on e : exception do result := 'ERRO NA GRAVAÇÃO DO CHAMADOPROPOSTA!!!'#13+e.message;
-  end;
+  Cadastro.post;
+  result := Cadastro.AMensagemErroGravacao;
   Cadastro.close;
 end;
 

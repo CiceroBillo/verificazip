@@ -842,6 +842,8 @@ begin
       IndProdutoAtivo := CadProdutosC_ATI_PRO.AsString = 'S';
       PerMVA := CadProdutosN_PER_SUT.AsFloat;
       PerMVAAnterior := PerMVA;
+      NumOrigemProduto := CadProdutosI_ORI_PRO.AsInteger;
+      PerICMSCadatroProduto := CadProdutosN_PER_ICM.AsFloat;
       if config.EstoquePorCor then
       begin
         VpaDProNotaFor.CodCor := CadProdutosI_COD_COR.AsInteger;

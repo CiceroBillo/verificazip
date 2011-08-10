@@ -138,8 +138,8 @@ type
     N6: TMenuItem;
     ConsultaOramentoCompra1: TMenuItem;
     N7: TMenuItem;
-    Bduplicar: TBitBtn;
     BCancelar: TBitBtn;
+    Duplicar1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BFecharClick(Sender: TObject);
@@ -179,6 +179,7 @@ type
     procedure ConsultaOramentoCompra1Click(Sender: TObject);
     procedure BduplicarClick(Sender: TObject);
     procedure BCancelarClick(Sender: TObject);
+    procedure Duplicar1Click(Sender: TObject);
   private
     FunNotaFor: TFuncoesNFFor;
     VprSeqProduto,
@@ -431,6 +432,17 @@ begin
   AtualizaConsulta;
 end;
 
+procedure TFPedidoCompra.Duplicar1Click(Sender: TObject);
+begin
+  if PEDIDOCOMPRACORPOSEQPEDIDO.AsInteger <> 0 then
+  begin
+    FNovoPedidoCompra:= TFNovoPedidoCompra.CriarSDI(Application,'',True);
+    if FNovoPedidoCompra.Duplicar(PEDIDOCOMPRACORPOCODFILIAL.AsInteger,PEDIDOCOMPRACORPOSEQPEDIDO.AsInteger) then
+      AtualizaConsulta(true);
+    FNovoPedidoCompra.Free;
+  end;
+end;
+
 {******************************************************************************}
 procedure TFPedidoCompra.PEDIDOCOMPRACORPOAfterScroll(DataSet: TDataSet);
 begin
@@ -604,13 +616,6 @@ end;
 
 procedure TFPedidoCompra.BduplicarClick(Sender: TObject);
 begin
-  if PEDIDOCOMPRACORPOSEQPEDIDO.AsInteger <> 0 then
-  begin
-    FNovoPedidoCompra:= TFNovoPedidoCompra.CriarSDI(Application,'',True);
-    if FNovoPedidoCompra.Duplicar(PEDIDOCOMPRACORPOCODFILIAL.AsInteger,PEDIDOCOMPRACORPOSEQPEDIDO.AsInteger) then
-      AtualizaConsulta(true);
-    FNovoPedidoCompra.Free;
-  end;
 end;
 
 {******************************************************************************}

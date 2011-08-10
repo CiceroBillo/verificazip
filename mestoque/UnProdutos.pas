@@ -3134,7 +3134,15 @@ begin
                                     ' Where I_SEQ_PRO = '+IntToStr(VpaSeqProduto) );
   ProCadastro.Edit;
   ProCadastro.FieldByName('C_CLA_FIS').AsString := VpaCodClassificacao;
-  ProCadastro.FieldByName('N_PER_SUT').AsFloat := VpaPerMVA;
+  if VpaPerMVA > 0 then
+    ProCadastro.FieldByName('N_PER_SUT').AsFloat := VpaPerMVA
+  else
+    if VpaPerMVA < 0 then
+    begin
+      ProCadastro.FieldByName('N_PER_SUT').clear;
+      ProCadastro.FieldByName('C_SUB_TRI').AsString := 'S';
+    end;
+
   ProCadastro.FieldByName('C_ASS_REG').AsString := Sistema.RAssinaturaRegistro(ProCadastro);
   ProCadastro.Post;
   result := ProCadastro.AMensagemErroGravacao;
