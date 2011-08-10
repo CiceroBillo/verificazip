@@ -15,6 +15,7 @@ type
     GProdutos: TRBStringGridColor;
     BBaixar: TBitBtn;
     BCancelar: TBitBtn;
+    BImprimir: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BCancelarClick(Sender: TObject);
@@ -25,10 +26,12 @@ type
     procedure BBaixarClick(Sender: TObject);
     procedure GProdutosCarregaItemGrade(Sender: TObject; VpaLinha: Integer);
     procedure GProdutosNovaLinha(Sender: TObject);
+    procedure BImprimirClick(Sender: TObject);
   private
     VprProdutoComEstoque : TList;
     VprDProdutoNaoComprado : TRBDFracaoOPProdutoNaoComprado;
     VprAcao : Boolean;
+    VprSeqProdutoNaoComprado: Integer;
     function RColunaGrade(VpaColuna : TRBDColunaGradeProduto):Integer;
     procedure CarTituloGrade;
     procedure InicializaTela(VpaProdutoOrdemProducao : TList);
@@ -43,7 +46,8 @@ var
 
 implementation
 
-uses APrincipal, UnProdutos, FunObjeto, ANovaSolicitacaoCompra, Constantes;
+uses APrincipal, UnProdutos, FunObjeto, ANovaSolicitacaoCompra, Constantes,
+  UnOrdemProducao, ConstMsg, dmRave;
 
 {$R *.DFM}
 
@@ -126,8 +130,10 @@ begin
       VprProdutoComEstoque.Add(VpfDProdutoNaoComprado);
       VpfDProdutoNaoComprado.SeqProduto := VpfDProdutoSolicitacao.SeqProduto;
       VpfDProdutoNaoComprado.CodProduto := VpfDProdutoSolicitacao.CodProduto;
+      VpfDProdutoNaoComprado.NomProduto := VpfDProdutoSolicitacao.NomProduto;
       VpfDProdutoNaoComprado.CodFilialFracao := VpfDProdutoSolicitacao.CodFilialFracao;
       VpfDProdutoNaoComprado.SeqFracao := VpfDProdutoSolicitacao.SeqFracao;
+      VpfDProdutoNaoComprado.SeqOrdemProducao:= VpfDProdutoSolicitacao.SeqOrdemProducao;
       VpfDProdutoNaoComprado.QtdEstoque := VpfQtdProdutoEstoque;
       VpfDProdutoNaoComprado.IndMarcado := true;
     end;
@@ -187,11 +193,30 @@ begin
 end;
 
 { *************************************************************************** }
-procedure TFOrdemProdutoEstoque.BBaixarClick(Sender: TObject);
+procedure TFOrdemProdutoEstoque.BImprimirClick(Sender: TObject);
 begin
-  //grava produtos nao comprados
-  VprAcao := true;
-  close;
+  try
+    dtRave := TdtRave.create(self);
+    dtRave.ImprimeRelacaoProdutosNaoComprados(VprSeqProdutoNaoComprado);
+  finally
+    dtRave.free;
+  end;
+end;
+
+{ *************************************************************************** }
+procedure TFOrdemProdutoEstoque.BBaixarClick(Sender: TObject);
+var
+  VpfResultado : String;
+begin
+  VpfResultado := FunOrdemProducao.GravaDFracaoProdutoNaoComprado(VprDProdutoNaoComprado, VprProdutoComEstoque, VprSeqProdutoNaoComprado);
+  if VpfResultado <> '' then
+    aviso(VpfResultado)
+  else
+  begin
+    VprAcao := true;
+    BBaixar.Enabled:= false;
+    BImprimir.Enabled:= true;
+  end;
 end;
 
 { *************************************************************************** }

@@ -47,6 +47,7 @@ Type TRBFuncoesOrdemProducao = class(TRBLocalizaOrdemProducao)
     function RSeqOrdemCorteDisponivel(VpaCodFilial,VpaSeqOrdemProducao : Integer) : Integer;
     function RSeqPlanoCorteDisponivel(VpaCodFilial : Integer) : Integer;
     function RSeqImpressaoDisponivel : Integer;
+    function RSeqProdutoNaoCompradoDisponivel: Integer;
     function RQtdItemRomaneio(VpaFilial, VpaSeqRomaneio : String) : Integer;
     function RQtdRomaneioProdutoItem(VpaCodFilial,VpaSeqRomaneio,VpaSeqItem : Integer) : Integer;
     function RQtdRomaneioProduto(VpaCodFilial,VpaSeqRomaneio : Integer) : Integer;
@@ -163,6 +164,8 @@ Type TRBFuncoesOrdemProducao = class(TRBLocalizaOrdemProducao)
     function GravaDRevisaoFracaoFaccionista(VpaDRevisaoFracao : TRBDRevisaoFracaoFaccionista) : string;
     function GravaConsumoOP(VpaDOrdemProducao : TRBDordemProducao):String;
     function GravaDPlanoCorte(VpaDPlanoCorte : TRBDPlanoCorteCorpo) : string;
+    function GravaDFracaoProdutoNaoComprado(VpaDProdutoNaoComprado: TRBDFracaoOPProdutoNaoComprado; VpaProdutoEstoque: TList; var VpaSeqProdutoNaoComprado : Integer): String;
+    function GravaDFracaoProdutoNaoCompradoItem(VpaDProdutoNaoComprado: TRBDFracaoOPProdutoNaoComprado; VpaSeqFracaoProdutoNaoComprado: Integer; VpaProdutoComEstoque: Tlist): String;
     function GeraOrdemCorte(VpaDOrdemProducao : TRBDOrdemProducao):string;
     function AlteraEstagio(VpaDOrdem : TRBDOrdemProducaoEtiqueta):String;
     function AlteraCliente(VpaCodFilial,VpaSeqOrdem, VpaCodCliente : Integer):string;
@@ -1272,6 +1275,51 @@ begin
   OrdCadastro.FieldByName('SEQESTAGIO').AsInteger := RSeqEstagioFracaoOpDisponivel(VpaDEstagio.CodFilial,VpaDEstagio.SeqOrdem,VpaDEstagio.SeqFracao);
   OrdCadastro.post;
   result := OrdCadastro.AMensagemErroGravacao;
+  OrdCadastro.close;
+end;
+
+{******************************************************************************}
+function TRBFuncoesOrdemProducao.GravaDFracaoProdutoNaoComprado(VpaDProdutoNaoComprado: TRBDFracaoOPProdutoNaoComprado; VpaProdutoEstoque: TList; var VpaSeqProdutoNaoComprado : Integer): String;
+begin
+  result := '';
+  AdicionaSQLAbreTabela(OrdCadastro,'Select * from PRODUTONAOCOMPRADOCORPO '+
+                                    ' WHERE SEQPRODUTONAOCOMPRADO = 0 AND CODUSUARIO = 0');
+  OrdCadastro.insert;
+  OrdCadastro.FieldByname('CODUSUARIO').AsInteger := varia.CodigoUsuario;
+  OrdCadastro.FieldByname('DATALTERACAO').AsDateTime := now;
+  VpaSeqProdutoNaoComprado:= RSeqProdutoNaoCompradoDisponivel;
+  OrdCadastro.FieldByname('SEQPRODUTONAOCOMPRADO').AsInteger := VpaSeqProdutoNaoComprado;
+  OrdCadastro.post;
+  result := OrdCadastro.AMensagemErroGravacao;
+  OrdCadastro.close;
+  if result = '' then
+    result := GravaDFracaoProdutoNaoCompradoItem(VpaDProdutoNaoComprado, VpaSeqProdutoNaoComprado, VpaProdutoEstoque);
+end;
+
+{******************************************************************************}
+function TRBFuncoesOrdemProducao.GravaDFracaoProdutoNaoCompradoItem(
+  VpaDProdutoNaoComprado: TRBDFracaoOPProdutoNaoComprado;
+  VpaSeqFracaoProdutoNaoComprado: Integer; VpaProdutoComEstoque: Tlist): String;
+var
+  VpfLaco: Integer;
+begin
+  result := '';
+  AdicionaSQLAbreTabela(OrdCadastro,'Select * from PRODUTONAOCOMPRADOITEM '+
+                                    ' WHERE SEQPRODUTONAOCOMPRADO = 0 AND CODFILIAL = 0 AND SEQORDEMPRODUCAO = 0 AND SEQFRACAO = 0');
+
+  for VpfLaco := 0 to VpaProdutoComEstoque.Count -1 do
+  begin
+    OrdCadastro.insert;
+    VpaDProdutoNaoComprado:= TRBDFracaoOPProdutoNaoComprado(VpaProdutoComEstoque[VpfLaco]);
+    OrdCadastro.FieldByname('SEQPRODUTONAOCOMPRADO').AsInteger := VpaSeqFracaoProdutoNaoComprado;
+    OrdCadastro.FieldByname('CODFILIAL').AsInteger := VpaDProdutoNaoComprado.CodFilialFracao;
+    OrdCadastro.FieldByname('SEQORDEMPRODUCAO').AsInteger := VpaDProdutoNaoComprado.SeqOrdemProducao;
+    OrdCadastro.FieldByname('SEQFRACAO').AsInteger := VpaDProdutoNaoComprado.SeqFracao;
+    OrdCadastro.post;
+    result := OrdCadastro.AMensagemErroGravacao;
+    if Result <> '' then
+      break;
+  end;
   OrdCadastro.close;
 end;
 
@@ -3442,6 +3490,14 @@ begin
   AdicionaSQLAbreTabela(OrdAux,'Select MAX(SEQPLANOCORTE) ULTIMO  from PLANOCORTECORPO '+
                                ' Where CODFILIAL = '+IntToStr(VpaCodFilial));
   result := OrdAux.FieldByname('ULTIMO').AsInteger + 1;
+  OrdAux.close;
+end;
+
+{******************************************************************************}
+function TRBFuncoesOrdemProducao.RSeqProdutoNaoCompradoDisponivel: Integer;
+begin
+  AdicionaSqlAbreTabela(OrdAux,'Select MAX(SEQPRODUTONAOCOMPRADO) ULTIMO from PRODUTONAOCOMPRADOCORPO ');
+  result := OrdAux.FieldByName('ULTIMO').AsInteger +1;
   OrdAux.close;
 end;
 

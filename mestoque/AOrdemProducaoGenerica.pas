@@ -597,6 +597,7 @@ begin
     VpfDProdutoOrcamento.QtdAprovado :=OrdemProducaoQTDPRODUTO.AsFloat;
     VpfDProdutoOrcamento.CodFilialFracao :=OrdemProducaoEMPFIL.AsInteger;
     VpfDProdutoOrcamento.SeqFracao :=OrdemProducaoSEQFRACAO.AsInteger;
+    VpfDProdutoOrcamento.SeqOrdemProducao :=OrdemProducaoSEQORD.AsInteger;
     OrdemProducao.Next
   end;
   OrdemProducao.GotoBookmark(VpfPosicao);

@@ -626,7 +626,8 @@ type
       SeqProduto,
       CodCor,
       CodFilialFracao,
-      SeqFracao: Integer;
+      SeqFracao,
+      SeqOrdemProducao  : Integer;
       CodClassificacao,
       CodProduto,
       NomProduto,
@@ -724,7 +725,8 @@ Type
      SeqProduto,
      CodCor,
      CodFilialFracao,
-     SeqFracao : Integer;
+     SeqFracao,
+     SeqOrdemProducao : Integer;
      CodProduto,
      NomProduto,
      NomCor : String;

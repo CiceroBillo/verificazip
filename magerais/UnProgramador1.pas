@@ -3,7 +3,7 @@ unit UnProgramador1;
 interface
 Uses SQLExpr, Classes, SysUtils;
 Const
-  CT_VersaoBancoProgramador1 = 203;
+  CT_VersaoBancoProgramador1 = 205;
 
 Type
   TRBFunProgramador1 = class
@@ -1693,6 +1693,29 @@ begin
     ExecutaComandoSql(Aux,' ALTER TABLE CFG_PRODUTO ADD(C_PRA_OBR CHAR(1))');
     ExecutaComandoSql(Aux,'UPDATE CFG_PRODUTO SET C_PRA_OBR = ''F''');
     ExecutaComandoSql(Aux,'Update CFG_GERAL set I_Ult_PR1 = 203');
+  end;
+  if VpaNumAtualizacao < 204 then
+  begin
+    result := '204';
+    ExecutaComandoSql(Aux,' CREATE TABLE PRODUTONAOCOMPRADOCORPO(' +
+                          ' SEQPRODUTONAOCOMPRADO NUMBER(10) NOT NULL, ' +
+                          ' CODUSUARIO NUMBER(10) NOT NULL, ' +
+                          ' DATALTERACAO DATE,' +
+                          ' PRIMARY KEY(SEQPRODUTONAOCOMPRADO,CODUSUARIO))');
+    ExecutaComandoSql(Aux,'CREATE INDEX PRODCOMPRADOCORPO_FK1 ON PRODUTONAOCOMPRADOCORPO(SEQPRODUTONAOCOMPRADO)');
+    ExecutaComandoSql(Aux,'Update CFG_GERAL set I_Ult_PR1 = 204');
+  end;
+  if VpaNumAtualizacao < 205 then
+  begin
+    result := '205';
+    ExecutaComandoSql(Aux,' CREATE TABLE PRODUTONAOCOMPRADOITEM(' +
+                          ' SEQPRODUTONAOCOMPRADO NUMBER(10) NOT NULL, ' +
+                          ' CODFILIAL NUMBER(10) NOT NULL, ' +
+                          ' SEQORDEMPRODUCAO NUMBER(10) NOT NULL, '+
+                          ' SEQFRACAO NUMBER(10) NOT NULL, ' +
+                          ' PRIMARY KEY(SEQPRODUTONAOCOMPRADO,CODFILIAL,SEQORDEMPRODUCAO,SEQFRACAO))');
+    ExecutaComandoSql(Aux,'CREATE INDEX PRODCOMPRADOITEM_FK1 ON PRODUTONAOCOMPRADOITEM(CODFILIAL,SEQORDEMPRODUCAO,SEQFRACAO)');
+    ExecutaComandoSql(Aux,'Update CFG_GERAL set I_Ult_PR1 = 205');
   end;
 end;
 end.

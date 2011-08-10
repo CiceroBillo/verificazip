@@ -220,6 +220,7 @@ type
     procedure ImprimeConhecimentoTransporteEntrada(VpaDatInicio, VpaDatFim: TDateTime; VpaCodFilial, VpaCodTransportadora: Integer; VpaCaminhoRelatorio, VpaNomFilial, VpaNomTransportadora:String);
     procedure ImprimeConhecimentoTransporteSaida(VpaDatInicio, VpaDatFim: TDateTime; VpaCodFilial, VpaCodTransportadora: Integer; VpaCaminhoRelatorio, VpaNomFilial, VpaNomTransportadora:String);
     procedure ImprimeRecibosEmitidos(VpaDatInicio,VpaDatFim : TDateTime;VpaCodFilial,VpaCodCliente : Integer;VpaCaminhoRelatorio,VpaNomFilial,VpaNomCliente: String);
+    procedure ImprimeRelacaoProdutosNaoComprados(VpaSeqProdutoNaoComprado: Integer);
     procedure TesteDataConection;
   end;
 
@@ -2840,6 +2841,29 @@ begin
 
   Rave.Execute;
 
+end;
+
+{******************************************************************************}
+procedure TdtRave.ImprimeRelacaoProdutosNaoComprados(VpaSeqProdutoNaoComprado: Integer);
+begin
+  Rave.close;
+  RvSystem1.SystemPrinter.Title := 'Eficácia - Relacao Produto Nao Comprados';
+  Rave.projectfile := varia.PathRelatorios+'\Ordem Producao\2500ES_Relacao Produto Nao Comprados';
+  Rave.clearParams;
+  RvSystem1.defaultDest := rdPreview;
+  Principal.close;
+  Principal.sql.clear;
+  AdicionaSQlTabela(Principal, 'SELECT PRO.C_COD_PRO, PRO.C_NOM_PRO, ' +
+                               ' FRA.QTDPRODUTO, FRA.SEQORDEM, FRA.SEQFRACAO ' +
+                               ' FROM CADPRODUTOS PRO, FRACAOOP FRA, PRODUTONAOCOMPRADOITEM COM ' +
+                               ' WHERE FRA.SEQPRODUTO = PRO.I_SEQ_PRO' +
+                               ' AND FRA.CODFILIAL = COM.CODFILIAL' +
+                               ' AND FRA.SEQORDEM = COM.SEQORDEMPRODUCAO '+
+                               ' AND FRA.SEQFRACAO = COM.SEQFRACAO '+
+                               ' AND COM.SEQPRODUTONAOCOMPRADO = ' + IntToStr(VpaSeqProdutoNaoComprado));
+  AdicionaSqlTabela(Principal,' ORDER BY COM.SEQFRACAO');
+  Principal.open;
+  Rave.Execute;
 end;
 
 {******************************************************************************}
