@@ -479,7 +479,7 @@ begin
         VpfDRegistroC170.ALIQ_ICMS := Tabela2.FieldByName('N_PER_ICM').AsFloat;
         VpfDRegistroC170.VL_ICMS := Tabela2.FieldByName('N_VLR_ICM').AsFloat;
         VpfDRegistroC170.VL_BC_ICMS_ST := Tabela2.FieldByName('N_VLR_BST').AsFloat;
-        VpfDRegistroC170.VL_ICMS_ST := Tabela2.FieldByName('N_VLR_BST').AsFloat;
+        VpfDRegistroC170.VL_ICMS_ST := Tabela2.FieldByName('N_VLR_TST').AsFloat;
         VpfDRegistroC170.ALIQ_ST := 0;
         VpfDRegistroC170.IND_APUR := iaMensal;
         VpfDRegistroC170.CST_IPI := varia.CSTIPIEntrada;

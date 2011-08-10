@@ -624,7 +624,9 @@ type
     public
       SeqItem,
       SeqProduto,
-      CodCor: Integer;
+      CodCor,
+      CodFilialFracao,
+      SeqFracao: Integer;
       CodClassificacao,
       CodProduto,
       NomProduto,
@@ -635,6 +637,7 @@ type
       IndComprado: Boolean;
       UnidadesParentes: TStringList;
       QtdProduto,
+      QtdEstoque,
       QtdAprovado,
       QtdComprado,
       QtdChapa,
@@ -714,6 +717,22 @@ Type
       constructor cria;
       destructor destroy; override;
 end;
+
+Type
+  TRBDFracaoOPProdutoNaoComprado = class
+    public
+     SeqProduto,
+     CodCor,
+     CodFilialFracao,
+     SeqFracao : Integer;
+     CodProduto,
+     NomProduto,
+     NomCor : String;
+     QtdEstoque : Double;
+     IndMarcado : Boolean;
+     constructor cria;
+     destructor destroy;override;
+  end;
 
 type
   TRBDFracaoOPPedidoCompra = class
@@ -5680,6 +5699,24 @@ end;
 
 {******************************************************************************}
 destructor TRBDSpedFiscalRegistroD100.destroy;
+begin
+
+  inherited;
+end;
+
+{******************************************************************************}
+{ TRBDFracaoOPProdutoNaoComprado }
+{******************************************************************************}
+
+{******************************************************************************}
+constructor TRBDFracaoOPProdutoNaoComprado.cria;
+begin
+  inherited create;
+  IndMarcado := false;
+end;
+
+{******************************************************************************}
+destructor TRBDFracaoOPProdutoNaoComprado.destroy;
 begin
 
   inherited;

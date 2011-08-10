@@ -595,6 +595,8 @@ begin
     VpfDProdutoOrcamento.UnidadesParentes := FunProdutos.RUnidadesParentes(VpfDProdutoOrcamento.DesUM);
     VpfDProdutoOrcamento.QtdProduto := OrdemProducaoQTDPRODUTO.AsFloat;
     VpfDProdutoOrcamento.QtdAprovado :=OrdemProducaoQTDPRODUTO.AsFloat;
+    VpfDProdutoOrcamento.CodFilialFracao :=OrdemProducaoEMPFIL.AsInteger;
+    VpfDProdutoOrcamento.SeqFracao :=OrdemProducaoSEQFRACAO.AsInteger;
     OrdemProducao.Next
   end;
   OrdemProducao.GotoBookmark(VpfPosicao);
@@ -1015,9 +1017,9 @@ var
 begin
   VpfProdutosOrcamento := TList.create;
   AdicionaFracoesOrcamentoCompras(VpfProdutosOrcamento);
-  {FOrdemProdutoEstoque := TFOrdemProdutoEstoque.CriarSDI(self,'',FPrincipal.VerificaPermisao('FOrdemProdutoEstoque'));
-  FOrdemProdutoEstoque.CarListaProdutoEstoque(VpfProdutosOrcamento, VprDFracaoOp);
-  FOrdemProdutoEstoque.free;}
+  FOrdemProdutoEstoque := TFOrdemProdutoEstoque.CriarSDI(self,'',FPrincipal.VerificaPermisao('FOrdemProdutoEstoque'));
+  FOrdemProdutoEstoque.CarListaProdutoEstoque(VpfProdutosOrcamento);
+  FOrdemProdutoEstoque.free;
   FNovaSolicitacaoCompras := TFNovaSolicitacaoCompras.CriarSDI(self,'',FPrincipal.VerificaPermisao('FNovoOrcamentoCompras'));
   FNovaSolicitacaoCompras.NovoOrcamentoConsumo(EFilial.AInteiro,OrdemProducaoSEQORD.AsInteger,OrdemProducaoSEQFRACAO.AsInteger,VpfProdutosOrcamento);
   FNovaSolicitacaoCompras.free;

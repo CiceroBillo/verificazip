@@ -247,6 +247,9 @@ type
     Nova1: TMenuItem;
     BaseDados: TSQLConnection;
     BitBtn6: TBitBtn;
+    BitBtn7: TBitBtn;
+    Janete: TSQLConnection;
+    BDJanete: TRBSQL;
     procedure MostraHint(Sender : TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -266,6 +269,7 @@ type
     procedure BitBtn4Click(Sender: TObject);
     procedure BitBtn5Click(Sender: TObject);
     procedure BitBtn6Click(Sender: TObject);
+    procedure BitBtn7Click(Sender: TObject);
   private
     TipoSistema : string;
     UnPri : TFuncoesPrincipal;
@@ -1340,6 +1344,26 @@ begin
   if VpfResultado <> '' then
     aviso(VpfResultado);
   exit;
+end;
+
+{******************************************************************************}
+procedure TFPrincipal.BitBtn7Click(Sender: TObject);
+begin
+  AdicionaSQLAbreTabela(Cliente,'Select * from CADCLIENTES ' +
+                                ' Where C_INS_CLI = ''ISENTO''');
+  while not Cliente.Eof do
+  begin
+    AdicionaSQLAbreTabela(BDJanete,'Select * from CADCLIENTES ' +
+                                   ' WHERE I_COD_CLI = ' +IntToStr(Cliente.FieldByName('I_COD_CLI').AsInteger));
+    if BDJanete.FieldByName('C_INS_CLI').AsString <> 'ISENTO' then
+    Begin
+      Cliente.Edit;
+      Cliente.FieldByName('C_INS_CLI').AsString := BDJanete.FieldByName('C_INS_CLI').AsString;
+      Cliente.Post;
+    End;
+
+    Cliente.Next;
+  end;
 end;
 
 procedure TFPrincipal.BRegeraComissaoClick(Sender: TObject);

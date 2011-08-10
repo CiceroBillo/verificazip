@@ -2639,6 +2639,18 @@ object FPrincipal: TFPrincipal
     Visible = False
     OnClick = BitBtn6Click
   end
+  object BitBtn7: TBitBtn
+    Left = 253
+    Top = 352
+    Width = 99
+    Height = 25
+    Caption = 'Janete'
+    DoubleBuffered = True
+    ParentDoubleBuffered = False
+    TabOrder = 10
+    Visible = False
+    OnClick = BitBtn7Click
+  end
   object Menu: TMainMenu
     Left = 134
     Top = 88
@@ -3600,8 +3612,10 @@ object FPrincipal: TFPrincipal
     Aggregates = <>
     Params = <>
     ProviderName = 'InternalProvider'
+    ASQlConnection = BaseDados
     ASqlQuery.MaxBlobSize = -1
     ASqlQuery.Params = <>
+    ASqlQuery.SQLConnection = BaseDados
     Left = 368
     Top = 72
   end
@@ -3646,5 +3660,39 @@ object FPrincipal: TFPrincipal
     Connected = True
     Left = 248
     Top = 96
+  end
+  object Janete: TSQLConnection
+    ConnectionName = 'BASEDADOSORA'
+    DriverName = 'Oracle'
+    GetDriverFunc = 'getSQLDriverORACLE'
+    LibraryName = 'dbxora.dll'
+    LoginPrompt = False
+    Params.Strings = (
+      'drivername=Oracle'
+      'Database=Delphi11'
+      'user_name=Janete'
+      'password=1298'
+      'rowsetsize=20'
+      'blobsize=-1'
+      'localecode=0000'
+      'oracle transisolation=ReadCommited'
+      'os authentication=False'
+      'multiple transaction=False'
+      'trim char=False'
+      'decimal separator=,')
+    VendorLib = 'oci.dll'
+    Left = 568
+    Top = 152
+  end
+  object BDJanete: TRBSQL
+    Aggregates = <>
+    Params = <>
+    ProviderName = 'InternalProvider'
+    ASQlConnection = Janete
+    ASqlQuery.MaxBlobSize = -1
+    ASqlQuery.Params = <>
+    ASqlQuery.SQLConnection = Janete
+    Left = 648
+    Top = 152
   end
 end
