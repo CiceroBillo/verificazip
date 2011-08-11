@@ -3,7 +3,7 @@ unit UnProgramador1;
 interface
 Uses SQLExpr, Classes, SysUtils;
 Const
-  CT_VersaoBancoProgramador1 = 205;
+  CT_VersaoBancoProgramador1 = 207;
 
 Type
   TRBFunProgramador1 = class
@@ -1716,6 +1716,20 @@ begin
                           ' PRIMARY KEY(SEQPRODUTONAOCOMPRADO,CODFILIAL,SEQORDEMPRODUCAO,SEQFRACAO))');
     ExecutaComandoSql(Aux,'CREATE INDEX PRODCOMPRADOITEM_FK1 ON PRODUTONAOCOMPRADOITEM(CODFILIAL,SEQORDEMPRODUCAO,SEQFRACAO)');
     ExecutaComandoSql(Aux,'Update CFG_GERAL set I_Ult_PR1 = 205');
+  end;
+  if VpaNumAtualizacao < 206 then
+  begin
+    result := '206';
+    ExecutaComandoSql(Aux,' ALTER TABLE CADGRUPOS ADD(C_IND_CVE CHAR(1)) ');
+    ExecutaComandoSql(Aux,' UPDATE CADGRUPOS SET C_IND_CVE = C_IND_SCV ');
+    ExecutaComandoSql(Aux,'Update CFG_GERAL set I_Ult_PR1 = 206');
+  end;
+  if VpaNumAtualizacao < 207 then
+  begin
+    result := '207';
+    ExecutaComandoSql(Aux,' ALTER TABLE CFG_GERAL ADD(C_COT_ICO CHAR(1)) ');
+    ExecutaComandoSql(Aux,'UPDATE CFG_GERAL SET C_COT_ICO  = ''F''');
+    ExecutaComandoSql(Aux,'Update CFG_GERAL set I_Ult_PR1 = 207');
   end;
 end;
 end.

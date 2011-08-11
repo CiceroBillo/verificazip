@@ -1,3 +1,4 @@
+
 unit ANovoGrupo;
 
 interface
@@ -332,6 +333,8 @@ type
     CadGruposC_EXC_AMO: TWideStringField;
     CadGruposC_POL_ISE: TWideStringField;
     DBCheckBox107: TDBCheckBox;
+    DBCheckBox108: TDBCheckBox;
+    CadGruposC_IND_CVE: TWideStringField;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure CadGruposAfterInsert(DataSet: TDataSet);

@@ -4105,10 +4105,6 @@ object FNovaCotacao: TFNovaCotacao
     object PEstagios: TTabSheet
       Caption = 'Est'#225'gios'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Splitter1: TSplitter
         Left = 0
         Top = 317
@@ -4241,10 +4237,6 @@ object FNovaCotacao: TFNovaCotacao
     object PEmails: TTabSheet
       Caption = 'E-Mails'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GEmails: TGridIndice
         Left = 0
         Top = 0

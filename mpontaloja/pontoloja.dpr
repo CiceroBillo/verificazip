@@ -341,7 +341,8 @@ uses
   ANovaFaccionista in '..\mestoque\ANovaFaccionista.pas' {FNovaFaccionista},
   AFaccionistas in '..\mestoque\AFaccionistas.pas' {FFaccionistas},
   ARetornoFracaoFaccionista in '..\mestoque\ARetornoFracaoFaccionista.pas' {FRetornoFracaoFaccionista},
-  AConhecimentoTransporteEntrada in '..\mestoque\AConhecimentoTransporteEntrada.pas' {FConhecimentoTransporteEntrada};
+  AConhecimentoTransporteEntrada in '..\mestoque\AConhecimentoTransporteEntrada.pas' {FConhecimentoTransporteEntrada},
+  AOrdemProdutoEstoque in '..\mestoque\AOrdemProdutoEstoque.pas' {FOrdemProdutoEstoque};
 
 {$R *.res}
 

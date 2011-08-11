@@ -399,7 +399,8 @@ type
   private
     TeclaPressionada,
     VprPressionadoR,
-    VprGerandoNota : boolean;
+    VprGerandoNota,
+    VprConsultaCliente : boolean;
     VprCodProduto,
     VprNomProduto,
     VprOrdem : String;
@@ -571,6 +572,7 @@ begin
   DataInicial.DateTime := PrimeiroDiaMes(DecMes(date,3));
   ECliente.AInteiro := VpaCodCliente;
   ECliente.Atualiza;
+  VprConsultaCliente:= true;
   AtualizaConsulta;
   showmodal;
 end;
@@ -1890,6 +1892,13 @@ begin
     end;
   if (puSomenteClientesdoVendedor in varia.PermissoesUsuario) then
     VpaSelect.Add('and ORC.I_COD_VEN in '+Varia.CodigosVendedores) ;
+
+  if not VprConsultaCliente then
+  begin
+    if (puSomenteCotacaodoVendedor in varia.PermissoesUsuario) then
+      VpaSelect.Add('and ORC.I_COD_VEN in '+Varia.CodigosVendedores) ;
+  end;
+
 end;
 
 {************************* atualiza os totais *********************************}

@@ -1537,6 +1537,19 @@ end;
 procedure TFNovaCotacao.BGravarClick(Sender: TObject);
 begin
   ChamaRotinasGravacao;
+  if (Config.QuandoGravarCotacaoMensagemImprimir) and not(VprDCotacao.IndImpresso) then
+  begin
+    if Confirmacao('Deseja imprimir?') then
+    begin
+       try
+         dtRave := TdtRave.create(self);
+         dtRave.ImprimePedido(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento,false);
+         FunCotacao.SetaOrcamentoImpresso1(VprDCotacao.CodEmpFil,VprDCotacao.LanOrcamento);
+       finally
+         dtRave.free;
+       end;
+    end;
+  end;
 end;
 
 {******************************************************************************}
@@ -2707,6 +2720,9 @@ begin
     FunCotacao.CarServicoExecutadonaObsdaCotacao(VprDCotacao,VpaDChamado);
     EObservacoes.Lines := VprDCotacao.DesObservacao;
   end;
+//  EObservacoes.Lines.Text := VprDCotacao.DesObservacao;
+  EObservacoes.Lines.Add('REFERENTE CHAMADO : '+IntToStr(VpaDChamado.NumChamado));
+
   EObservacaoFiscal.Lines.Text := VprDCotacao.DesObservacaoFiscal;
   EObservacaoFiscal.Lines.Add('REFERENTE CHAMADO : '+IntToStr(VpaDChamado.NumChamado));
   CalculaValorTotal;

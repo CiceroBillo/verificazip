@@ -70,7 +70,7 @@ type
     puCHAlterarChamadosFinalizados,puESRomaneio,puESCadastrarFaccionista,puESAdicionarFracaoFaccionista,puESConsultarFracaoFaccionista,
     puESExcluirFracaoFaccionista,puESAdicionarRetornoFracaoFaccionista,puESConsultarRetornoFracaoFaccionista,puESExcluirRetornoFracaoFaccionista,
     puESImprimirEtiquetaProduto, puCRSomenteSuspectDoVendedor, puCREstagiosAutorizados,puESPedidoCompra, puESOrcamentoCompra, puESAprovaPedidoCompra, puESSolicitacaoCompra,
-    puSomenteClientesdoVendedor,puSomenteProspectdoVendedor, puFIBloquearClientes, puVendedorAlteraContrato, puPLImprimirPedidoDuasVezes, puPLImprimirValoresRelatorioPedidosPendentes,
+    puSomenteClientesdoVendedor,puSomenteCotacaodoVendedor, puSomenteProspectdoVendedor, puFIBloquearClientes, puVendedorAlteraContrato, puPLImprimirPedidoDuasVezes, puPLImprimirValoresRelatorioPedidosPendentes,
     puESPlanoCorte,puCRSomenteCadastraProspect,puESColetaQtdProduzidoOP,puESReprocessarProdutividade, puESAcertoEstoque,
     puESMenuGerencial, puESRegerarProjeto,puSomenteCondicoesPgtoAutorizadas, puESCadastrarCelulaTrabalho, puESReservaEstoque, puESConsultaProduto,
     puAlterarLimiteCredito, puESInventario, puESMenuGerencialFichaAmostraPendente,puESMenuGerencialAmostraPendente, puESCustoPendente, puCRConcluirAmostra,
@@ -811,6 +811,7 @@ type
     LayoutModificadoEmailCotacaoEstagio: Boolean;
     PermitirAlterarNomedaCorProdutonaCotacao : Boolean;
     ImprimirOPQuandoIniciarSeparacao : boolean;
+    QuandoGravarCotacaoMensagemImprimir: boolean;
 
 
     //-----------------------Caixa
@@ -1160,6 +1161,8 @@ begin
    VpaDPermissao := VpaDPermissao + [puCRCompleto];
   if TipoCheck(VarAux.FieldByName('C_IND_SCV').AsString) then
    VpaDPermissao := VpaDPermissao + [puSomenteClientesdoVendedor];
+  if TipoCheck(VarAux.FieldByName('C_IND_CVE').AsString) then
+   VpaDPermissao := VpaDPermissao + [puSomenteCotacaodoVendedor];
   if TipoCheck(VarAux.FieldByName('C_CRM_SPV').AsString) then
    VpaDPermissao := VpaDPermissao + [puCRSomenteSuspectDoVendedor];
   if TipoCheck(VarAux.FieldByName('C_EST_PEC').AsString) then
@@ -1988,6 +1991,7 @@ begin
       LeitorSemFioNoAcertodeEstoque := TipoCheck( VpfTabela.fieldByName('C_LEI_SEF').AsString);
       MostrarTecnicoNoAcertodeEstoque := TipoCheck( VpfTabela.fieldByName('C_TEC_ACE').AsString);
       ImprimirOPQuandoIniciarSeparacao := TipoCheck( VpfTabela.fieldByName('C_COT_IOI').AsString);
+      QuandoGravarCotacaoMensagemImprimir:= TipoCheck( VpfTabela.fieldByName('C_COT_ICO').AsString);
     end;
   end;
 
