@@ -366,6 +366,7 @@ begin
   Config := TConfig.Create;     // Classe das variaveis Booleanas
   ConfigModulos := TConfigModulo.create; // classe das variaveis de configuracao do modulo.
   FunImpressaoRel := TImpressaoRelatorio.Cria(baseDados);
+  FunClientes := TRBFuncoesClientes.cria(BaseDados);
   Application.OnHint := MostraHint;
   Application.HintColor := $00EDEB9E;        // cor padrão dos hints
   Application.Title := 'Ponto de Venda';  // nome a ser mostrado na barra de tarefa do Windows
@@ -550,7 +551,6 @@ begin
   FunContasAReceber := TFuncoesContasAreceber.Cria(BaseDados);
   FunCaixa := TRBFuncoesCaixa.Cria(BaseDados);
   FunCotacao := TFuncoesCotacao.Cria(BaseDados);
-  FunClientes := TRBFuncoesClientes.cria(BaseDados);
   FunProspect := TRBFuncoesProspect.cria(baseDados);
   FunEcf := TRBFuncoesECF.cria(BarraStatus,BaseDados);
  // configuracoes do usuario

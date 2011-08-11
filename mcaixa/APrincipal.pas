@@ -122,6 +122,7 @@ begin
   ConfigModulos := TConfigModulo.create; // classe das variaveis de configuracao do modulo.
   FunImpressaoRel := TImpressaoRelatorio.Cria(BaseDados);
   FunContasAReceber := TFuncoesContasAReceber.cria(BaseDados);
+  FunClientes := TRBFuncoesClientes.cria(FPrincipal.BaseDados);
   Application.OnHint := MostraHint;
   Application.HintColor := $00EDEB9E;        // cor padrão dos hints
   Application.Title := 'Caixa';  // nome a ser mostrado na barra de tarefa do Windows
@@ -212,7 +213,6 @@ begin
   FunProdutos := TFuncoesProduto.criar(self,BaseDados);
   FunContasAPagar := TFuncoesContasAPagar.criar(self,BaseDados);
   FunCotacao := TFuncoesCotacao.Cria(BaseDados);
-  FunClientes := TRBFuncoesClientes.cria(FPrincipal.BaseDados);
   FunCaixa := TRBFuncoesCaixa.cria(FPrincipal.BaseDados);
  // configuracoes do usuario
  UnPri.ConfigUsu(varia.CodigoUsuario, CorFoco, CorForm, CorPainelGra, Self );

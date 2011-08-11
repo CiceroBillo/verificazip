@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, LabelCorMove, PainelGradiente, ExtCtrls, Icones, Menus, Buttons, Shellapi,
   DBTables, Componentes1, IniFiles, Registry, Db, UnSistema, WideStrings,
-  DBXOracle, SqlExpr, FMTBcd, unPrincipal;
+  DBXOracle, SqlExpr, FMTBcd, unPrincipal, UnClientes;
 
 const
   NomeModulo = 'Siscorp';
@@ -123,6 +123,8 @@ begin
   UnPri := TFuncoesPrincipal.criar(self, BaseDados, NomeModulo);
   VprDiretorioCorrente := RetornaDiretorioCorrente;
   Sistema := TRBFuncoesSistema.Cria(baseDados);
+  FunClientes := TRBFuncoesClientes.cria(FPrincipal.BaseDados);
+
   IconeBarraStatus1.AAtiva := true;
   IconeBarraStatus1.AVisible := true;
   VprUsuarioLogado := false;

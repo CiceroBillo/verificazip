@@ -24,10 +24,10 @@ object FAlteraEstagioCotacao: TFAlteraEstagioCotacao
     Align = alTop
     Alignment = taLeftJustify
     Caption = '  Altera Est'#225'gio   '
-    Font.Charset = ANSI_CHARSET
+    Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
-    Font.Height = -24
-    Font.Name = 'Times New Roman'
+    Font.Height = -16
+    Font.Name = 'MS Sans Serif'
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 0

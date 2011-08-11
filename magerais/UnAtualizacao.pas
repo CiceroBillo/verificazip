@@ -5,7 +5,7 @@ interface
        SQLExpr,IniFiles, UnProgramador1, Tabela ;
 
 Const
-  CT_VersaoBanco = 2121;
+  CT_VersaoBanco = 2122;
   CT_VersaoInvalida = 'SISTEMA DESATUALIZADO!!! Este sistema já possui novas versões, essa versão pode não funcionar corretamente,  para o bom funcionamento do mesmo é necessário fazer a atualização...' ;
 
   CT_SenhaAtual = '9774';
@@ -5979,6 +5979,12 @@ begin
     result := '2120';
     ExecutaComandoSql(Aux,'alter table CADORCAMENTOS MODIFY C_OBS_FIS VARCHAR2(4000)');
     ExecutaComandoSql(Aux,'Update CFG_GERAL set I_Ult_Alt = 2120');
+  end;
+  if VpaNumAtualizacao < 2122 then
+  begin
+    result := '2122';
+    ExecutaComandoSql(Aux,'alter table RETORNOITEM MODIFY NOMOCORRENCIA VARCHAR2(40)');
+    ExecutaComandoSql(Aux,'Update CFG_GERAL set I_Ult_Alt = 2122');
   end;
   if VpaNumAtualizacao < 2121 then
   begin

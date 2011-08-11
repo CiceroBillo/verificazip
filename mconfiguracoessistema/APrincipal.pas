@@ -7,7 +7,7 @@ uses
   Menus, DBTables, ComCtrls, ExtCtrls, StdCtrls, Constantes, Buttons,  formulariosFundo, Formularios,
   ToolWin, ExtDlgs, Inifiles, constMsg, FunObjeto, Db, DBCtrls, Grids,
   DBGrids, Componentes1, PainelGradiente, FunIni, Tabela, Localizacao, UnContasAReceber,
-  Mask, UnPrincipal, UnVersoes, WideStrings, DBXOracle, SqlExpr, UnSistema;
+  Mask, UnPrincipal, UnVersoes, WideStrings, DBXOracle, SqlExpr, UnSistema, UnClientes;
 
 const
   CampoPermissaoModulo = 'c_con_sis';
@@ -158,6 +158,7 @@ begin
  ConfigModulos := TConfigModulo.create; //Classe que configura os modulos
  Sistema := TRBFuncoesSistema.cria(BaseDados);
  FunContasAReceber := TFuncoesContasAReceber.cria(BaseDados);
+ FunClientes := TRBFuncoesClientes.cria(BaseDados);
 
  Application.OnHint := MostraHint;
  Application.HintColor := $00EDEB9E;        // cor padrão dos hints
@@ -462,4 +463,5 @@ begin
 end;
 
 end.
+
 

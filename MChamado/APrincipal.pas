@@ -195,6 +195,7 @@ begin
   Config := TConfig.Create;     // Classe das variaveis Booleanas
   ConfigModulos := TConfigModulo.create; // classe das variaveis de configuracao do modulo.
   FunImpressaoRel := TImpressaoRelatorio.Cria(BaseDados);
+  FunClientes := TRBFuncoesClientes.cria(BaseDados);
   Application.OnHint := MostraHint;
   Application.HintColor := $00EDEB9E;        // cor padrão dos hints
   Application.Title := 'Chamado Técnico';  // nome a ser mostrado na barra de tarefa do Windows
@@ -320,7 +321,6 @@ begin
   FunNotaFiscal := TFuncoesNotaFiscal.criar(self,BaseDados);
   FunContasAPagar := TFuncoesContasAPagar.criar(self,BaseDados);
   FunCotacao := TFuncoesCotacao.Cria(BaseDados);
-  FunClientes := TRBFuncoesClientes.cria(BaseDados);
   FunEcf := TRBFuncoesECF.cria(BarraStatus,BaseDados);
   FunContasAReceber := TFuncoesContasAREceber.cria(BaseDAdos);
   FunCaixa := TRBFuncoesCaixa.Cria(BaseDados);

@@ -220,6 +220,8 @@ begin
   Config := TConfig.Create;     // Classe das variaveis Booleanas
   ConfigModulos := TConfigModulo.create; // classe das variaveis de configuracao do modulo.
   FunImpressaoRel := TImpressaoRelatorio.cria(Basedados);
+  FunClientes := TRBFuncoesClientes.cria(FPrincipal.BaseDados);
+
   Application.OnHint := MostraHint;
   Application.HintColor := $00EDEB9E;        // cor padrão dos hints
   Application.Title := 'CRM';  // nome a ser mostrado na barra de tarefa do Windows
@@ -330,7 +332,6 @@ begin
   FunNotaFiscal := TFuncoesNotaFiscal.criar(self,BaseDados);
   FunContasAPagar := TFuncoesContasAPagar.criar(self,BaseDados);
   FunCotacao := TFuncoesCotacao.Cria(BaseDados);
-  FunClientes := TRBFuncoesClientes.cria(FPrincipal.BaseDados);
   FunProspect := TRBFuncoesProspect.Cria(BaseDados);
   FunEcf := TRBFuncoesECF.cria(BarraStatus,basedados);
   FunContasAReceber := TFuncoesContasAReceber.Cria(BaseDados);
@@ -763,3 +764,4 @@ end;
 
 {******************************************************************************}
 end.
+
