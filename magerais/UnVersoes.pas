@@ -4,12 +4,12 @@ interface
 
 
 Const
-  VersaoEstoque = '3.324';
+  VersaoEstoque = '3.323';
   VersaoFinanceiro = '2.862';
-  VersaoConfiguracaoSistema = '2.431';
-  VersaoPontoLoja = '4.033';
+  VersaoConfiguracaoSistema = '2.432';
+  VersaoPontoLoja = '4.027';
   VersaoFaturamento = '2.790';
-  VersaoChamadoTecnico = '2.578';
+  VersaoChamadoTecnico = '2.576';
   VersaoAgenda = '1.06';
   VersaoCRM = '3.042';
   VersaoCaixa = '0.509';

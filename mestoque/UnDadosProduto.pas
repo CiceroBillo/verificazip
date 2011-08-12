@@ -2219,6 +2219,33 @@ Type TRBDNotaFiscalForServico = class
 end;
 
 Type
+  TRBDProdutoXMLNotaFor = class
+    public
+      SeqItemXML,
+      SeqProduto,
+      CodCor,
+      CodTamanho : Integer;
+      CodProduto,
+      CodReferencia,
+      NomProduto,
+      NomCor,
+      NomTamanho,
+      DesUM,
+      CodClassificacaoFiscal : String;
+      QtdProduto,
+      ValUnitario,
+      ValTotal,
+      PerIPI,
+      PerICMS,
+      PerICMSST,
+      ValBaseST,
+      ValST,
+      PerMVA : Double;
+      constructor cria;
+      destructor destroy;override;
+  end;
+
+Type
   TRBDNotaFiscalForItem = class
     public
       CodFilial,
@@ -2323,11 +2350,13 @@ Type
       DatEmissao,
       DatRecebimento : TDateTime;
       ItensNota,
+      ItensXML,
       ItensServicos : TList;
       constructor cria;
       destructor destroy;override;
       function AddNotaItem : TRBDNotaFiscalForItem;
       function AddNotaServico: TRBDNotaFiscalForServico;
+      function AddProdutoXML : TRBDProdutoXMLNotaFor;
 end;
 
 Type
@@ -4159,12 +4188,20 @@ begin
 end;
 
 {******************************************************************************}
+function TRBDNotaFiscalFor.AddProdutoXML: TRBDProdutoXMLNotaFor;
+begin
+  result := TRBDProdutoXMLNotaFor.cria;
+  ItensXML.Add(result);
+end;
+
+{******************************************************************************}
 constructor TRBDNotaFiscalFor.cria;
 begin
   inherited create;
   DNaturezaOperacao := TRBDNaturezaOperacao.cria;
   ItensNota := TList.Create;
   ItensServicos:= TList.Create;
+  ItensXML := TList.Create;
   IndGerouEstoqueChapa := false;
   SeqNota := 0;
 end;
@@ -4175,8 +4212,10 @@ begin
   DNaturezaOperacao.Free;
   FreeTObjectsList(ItensNota);
   FreeTObjectsList(ItensServicos);
+  FreeTObjectsList(ItensXML);
   ItensNota.free;
   ItensServicos.Free;
+  ItensXML.Free;
   inherited destroy;
 end;
 
@@ -4629,6 +4668,23 @@ end;
 
 {******************************************************************************}
 destructor TRBDParcelaSinal.destroy;
+begin
+
+  inherited;
+end;
+
+{******************************************************************************}
+{ TRBDProdutoXMLNotaFor }
+{******************************************************************************}
+
+{******************************************************************************}
+constructor TRBDProdutoXMLNotaFor.cria;
+begin
+  inherited create;
+end;
+
+{******************************************************************************}
+destructor TRBDProdutoXMLNotaFor.destroy;
 begin
 
   inherited;

@@ -227,6 +227,7 @@ type
     procedure TiraProdutoAtividade(VpaSequencial : String);
     function CQtdValorCusto(VpaCodFilial, VpaSeqProduto, VpaCodCor, VpaCodTamanho : Integer; Var VpaQtdProduto, VpaValCusto : Double):Boolean;
     function RFreteRateado(VpaQtdComprado,VpaVlrCompra, VpaTotCompra, VpaTotFrete : Double) : Double;
+    function RValorOutrasDespesasRateado(VpaQtdComprado,VpaVlrCompra, VpaTotCompra, VpaValOutrasDespesas : Double) : Double;
     function RDescontoRateado(VpaQtdComprado,VpaVlrCompra, VpaTotCompra, VpaValDesconto : Double) : Double;
     function RFuncaoOperacaoEstoque(VpaCodOperacao : String):String;
     function RIcmsEstado(VpaEstado:String):Double;
@@ -252,7 +253,7 @@ type
     function AdicionarProdutosFilial: String;
     function RUMMTCMBR(VpaCodUnidade : String):string;
     function PrincipioAtivoControlado(VpaCodPrincipio : Integer) : boolean;
-    procedure AtualizaValorCusto(VpaSeqProduto,VpaCodFilial, VpaCodMoeda : Integer; VpaUniPadrao, VpaUniProduto,VpaFuncaoOperacao : String;VpaCodCor,VpaCodTamanho : Integer;VpaQtdProduto, VpaVlrCompra,VpaTotCompra,VpaVlrFrete,VpaPerIcms, VpaPerIPI, VpaValDescontoNota, VpaValSubstituicaoTributaria: Double;VpaIndFreteEmitente : Boolean);
+    procedure AtualizaValorCusto(VpaSeqProduto,VpaCodFilial, VpaCodMoeda : Integer; VpaUniPadrao, VpaUniProduto,VpaFuncaoOperacao : String;VpaCodCor,VpaCodTamanho : Integer;VpaQtdProduto, VpaVlrCompra,VpaTotCompraProdutos,VpaVlrFrete,VpaPerIcms, VpaPerIPI, VpaValDescontoNota, VpaValSubstituicaoTributaria, VpaValDespesasAcessorias : Double;VpaIndFreteEmitente : Boolean);
     function AtualizaCodEan(VpaSeqProduto,VpaCodCor : Integer;VpaCodBarras : String):String;
     function AtualizaValorVendaAutomatico(VpaSeqProduto : Integer;VpaValCusto : Double):string;
     function AtualizaEmbalagem(VpaSeqProduto,VpaCodEmbalagem : Integer):string;
@@ -288,6 +289,7 @@ type
     function RSeqReferenciaDisponivel(VpaSeqProduto, VpaCodCliente : Integer): Integer;
     function RReferenciaProduto(VpaSeqProduto,VpaCodCliente : Integer; VpaCodCor : String):String;
     function CarProdutodaReferencia(VpaDesReferencia : String;VpaCodCliente : Integer;Var VpaCodProduto : String; Var VpaCodCor : Integer) : Boolean;
+    function CarProdutodaReferenciaFornecedor(VpaDesReferencia : String;VpaCodCliente : Integer;Var VpaSeqProduto : Integer; Var VpaCodProduto : String; Var VpaCodCor : Integer) : Boolean;
     function RDesMMProduto(var VpaNomProduto : String) :String;
     function RComprimentoProduto(VpaSeqProduto : Integer):Integer;
     function REstagioProduto(VpaDProduto : TRBDProduto;VpaSeqEstagio : Integer):TRBDEstagioProduto;
@@ -4681,7 +4683,7 @@ begin
   result := 0;
   if VpaValDesconto <>0 then
   begin
-    VpfPerCompra := ((VpaVlrCompra * VpaQtdComprado) * 100) / (VpaTotCompra + VpaValDesconto);
+    VpfPerCompra := ((VpaVlrCompra * VpaQtdComprado) * 100) / (VpaTotCompra);
     Result := (VpaValDesconto * VpfPerCompra) / 100;
     result := result /VpaQtdComprado;
   end;
@@ -4790,6 +4792,20 @@ begin
                             ' order by I_COD_COR, I_COD_TAM' );
   Result := Aux.FieldByName('N_VLR_CUS').AsFloat;
   Aux.close;
+end;
+
+{******************************************************************************}
+function TFuncoesProduto.RValorOutrasDespesasRateado(VpaQtdComprado,VpaVlrCompra, VpaTotCompra, VpaValOutrasDespesas: Double): Double;
+var
+  VpfPerCompra : Double;
+begin
+  result := 0;
+  if VpaValOutrasDespesas >0 then
+  begin
+    VpfPerCompra := ((VpaVlrCompra * VpaQtdComprado) * 100) / VpaTotCompra;
+    Result := (VpaValOutrasDespesas * VpfPerCompra) / 100;
+    result := result /VpaQtdComprado;
+  end;
 end;
 
 {******************************************************************************}
@@ -4962,9 +4978,9 @@ begin
 end;
 
 {********************* atualiza o valor de compra do produto ******************}
-procedure TFuncoesProduto.AtualizaValorCusto(VpaSeqProduto,VpaCodFilial, VpaCodMoeda : Integer; VpaUniPadrao, VpaUniProduto, VpaFuncaoOperacao: String;VpaCodCor,VpaCodTamanho : Integer;VpaQtdProduto, VpaVlrCompra,VpaTotCompra,VpaVlrFrete,VpaPerIcms, VpaPerIPI,VpaValDescontoNota, VpaValSubstituicaoTributaria : Double;VpaIndFreteEmitente : Boolean);
+procedure TFuncoesProduto.AtualizaValorCusto(VpaSeqProduto,VpaCodFilial, VpaCodMoeda : Integer; VpaUniPadrao, VpaUniProduto, VpaFuncaoOperacao: String;VpaCodCor,VpaCodTamanho : Integer;VpaQtdProduto, VpaVlrCompra,VpaTotCompraProdutos,VpaVlrFrete,VpaPerIcms, VpaPerIPI,VpaValDescontoNota, VpaValSubstituicaoTributaria, VpaValDespesasAcessorias : Double;VpaIndFreteEmitente : Boolean);
 Var
-  VpfValCusto, VpfQtdEstoque, VpfValCustoEstoque, VpfQtdCompra, VpfValFrete, VpfValDesconto, VpfValCompraUMPadrao, VpfTotCompra : Double;
+  VpfValCusto, VpfQtdEstoque, VpfValCustoEstoque, VpfQtdCompra, VpfValFrete, VpfValOutrasDespesas, VpfValDesconto, VpfValCompraUMPadrao : Double;
   VpfMoedaProduto : Integer;
   VpfCifrao : String;
 begin
@@ -4972,25 +4988,23 @@ begin
   begin
     VpfMoedaProduto := MoedaPadrao(VpaSeqProduto);  // localiza a moeda do produto
     VpaVlrCompra := UnMoeda.ConverteValor( Vpfcifrao, VpaCodMoeda, VpfMoedaProduto, VpaVlrCompra);
-    VpaTotCompra := UnMoeda.ConverteValor( Vpfcifrao, VpaCodMoeda, VpfMoedaProduto, VpaTotCompra);
+    VpaTotCompraProdutos := UnMoeda.ConverteValor( Vpfcifrao, VpaCodMoeda, VpfMoedaProduto, VpaTotCompraProdutos);
     VpfQtdCompra := CalculaQdadePadrao( VpaUniProduto, VpaUniPadrao, VpaQtdProduto, IntToStr(VpaSeqProduto));
+
+    VpfValFrete :=  RFreteRateado(VpaQtdProduto,VpaVlrCompra,VpaTotCompraProdutos,VpaVlrFrete);
+    VpfValDesconto := RDescontoRateado(VpaQtdProduto,VpaVlrCompra,VpaTotCompraProdutos,VpaValDescontoNota);
+    VpfValOutrasDespesas :=  RValorOutrasDespesasRateado(VpaQtdProduto,VpaVlrCompra,VpaTotCompraProdutos,VpaValDespesasAcessorias);
+
     if Varia.UtilizarIpi then
       VpaVlrCompra := VpaVlrCompra +((VpaVlrCompra * VpaPerIPI)/100)  ;
     VpaVlrCompra := VpaVlrCompra + (VpaValSubstituicaoTributaria / VpaQtdProduto);
 
-    if VpaIndFreteEmitente then
-      VpfTotCompra := VpaTotCompra - VpaVlrFrete
-    else
-      VpfTotCompra := VpaTotCompra;
-
-    VpfValFrete :=  RFreteRateado(VpaQtdProduto,VpaVlrCompra,VpfTotCompra,VpaVlrFrete);
-    VpfValDesconto := RDescontoRateado(VpaQtdProduto,VpaVlrCompra,VpfTotCompra,VpaValDescontoNota);
 
     VpfValCompraUMPadrao := (VpaVlrCompra * ConvUnidade.Indice(VpaUniProduto,VpaUniPadrao,VpaSeqProduto,Varia.CodigoEmpresa));
 
     VpfValfrete := VpfValfrete / VpfQtdCompra;
 
-    VpfValCusto := VpfValCompraUMPadrao + VpfValFrete - VpfValDesconto;
+    VpfValCusto := VpfValCompraUMPadrao + VpfValFrete + VpfValOutrasDespesas - VpfValDesconto;
     if config.ValordeCompraComFrete then
       VpfValCompraUMPadrao := VpfValCompraUMPadrao + VpfValFrete;
     VpfValCompraUMPadrao := VpfValCompraUMPadrao - VpfValDesconto;
@@ -6034,6 +6048,23 @@ begin
 end;
 
 {******************************************************************************}
+function TFuncoesProduto.CarProdutodaReferenciaFornecedor(VpaDesReferencia: String;VpaCodCliente: Integer; var VpaSeqProduto: Integer; var VpaCodProduto: String;var VpaCodCor: Integer): Boolean;
+begin
+  AdicionaSQLAbreTabela(Aux,'Select PRO.I_SEQ_PRO, PRO.C_COD_PRO, CODCOR ' +
+                            ' FROM CADPRODUTOS PRO, PRODUTOFORNECEDOR REF  '+
+                            ' Where REF.DESREFERENCIA = '''+VpaDesReferencia+''''+
+                            ' and REF.CODCLIENTE = '+IntToStr(VpaCodCliente)+
+                            ' and PRO.I_SEQ_PRO = REF.SEQPRODUTO');
+  result := not Aux.Eof;
+  if result then
+  begin
+    VpaCodProduto := AUX.FieldByName('C_COD_PRO').AsString;
+    VpaCodCor := Aux.FieldByName('CODCOR').AsInteger;
+    VpaSeqProduto := AUX.FieldByName('I_SEQ_PRO').AsInteger;
+  end;
+  Aux.close;
+end;
+
 procedure TFuncoesProduto.CarProdutoFaturadosnoMes(VpaDatInicio, VpaDatFim : TDateTime;VpaFilial : Integer);
 var
   VpfSeqProdutoAtual : Integer;

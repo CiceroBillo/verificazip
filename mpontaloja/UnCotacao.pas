@@ -251,6 +251,7 @@ type TFuncoesCotacao = class(TLocalizaCotacao)
     function AsssociaCotacaoParcialRomaneioOrcamento(VpaCodFilial,VpaSeqRomaneio,VpaCodFilialCotacao,VpaLanOrcamento,VpaSeqParcial : Integer):string;
     function BloqueiaRomaneio(VpaCodFilial, VpaSeqRomaneio : Integer;VpaMotivo : String):string;
     function DesBloqueiaRomaneio(VpaCodFilial, VpaSeqRomaneio : Integer):string;
+    function ProdutoLiberadoFilial(VpaDCotacao : TRBDOrcamento;VpaDItemCotacao : TRBDOrcProduto):boolean;
 end;
 
 var
@@ -6197,6 +6198,31 @@ begin
         VpfDProPendenteExterno := TRBDProdutoPendenteMetalVidros(VpaProdutos.Items[VpfLacoExterno]);
       end;
     end;
+  end;
+end;
+
+{******************************************************************************}
+function TFuncoesCotacao.ProdutoLiberadoFilial(VpaDCotacao: TRBDOrcamento;VpaDItemCotacao: TRBDOrcProduto): boolean;
+begin
+  result := true;
+  if config.FaturarNaFiliasSomenteProdutosLiberados then
+  begin
+    result := false;
+    AdicionaSQLAbreTabela(Orcamento,'Select CODFILIAL ' +
+                                    ' FROM PRODUTOFILIALFATURAMENTO ' +
+                                    ' Where SEQPRODUTO = ' +IntToStr(VpaDItemCotacao.SeqProduto));
+    if Orcamento.Eof then
+      aviso('PRODUTO NÃO LIBERADO PARA FATURAR EM NENHUMA FILIAL!!!'#13'O produto "'+VpaDItemCotacao.CodProduto+' - '+VpaDItemCotacao.NomProduto+'" não está associado a nenhuma filial para faturamento, é necessário ir no cadastro de produtos na pagina Filial Faturamento, cadastrar a filial de faturamento.');
+    while not Orcamento.Eof do
+    begin
+      if (Orcamento.FieldByName('CODFILIAL').AsInteger = varia.CodigoEmpFil) then
+      begin
+        result := true;
+        break;
+      end;
+      Orcamento.Next;
+    end;
+    Orcamento.Close;
   end;
 end;
 

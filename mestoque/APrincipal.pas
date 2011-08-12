@@ -223,9 +223,7 @@ type
     ConsultaProdutosporNmerodeSrie1: TMenuItem;
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
-    BitBtn3: TBitBtn;
-    BaseMVA: TSQLConnection;
-    TabelaMVA: TSQL;
+    Button1: TButton;
     procedure MostraHint(Sender : TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -239,6 +237,7 @@ type
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     UnPri : TFuncoesPrincipal;
     FunImpressaoRel : TImpressaoRelatorio;
@@ -591,17 +590,41 @@ begin
                                'WHERE N_PER_SUT = 0 ');
   while not Tabela.Eof do
   begin
-    AdicionaSQLAbreTabela(TabelaMVA,'Select N_PER_SUT from CADPRODUTOS ' +
+{    AdicionaSQLAbreTabela(TabelaMVA,'Select N_PER_SUT from CADPRODUTOS ' +
                                     ' WHERE I_SEQ_PRO = ' +IntToStr(TABELA.FieldByName('I_SEQ_PRO').AsInteger));
     if TabelaMVA.FieldByName('N_PER_SUT').AsFloat > 0 then
     Begin
       Tabela.Edit;
       Tabela.FieldByName('N_PER_SUT').AsFloat := TabelaMVA.FieldByName('N_PER_SUT').AsFloat;
       tabela.Post;
-    End;
+    End;        }
     Tabela.Next;
   end;
   Tabela.Close;
+end;
+
+{******************************************************************************}
+procedure TFPrincipal.Button1Click(Sender: TObject);
+var
+  VpfArquivo : TStringLIst;
+  VpfLaco : Integer;
+  VpfLinha : String;
+begin
+  VpfArquivo := TStringList.Create;
+  VpfArquivo.LoadFromFile('m:\teste.csv');
+  for VpfLaco := 0 to VpfArquivo.Count - 1 do
+  begin
+    VpfLinha := VpfArquivo.Strings[VpfLaco];
+    aviso(CopiaAteChar(VpfLinha,';'));
+    VpfLinha := DeleteAteChar(VpfLinha,';');
+    aviso(CopiaAteChar(VpfLinha,';'));
+    VpfLinha := DeleteAteChar(VpfLinha,';');
+    aviso(CopiaAteChar(VpfLinha,';'));
+    VpfLinha := DeleteAteChar(VpfLinha,';');
+    if VpfLinha <> '' then
+      aviso('campos excedentes');
+  end;
+
 end;
 
 // -------------Quando é enviada a menssagem de criação de um formulario------------- //

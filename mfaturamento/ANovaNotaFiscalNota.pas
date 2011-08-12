@@ -3824,6 +3824,9 @@ begin
       for VpfLacoProdutos := 0 to VpfDCotacao.Produtos.Count - 1 do
       begin
         VpfDProCotacao := TRBDOrcProduto(VpfDCotacao.Produtos.Items[VpflacoProdutos]);
+        if not FunCotacao.ProdutoLiberadoFilial(VpfDCotacao,VpfDProCotacao) then
+          Continue;
+
         if not VpfDProCotacao.IndBrinde then
         begin
           if VpfFaturarTodos or VpfDProCotacao.IndFaturar or not(config.EstoqueFiscal) then

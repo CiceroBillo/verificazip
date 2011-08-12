@@ -303,9 +303,10 @@ type
     procedure InicializaDadosProdutoSpedFiscal;
     procedure AssociaNaturezaItens;
     procedure CarICMSPadrao;
+    procedure CarArquivoXMLPedido(VpaDNota : TRBDNotaFiscalFor;VpaArquivoXML : String);
   public
     function Cadastrar : Boolean;
-    function NovaNotaPedido(VpaDNota: TRBDNotaFiscalFor;VpaListaPedidos : TList): Boolean;
+    function NovaNotaPedido(VpaDNota: TRBDNotaFiscalFor;VpaListaPedidos : TList;VpaArquivoXML : String): Boolean;
     function Alterar(VpaDNota : TRBDNotaFiscalFor):Boolean;
     function GeraTroca(VpaDCliente : TRBDCliente;VpaDCotacao :TRBDOrcamento):Boolean;
     procedure ConsultaNota(VpaCodFilial, VpaSeqNota : Integer);
@@ -322,7 +323,7 @@ uses APrincipal, fundata, funstring, ANovoCliente,FunObjeto,
    ANovaNatureza, APlanoConta, ACores,
   ANaturezas, ALocalizaProdutos, UnClientes, AFormasPagamento,
   ANovoProdutoPro, dmRave, AMostraEstoqueChapas, alocalizaservico, UnNotaFiscal,
-  AConhecimentoTransporteEntrada;
+  AConhecimentoTransporteEntrada, AXMLProdutosNotasFiscalEntrada;
 
 {$R *.DFM}
 
@@ -377,7 +378,7 @@ begin
 end;
 
 {******************************************************************************}
-function TFNovaNotaFiscaisFor.NovaNotaPedido(VpaDNota: TRBDNotaFiscalFor;VpaListaPedidos : TList): Boolean;
+function TFNovaNotaFiscaisFor.NovaNotaPedido(VpaDNota: TRBDNotaFiscalFor;VpaListaPedidos : TList;VpaArquivoXML : String): Boolean;
 begin
   VprNotaPedido:= True;
   VprOperacao := ocInsercao;
@@ -389,6 +390,9 @@ begin
   VprDNotaFor.DatEmissao:= DecDia(Now,1);
   VprDNotaFor.DatRecebimento:= Now;
   VprDNotaFor.IndOrigemPedidoCompra := true;
+  if VpaArquivoXML <> '' then
+    CarArquivoXMLPedido(VprDNotaFor,VpaArquivoXML);
+
   VprOperacao := ocConsulta;
   CarDTela;
   Grade.ADados:= VpaDNota.ItensNota;
@@ -523,27 +527,33 @@ var
   VpfDProNota : TRBDNotaFiscalForItem;
   VpfDProduto : TRBDProduto;
 begin
-  VpfCFOPProduto := 0;
-  if VprDNotaFor.DNaturezaOperacao.CFOPProdutoIndustrializacao <> 0 then
-    VpfCFOPProduto := VprDNotaFor.DNaturezaOperacao.CFOPProdutoIndustrializacao
-  else
-    if length(VprDNotaFor.CodNatureza) = 4 then
-      VpfCFOPProduto := StrToInt(VprDNotaFor.CodNatureza);
-  if VpfCFOPProduto <> 0 then
+  if VprOperacao in [ocInsercao,ocEdicao] then
   begin
-    for VpfLaco := 0 to VprDNotaFor.ItensNota.Count - 1 do
+    VpfCFOPProduto := 0;
+    if VprDNotaFor.DNaturezaOperacao.CFOPProdutoIndustrializacao <> 0 then
+      VpfCFOPProduto := VprDNotaFor.DNaturezaOperacao.CFOPProdutoIndustrializacao
+    else
+      if length(VprDNotaFor.CodNatureza) = 4 then
+        VpfCFOPProduto := StrToInt(VprDNotaFor.CodNatureza);
+    if VpfCFOPProduto <> 0 then
     begin
-      VpfDProNota := TRBDNotaFiscalForItem(VprDNotaFor.ItensNota.Items[VpfLaco]);
-      VpfDProNota.CodCFOP := VpfCFOPProduto;
-      VpfDProduto := TRBDProduto.Cria;
-      FunProdutos.CarDProduto(VpfDProduto,Varia.CodigoEmpresa,VprDNotaFor.CodFilial,VpfDProNota.SeqProduto);
-      VpfDProNota.CodCST := FunNotaFor.RCSTICMSProduto(VprDCliente,VprDNotaFor.DNaturezaOperacao,VpfDProNota);
-      VpfDProNota.PerICMS := VprDNotaFor.PerICMSPadrao;
-      FunNotaFor.CarMVAAjustado(VprDNotaFor,VpfDProNota,VprDCliente);
-      VpfDProduto.Free;
+      for VpfLaco := 0 to VprDNotaFor.ItensNota.Count - 1 do
+      begin
+        VpfDProNota := TRBDNotaFiscalForItem(VprDNotaFor.ItensNota.Items[VpfLaco]);
+        VpfDProNota.CodCFOP := VpfCFOPProduto;
+        VpfDProduto := TRBDProduto.Cria;
+        FunProdutos.CarDProduto(VpfDProduto,Varia.CodigoEmpresa,VprDNotaFor.CodFilial,VpfDProNota.SeqProduto);
+        VpfDProNota.CodCST := FunNotaFor.RCSTICMSProduto(VprDCliente,VprDNotaFor.DNaturezaOperacao,VpfDProNota);
+        if VpfDProNota.PerICMSCadatroProduto > 0 then
+          VpfDProNota.PerICMS := VpfDProNota.PerICMSCadatroProduto
+        else
+          VpfDProNota.PerICMS := VprDNotaFor.PerICMSPadrao;
+        FunNotaFor.CarMVAAjustado(VprDNotaFor,VpfDProNota,VprDCliente);
+        VpfDProduto.Free;
+      end;
+      Grade.CarregaGrade;
+      CalculaNota;
     end;
-    Grade.CarregaGrade;
-    CalculaNota;
   end;
 end;
 
@@ -1338,6 +1348,15 @@ begin
     else
       VprDNotaFor.PerICMSPadrao := FunNotaFor.RValICMSFornecedor(VprDCliente.DesUF);
   end;
+end;
+
+{******************************************************************************}
+procedure TFNovaNotaFiscaisFor.CarArquivoXMLPedido(VpaDNota: TRBDNotaFiscalFor;VpaArquivoXML: String);
+begin
+  FunNotaFor.CarDXMLNotaEntrada(VpaDNota,VpaArquivoXML);
+  FXMLProdutosNotaFiscalEntrada := TFXMLProdutosNotaFiscalEntrada.criarSDI(Application,'',FPrincipal.VerificaPermisao('FXMLProdutosNotaFiscalEntrada'));
+  FXMLProdutosNotaFiscalEntrada.CarProdutosXML(VprDNotaFor);
+  FXMLProdutosNotaFiscalEntrada.free;
 end;
 
 {******************************************************************************}

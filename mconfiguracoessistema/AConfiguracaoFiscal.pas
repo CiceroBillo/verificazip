@@ -392,6 +392,9 @@ type
     Label99: TLabel;
     DBCheckBox12: TDBCheckBox;
     CFGC_CID_FRE: TWideStringField;
+    ScrollBox2: TScrollBox;
+    DBCheckBox13: TDBCheckBox;
+    CFGC_PRO_FIL: TWideStringField;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure DBEditLocaliza2Retorno(Retorno1, Retorno2: String);

@@ -5992,6 +5992,13 @@ begin
     ExecutaComandoSql(Aux,'ALTER TABLE CADNOTAFISCAISFOR ADD N_PER_ICM NUMBER(5,2) NULL');
     ExecutaComandoSql(Aux,'Update CFG_GERAL set I_Ult_Alt = 2121');
   end;
+  if VpaNumAtualizacao < 2122 then
+  begin
+    result := '2122';
+    ExecutaComandoSql(Aux,'ALTER TABLE CFG_FISCAL ADD C_PRO_FIL CHAR(1) NULL');
+    ExecutaComandoSql(Aux,'UPDATE CFG_FISCAL SET C_PRO_FIL = ''F''');
+    ExecutaComandoSql(Aux,'Update CFG_GERAL set I_Ult_Alt = 2122');
+  end;
 end;
 
 function TAtualiza.AtualizaTabela5(VpaNumAtualizacao: Integer): String;

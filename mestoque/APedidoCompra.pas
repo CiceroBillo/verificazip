@@ -140,6 +140,8 @@ type
     N7: TMenuItem;
     BCancelar: TBitBtn;
     Duplicar1: TMenuItem;
+    BImportarXML: TBitBtn;
+    OpenXML: TOpenDialog;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BFecharClick(Sender: TObject);
@@ -807,13 +809,23 @@ procedure TFPedidoCompra.GerarNotaFiscaldeentrada1Click(Sender: TObject);
 var
   VpfListaPedidos: TList;
   VpfDNota: TRBDNotaFiscalFor;
+  VpfArquivoXML : String;
 begin
+  VpfArquivoXML := '';
+  if TBitBtn(sender).Tag = 20 then
+  begin
+    if OpenXML.Execute then
+      VpfArquivoXML := OpenXML.FileName
+    else
+      exit;
+  end;
+
   VpfListaPedidos:= TList.Create;
   CarDClassePedidos(VpfListaPedidos);
   VpfDNota:= TRBDNotaFiscalFor.cria;
   FunNotaFor.GeraNotadosPedidos(VpfListaPedidos,VpfDNota);
   FNovaNotaFiscaisFor:= TFNovaNotaFiscaisFor.CriarSDI(Application,'',True);
-  if FNovaNotaFiscaisFor.NovaNotaPedido(VpfDNota,VpfListaPedidos) then
+  if FNovaNotaFiscaisFor.NovaNotaPedido(VpfDNota,VpfListaPedidos,VpfArquivoXML) then
     AtualizaConsulta(true);
   FNovaNotaFiscaisFor.Free;
   FreeTObjectsList(VpfListaPedidos);

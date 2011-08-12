@@ -853,7 +853,7 @@ type
     ImprimirFormaPagamentonaNota,
     ImprimirClassificacaoProdutonaNota: Boolean;
     ColocaroFreteemDespAcessoriasQuandoMesmaCidade : boolean;
-
+    FaturarNaFiliasSomenteProdutosLiberados : Boolean;
 
     //---------------------Ecf
     BaixarEstoqueECF, //baixar o estoque quando gera um cupom direto pela tela de cupom sem estar associado a uma cotação
@@ -2340,6 +2340,7 @@ begin
         ImprimirFormaPagamentonaNota := TipoCheck(VpfTabela.fieldByName('C_IMP_FNF').AsString);
         ImprimirClassificacaoProdutonaNota := TipoCheck(VpfTabela.fieldByName('C_IMP_CPN').AsString);
         ColocaroFreteemDespAcessoriasQuandoMesmaCidade := TipoCheck(VpfTabela.fieldByName('C_CID_FRE').AsString);
+        FaturarNaFiliasSomenteProdutosLiberados := TipoCheck(VpfTabela.fieldByName('C_PRO_FIL').AsString);
       end;
     end;
 

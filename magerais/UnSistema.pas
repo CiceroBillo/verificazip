@@ -867,7 +867,7 @@ Var
   VpfA, VpfB : Double;
 begin
   result := VpaMVAOriginal;
-  if VpaICMSOrigem <> VpaICMSDestino then
+  if (VpaICMSOrigem <> VpaICMSDestino) and (VpaMVAOriginal > 0) then
   begin
     VpfA := 1+(VpaMVAOriginal/100);
     VpfB := (1-(VpaICMSOrigem/100))/((1-(VpaICMSDestino/100)));

@@ -7155,7 +7155,7 @@ end;
 procedure TRBFunRave.ImprimeRelProdutoFornecedor(VpaObjeto: TObject);
 var
   VpfCodClienteAnterior, VpfQtdProdutosFornecedor : Integer;
-  VpfPerICMS, vpfPerMVAAjustado,VpfPerAcrescimo,VpfValFinal, VpfValST, VpfBaseST : Double;
+  VpfPerICMS, VpfPerICMSDestino, vpfPerMVAAjustado,VpfPerAcrescimo,VpfValFinal, VpfValST, VpfBaseST, VpfValProdutoComIPI : Double;
 begin
   VpfCodClienteAnterior := 0;
   VpfQtdProdutosFornecedor := 0;
@@ -7201,22 +7201,40 @@ begin
       PrintTab(Tabela.FieldByName('C_NOM_PRO').AsString);
       PrintTab(FormatFloat('#,###,###,##0.00', Tabela.FieldByName('VALUNITARIO').AsFloat)+' ');
       PrintTab(FormatFloat('#,###,###,##0.00', Tabela.FieldByName('PERIPI').AsFloat)+' ');
-      PrintTab(FormatFloat('#,##0.00%',VpfPerICMS));
-      vpfPerMVAAjustado := sistema.RMVAAjustado(Tabela.FieldByName('N_PER_SUT').AsFloat,VpfPerICMS,Varia.PerICMS);
+      if Tabela.FieldByName('PERICMSPRODUTO').AsFloat > 0 then
+      begin
+        VpfPerICMSDestino := Tabela.FieldByName('PERICMSPRODUTO').AsFloat;
+        VpfPerICMS := Tabela.FieldByName('PERICMSPRODUTO').AsFloat;
+      end
+      else
+      begin
+        VpfPerICMSDestino := Varia.PerICMS;
+        VpfPerICMS := FunClientes.RPerICMSUF(Tabela.FieldByName('C_EST_CLI').AsString);
+      end;
+
+      vpfPerMVAAjustado := sistema.RMVAAjustado(Tabela.FieldByName('N_PER_SUT').AsFloat,VpfPerICMS,VpfPerICMSDestino);
       if Tabela.FieldByName('C_OPT_SIM').AsString = 'S' then
         VpfValFinal := Tabela.FieldByName('VALUNITARIO').AsFloat
       else
         VpfValFinal := Tabela.FieldByName('VALUNITARIO').AsFloat - ((Tabela.FieldByName('VALUNITARIO').AsFloat*VpfPerICMS) /100);
+
       if vpfPerMVAAjustado <> 0 then
       begin
-        VpfBaseST := Tabela.FieldByName('VALUNITARIO').AsFloat +(Tabela.FieldByName('VALUNITARIO').AsFloat * vpfPerMVAAjustado)/100;
-        VpfValST := ((VpfBaseST * Varia.PerICMS)/100) - ((Tabela.FieldByName('VALUNITARIO').AsFloat * VpfPerICMS)/100);
+        VpfValProdutoComIPI := Tabela.FieldByName('VALUNITARIO').AsFloat + ((Tabela.FieldByName('VALUNITARIO').AsFloat * Tabela.FieldByName('PERIPI').AsFloat)/100);
+        VpfBaseST := VpfValProdutoComIPI ;
+        VpfBaseST := VpfBaseST +(VpfBaseST * vpfPerMVAAjustado)/100;
+
+        VpfValST := ((VpfBaseST * VpfPerICMSDestino)/100) - ((VpfValProdutoComIPI * VpfPerICMS)/100);
         VpfValFinal := VpfValFinal + VpfValST;
       end;
+      VpfValFinal := VpfValFinal + ((Tabela.FieldByName('PERIPI').AsFloat * Tabela.FieldByName('VALUNITARIO').AsFloat)/100);
       if Tabela.FieldByName('VALUNITARIO').AsFloat > 0 then
+      begin
         VpfPerAcrescimo := (VpfValST * 100) / Tabela.FieldByName('VALUNITARIO').AsFloat
+      end
       else
         VpfPerAcrescimo := 0;
+      PrintTab(FormatFloat('#,##0.00%',VpfPerICMS));
       PrintTab(FormatFloat('#,##0.00%',vpfPerMVAAjustado));
       PrintTab(Tabela.FieldByName('C_CLA_FIS').AsString);
       PrintTab(FormatFloat('#,##0.00%',VpfPerAcrescimo));
@@ -12831,7 +12849,7 @@ procedure TRBFunRave.ImprimeProdutoFornecedor(VpaCodFornecedor: integer;
 begin
   RvSystem.Tag := 51;
   LimpaSQlTabela(Tabela);
-  AdicionaSqltabela(Tabela, ' SELECT PRO.C_COD_PRO, PRO.C_NOM_PRO, PRO.N_PER_SUT, PRO.C_CLA_FIS,' +
+  AdicionaSqltabela(Tabela, ' SELECT PRO.C_COD_PRO, PRO.C_NOM_PRO, PRO.N_PER_SUT, PRO.C_CLA_FIS, PRO.N_PER_ICM PERICMSPRODUTO, ' +
                             ' PFO.VALUNITARIO, PFO.PERIPI, PFO.DATULTIMACOMPRA, PFO.NUMDIAENTREGA, PFO.DESREFERENCIA, ' +
                             ' CLI.I_COD_CLI, CLI.C_NOM_CLI, CLI.C_CON_COM, CLI.C_FON_COM, CLI.C_COM_END, CLI.C_OPT_SIM, '+
                             ' CLI.C_EST_CLI, '+

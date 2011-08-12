@@ -7,7 +7,7 @@ interface
 uses
     Db, DBTables, classes, sysUtils, painelGradiente, localizacao, UnArgox, UnZebra,
     Componentes1, UnProdutos, UnDados, UnDadosCR, UnContasAPagar, UnDadosProduto,
-    SQLExpr, tabela, DBClient;
+    SQLExpr, tabela, DBClient, ACBrNFe, forms, ACBRnfenotasFiscais;
 // calculos
 type
   TCalculosNFFor = class
@@ -49,10 +49,12 @@ type
     function AtualizaProdutoFornecedor(VpaDNotaFor : TRBDNotaFiscalFor):String;
     function AtualizaNcmProduto(VpaDNotaFor : TRBDNotaFiscalFor):String;
     function RProdutoNota(VpaDNota: TRBDNotaFiscalFor; VpaDProdutoPedido: TRBDProdutoPedidoCompra): TRBDNotaFiscalForItem;
+    function RValTotalProdutos(VpaDNota : TRBDNotaFiscalFor):Double;
     function ExtornaVinculoPedidoNotaFiscalItem(VpaCodFilial, VpaSeqNota: Integer): String;
     function AdicionaProdutoDevolucao(VpaNotas : TList;VpaDNotafor : TRBDNotaFiscalFor):string;
     procedure CalculaValorFreteProdutos(VpaDNota : TRBDNotaFiscalFor);
   public
+    NFe : TACBrNFe;
     Localiza: TConsultaPadrao;
     constructor criar( aowner : TComponent; VpaBaseDados : TSQLConnection ); override;
     destructor Destroy; override;
@@ -88,6 +90,7 @@ type
     function RCSTICMSProduto(VpaDCliente : TRBDCliente;VpaDNatureza : TRBDNaturezaOperacao;VpaDItemNota : TRBDNotaFiscalForItem) : string;
     function CarMVAAjustado(VpaDNota : TRBDNotaFiscalFor;VpaDItemNota : TRBDNotaFiscalForItem;VpaDFornecedor : TRBDCliente):string;
     function RMVAOriginal(VpaMVAAjustada : Double; VpaDNota : TRBDNotaFiscalFor;VpaDItemNota : TRBDNotaFiscalForItem;VpaDFornecedor : TRBDCliente):double;
+    function CarDXMLNotaEntrada(VpaDNota : TRBDNotaFiscalFor;VpaNomArquivo : String):string;
   end;
 
 implementation
@@ -174,6 +177,7 @@ end;
 constructor TFuncoesNFFor.criar( aowner : TComponent; VpaBaseDados : TSQLConnection );
 begin
   inherited;
+  NFe := TACBrNFe.Create(Application);
   DataBase := VpaBaseDados;
   Natureza := TSQLQuery.Create(aowner);
   Natureza.SQLConnection := VpaBaseDados;
@@ -196,6 +200,7 @@ begin
   NotCadastro.free;
   Natureza.close;
   Natureza.free;
+  NFe.Free;
   inherited;
 end;
 
@@ -724,7 +729,7 @@ end;
 {**************************Calcula o valor da nota*****************************}
 procedure TFuncoesNFFor.CalculaNota(VpaDNotaFor : TRBDNotaFiscalFor);
 var
-  VpfTotFrete, VpfPerDesconto, VpfValIPI, VpfValTotalServico,VpfValReducaoBaseICMS, VpfBaseICMSComIPI : double;
+  VpfTotFrete, VpfPerDesconto, VpfValIPI, VpfValTotalServico,VpfValReducaoBaseICMS, VpfBaseICMSComIPI, VpfPerIMCSST : double;
   descontoFormato : string;
   Sinal : string;
   VpfLaco, VpfLacoServico : Integer;
@@ -777,12 +782,18 @@ begin
       VpaDNotaFor.ValICMS := VpaDNotaFor.ValICMS + VpfDItemNota.ValICMS;
     end;
     VpfDItemNota.PerAcrescimoST := 0;
+    VpfDItemNota.ValBaseST := 0;
+    VpfDItemNota.ValST := 0;
     if FunProdutos.ProdutoDestacaST(VpfDItemNota.CodCST) then
     begin
+      if VpfDItemNota.PerICMSCadatroProduto> 0 then
+        VpfPerIMCSST := VpfDItemNota.PerICMSCadatroProduto
+      else
+        VpfPerIMCSST := varia.PerICMS;
       VpfDItemNota.ValBaseST := VpfDItemNota.ValBaseIcms + (( VpfDItemNota.ValBaseIcms * VpfDItemNota.PerIPI)/100);
       VpfDItemNota.ValBaseST := VpfDItemNota.ValBaseST + (( VpfDItemNota.ValBaseST * VpfDItemNota.PerMVAAjustado)/100);
       VpfDItemNota.ValBaseST := ArredondaDecimais(VpfDItemNota.ValBaseST,2);
-      VpfDItemNota.ValST := ((VpfDItemNota.ValBaseST * varia.PerICMS)/100) - ((VpfDItemNota.ValBaseIcms * VpfDItemNota.PerICMS)/100);
+      VpfDItemNota.ValST := ((VpfDItemNota.ValBaseST * VpfPerIMCSST)/100) - ((VpfDItemNota.ValBaseIcms * VpfDItemNota.PerICMS)/100);
       VpfDItemNota.ValST := ArredondaDecimais(VpfDItemNota.ValST,2);
       if VpfDItemNota.ValBaseST > 0 then
         VpfDItemNota.PerAcrescimoST :=(((VpfDItemNota.ValBaseIcms + VpfDItemNota.ValST) *100) /VpfDItemNota.ValBaseIcms) - 100;
@@ -1171,6 +1182,39 @@ begin
 end;
 
 {******************************************************************************}
+function TFuncoesNFFor.CarDXMLNotaEntrada(VpaDNota: TRBDNotaFiscalFor;VpaNomArquivo: String): string;
+var
+  VpfLaco : Integer;
+  VpfDNotaXML : NotaFiscal;
+  VpfDProdutoXML : TRBDProdutoXMLNotaFor;
+begin
+  NFe.NotasFiscais.LoadFromFile(VpaNomArquivo);
+  VpfDNotaXML := nfe.NotasFiscais.Items[0];
+  VpaDNota.NumNota := VpfDNotaXML.NFe.Ide.nNF;
+  VpaDNota.SerNota := IntTostr(VpfDNotaXML.NFe.Ide.serie);
+  VpaDNota.CodModeloDocumento := IntTostr(VpfDNotaXML.NFe.Ide.modelo);
+  VpaDNota.DatEmissao := VpfDNotaXML.NFe.Ide.dEmi;
+
+  for VpfLaco := 0 to VpfDNotaXML.NFe.Det.Count - 1 do
+  begin
+    VpfDProdutoXML := VpaDNota.AddProdutoXML;
+    VpfDProdutoXML.CodReferencia := DeletaCharE(VpfDNotaXML.NFe.Det.Items[VpfLaco].Prod.cProd,'0');
+    VpfDProdutoXML.NomProduto := VpfDNotaXML.NFe.Det.Items[VpfLaco].Prod.xProd;
+    if FunProdutos.CarProdutodaReferenciaFornecedor(VpfDProdutoXML.CodReferencia,VpaDNota.CodFornecedor,VpfDProdutoXML.SeqProduto,VpfDProdutoXML.CodProduto,VpfDProdutoXML.CodCor) then
+    begin
+
+    end;
+    VpfDProdutoXML.DesUM := VpfDNotaXML.NFe.Det.Items[VpfLaco].Prod.uCom;
+    VpfDProdutoXML.CodClassificacaoFiscal := VpfDNotaXML.NFe.Det.Items[VpfLaco].Prod.NCM;
+    VpfDProdutoXML.QtdProduto := VpfDNotaXML.NFe.Det.Items[VpfLaco].Prod.qCom;
+    VpfDProdutoXML.ValUnitario := VpfDNotaXML.NFe.Det.Items[VpfLaco].Prod.vUnCom;
+    VpfDProdutoXML.ValTotal := VpfDNotaXML.NFe.Det.Items[VpfLaco].Prod.vProd;
+  end;
+
+
+end;
+
+{******************************************************************************}
 function TFuncoesNFFor.CarMVAAjustado(VpaDNota: TRBDNotaFiscalFor;VpaDItemNota: TRBDNotaFiscalForItem;VpaDFornecedor : TRBDCliente): string;
 Var
   VpfICMSDestino : Double;
@@ -1421,7 +1465,7 @@ end;
 function TFuncoesNFFor.BaixaProdutosEstoque(VpaDNotaFor : TRBDNotaFiscalFor) :String;
 var
   VpfLaco,VpfSeqEstoqueBarra : Integer;
-  VpfValDescontoNota : Double;
+  VpfValDescontoNota, VpfValTotalProdutos : Double;
   VpfDItemNota : TRBDNotaFiscalForItem;
   VpfDProduto : TRBDProduto;
 begin
@@ -1429,13 +1473,14 @@ begin
   VpaDNotaFor.IndGerouEstoqueChapa := false;
   if VpaDNotaFor.DNaturezaOperacao.IndBaixarEstoque then
   begin
+    VpfValTotalProdutos := RValTotalProdutos(VpaDNotaFor);
     for VpfLaco := 0 to VpaDNotaFor.ItensNota.Count - 1 do
     begin
       VpfDItemNota := TRBDNotaFiscalForItem(VpaDNotaFor.ItensNota.Items[VpfLaco]);
       FunProdutos.AtualizaValorCusto(VpfDItemNota.SeqProduto,VpaDNotaFor.CodFilial,varia.MoedaBase,
                                      VpfDItemNota.UMOriginal,VpfDItemNota.um,VpaDNotaFor.DNaturezaOperacao.FuncaoOperacaoEstoque,
-                                     VpfDItemNota.CodCor,VpfDItemNota.CodTamanho,VpfDItemNota.QtdProduto,VpfDItemNota.ValUnitario,VpaDNotaFor.ValTotal,VpaDNotaFor.ValFrete,
-                                     VpfDItemNota.PerICMS,VpfDItemNota.PerIPI,VpaDNotaFor.ValDescontoCalculado,VpfDItemNota.ValST,VpaDNotaFor.IndFreteEmitente);
+                                     VpfDItemNota.CodCor,VpfDItemNota.CodTamanho,VpfDItemNota.QtdProduto,VpfDItemNota.ValUnitario,VpfValTotalProdutos,VpaDNotaFor.ValFrete,
+                                     VpfDItemNota.PerICMS,VpfDItemNota.PerIPI,VpaDNotaFor.ValDescontoCalculado,VpfDItemNota.ValST,VpaDNotaFor.ValOutrasDespesas, VpaDNotaFor.IndFreteEmitente);
       VpfDProduto := TRBDProduto.Cria;
       FunProdutos.CarDProduto(VpfDProduto,0,VpaDNotaFor.CodFilial,VpfDItemNota.SeqProduto);
       FunProdutos.BaixaProdutoEstoque( VpfDProduto, VpaDNotaFor.CodFilial, VpaDNotaFor.DNaturezaOperacao.CodOperacaoEstoque,
@@ -1521,6 +1566,20 @@ begin
                             ' and I_COD_EMP = ' +IntToStr(Varia.CodigoEmpresa));
   result := Tabela.FieldByName('N_ICM_EXT').AsFloat;
   Tabela.Close;
+end;
+
+{******************************************************************************}
+function TFuncoesNFFor.RValTotalProdutos(VpaDNota: TRBDNotaFiscalFor): Double;
+var
+  VpfLaco : Integer;
+  VpfDItem : TRBDNotaFiscalForItem;
+begin
+  result := 0;
+  for VpfLaco := 0 to VpaDNota.ItensNota.Count - 1 do
+  begin
+    VpfDItem := TRBDNotaFiscalForItem(VpaDNota.ItensNota.Items[VpfLaco]);
+    result := result + (VpfDItem.ValUnitario * VpfDItem.QtdProduto);
+  end;
 end;
 
 {******************************************************************************}
