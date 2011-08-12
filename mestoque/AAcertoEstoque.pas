@@ -441,10 +441,11 @@ procedure TFAcertoEstoque.BotaoGravar2Click(Sender: TObject);
 var
   VpfResultado : string;
   VpfDProduto: TRBDProduto;
-  VpfCodTamanho, VpfCodCor: Integer;
+  VpfCodTamanho, VpfCodCor, VpfNumSerie: Integer;
 begin
   VpfCodTamanho:= ETamanho.AInteiro;
   VpfCodCor:= ecor.AInteiro;
+  VpfNumSerie:= StrToInt(ENumSerie.Text);
   if DadosValidos then
   begin
     if ETipOperacao.Text = 'S' then
@@ -478,6 +479,9 @@ begin
       FunProdutos.CarDProduto(VpfDProduto);
       VpfResultado:= FunProdutos.AdicionaProdutoNaTabelaPreco(1101, VpfDProduto, VpfCodTamanho, VpfCodCor);
     end;
+
+    if VpfResultado = '' then
+      VpfResultado:= FunProdutos.AdicionaSequencialNumeroSerie(VpfNumSerie);
 
     if VpfResultado <> '' then
       aviso(VpfResultado);
@@ -551,7 +555,7 @@ begin
 
     if config.EstoquePorNumeroSerie then
       if ETipOperacao.Text = 'E' then
-        ENumSerie.Text := FunProdutos.CalculaNumeroSerie(CadProduto.FieldByName('I_NUM_LOT').AsInteger+1);
+        ENumSerie.Text := FunProdutos.CalculaNumeroSerie(CadProduto.FieldByName('I_NUM_LOT').AsInteger+1, VpaSeqProduto,ECor.AInteiro,ETamanho.AInteiro);
   end;
 end;
 
@@ -736,6 +740,7 @@ end;
 procedure TFAcertoEstoque.ECorExit(Sender: TObject);
 begin
   EQtdReservada.AValor:= RQtdEstoqueReservada(VprSeqProduto, ECor.AInteiro, ETamanho.AInteiro);
+  PosProduto(VprSeqProduto);
 end;
 
 {******************************************************************************}

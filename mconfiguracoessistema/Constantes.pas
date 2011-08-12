@@ -89,7 +89,7 @@ type
   TRBDFormatoExportacaoFiscal =(feLince,feWKLiscalforDos,feSantaCatarina,feSintegra,feMTFiscal,feWKRadar,feValidaPR,feDominioSistemas);
   TRBTipoImpressoraFiscal = (ifBematech_FI_2,ifDaruamFS600,ifSchalter);
   TRBPortaImpressoraFiscal = (pcCOM1,pcCOM2,pcCOM3,pcCOM4,pcCOM5,pcCOM6);
-  TRBDRegraNumeroSerie = (rnNNNNNDDMAAD);
+  TRBDRegraNumeroSerie = (rnNNNNNDDMAAD, rnSequencial);
   TRBTipoCodigoBArras = (cbNenhum,cbEAN13);
   TRBDModeloEtiquetaVolume = (me5X2Argox);
   TRBDModeloEtiquetaRomaneioOrcamento = (er32X18Argox);
@@ -2071,6 +2071,7 @@ begin
          QuantidadeLetrasClassificacaProdutoUnidadeFabricacao := VpfTabela.fieldByName('I_QTD_LUF').AsInteger;
          case VpfTabela.FieldByName('I_REG_LOT').AsInteger of
            0 : RegraNumeroSerie := rnNNNNNDDMAAD;
+           1 : RegraNumeroSerie := rnSequencial;
          end;
          case VpfTabela.FieldByName('I_TIP_BAR').AsInteger of
            0 : TipCodBarras := cbNenhum;

@@ -139,6 +139,9 @@ type
     CadProdutosDESCONTOMAXIMOCLASSIFICACAO: TFMTBCDField;
     CadProdutosDESCONTOMAXIMOTABELAPRECO: TFMTBCDField;
     CadProdutosN_PER_SUT: TFMTBCDField;
+    N1: TMenuItem;
+    EstoqueNumeroSerie1: TMenuItem;
+    CadProdutosDESNUMEROSERIE: TWideStringField;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure CProAtiClick(Sender: TObject);
@@ -176,6 +179,7 @@ type
     procedure ConsultaFraesAReservar1Click(Sender: TObject);
     procedure GProdutosDrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure EstoqueNumeroSerie1Click(Sender: TObject);
   private
     { Private declarations }
     Cadastrou : Boolean;
@@ -230,7 +234,8 @@ var
 implementation
 
 uses APrincipal, Constantes,ConstMsg, AProdutosKit,ANovoProdutoPro,
-  ALocalizaClassificacao, Unsistema, FunSql,FunObjeto, AOPProdutosAReservar;
+  ALocalizaClassificacao, Unsistema, FunSql,FunObjeto, AOPProdutosAReservar,
+  AEstoqueNumeroSerie;
 {$R *.DFM}
 
 
@@ -336,9 +341,10 @@ begin
                      ' QTD.I_COD_COR, QTD.N_QTD_FIS, QTD.N_VLR_CUS, QTD.N_VLR_COM, '+
                      ' QTD.I_COD_TAM, '+
                      ' COR.NOM_COR, ' +
-                     ' TAM.NOMTAMANHO '+
+                     ' TAM.NOMTAMANHO, '+
+                     ' EST.DESNUMEROSERIE '+
                      ' from CADPRODUTOS pro, MOVQDADEPRODUTO Qtd, COR,  TAMANHO TAM,  MOVTABELAPRECO PRE,' +
-                     ' CADMOEDAS MOE, CADCLASSIFICACAO CLA');
+                     ' CADMOEDAS MOE, CADCLASSIFICACAO CLA, ESTOQUENUMEROSERIE EST');
   AdicionaFiltrosProduto(Cadprodutos.Sql);
   CadProdutos.sql.add(' and Qtd.I_Seq_Pro = Pro.I_Seq_Pro '+
                       ' and CLA.C_TIP_CLA = ''P'''+
@@ -351,7 +357,8 @@ begin
                       ' and Pre.I_Cod_Tab = ' + IntToStr(ETabelaPreco.AInteiro) +
                       ' and PRE.I_COD_EMP = '+IntToStr(Varia.codigoEmpresa)+
                       ' AND '+SQLTextoRightJoin('QTD.I_COD_COR','COR.COD_COR')+
-                      ' AND '+SQLTextoRightJoin('QTD.I_COD_TAM','TAM.CODTAMANHO'));
+                      ' AND '+SQLTextoRightJoin('QTD.I_COD_TAM','TAM.CODTAMANHO')+
+                      ' AND '+SQLTextoRightJoin('QTD.I_SEQ_PRO','EST.SEQPRODUTO'));
   //estava bem lento para localizar os protutos quando dava o f3 na cotacao
   //foi colocado essa condicao para deixar mais rapido
   if Varia.CNPJFilial = CNPJ_HORNBURG then
@@ -1516,18 +1523,27 @@ begin
   end;
 end;
 
-
+{******************************************************************************}
 procedure TFlocalizaProduto.ESeqProdutoEnter(Sender: TObject);
 begin
   BFechar.Default := false;
   VprSeqProduto := ESeqProduto.Text;
 end;
 
+{******************************************************************************}
 procedure TFlocalizaProduto.ESeqProdutoExit(Sender: TObject);
 begin
   if ESeqProduto.Text <> VprSeqProduto then
     AtualizaConsulta;
   BFechar.Default := true;
+end;
+
+{******************************************************************************}
+procedure TFlocalizaProduto.EstoqueNumeroSerie1Click(Sender: TObject);
+begin
+  FEstoqueNumeroSerie := TFEstoqueNumeroSerie.CriarSDI(self,'',FPrincipal.VerificaPermisao('FEstoqueNumeroSerie'));
+  FEstoqueNumeroSerie.ConsultaEstoqueNumeroSerie(CadProdutosI_SEQ_PRO.AsInteger, CadProdutosI_COD_COR.AsInteger);
+  FEstoqueNumeroSerie.free;
 end;
 
 Initialization

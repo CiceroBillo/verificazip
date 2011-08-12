@@ -52,7 +52,7 @@ object FNovaCotacao: TFNovaCotacao
         Width = 808
         Height = 530
         HorzScrollBar.Visible = False
-        VertScrollBar.Position = 960
+        VertScrollBar.Position = 195
         Align = alClient
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
@@ -65,7 +65,7 @@ object FNovaCotacao: TFNovaCotacao
         TabOrder = 0
         object PCliente: TPanelColor
           Left = 0
-          Top = -960
+          Top = -195
           Width = 787
           Height = 243
           Align = alTop
@@ -867,7 +867,7 @@ object FNovaCotacao: TFNovaCotacao
         end
         object PRodaPe: TPanelColor
           Left = 0
-          Top = 6
+          Top = 771
           Width = 785
           Height = 912
           Hint = 'Rodape'
@@ -2619,7 +2619,7 @@ object FNovaCotacao: TFNovaCotacao
         end
         object PVendedor: TPanelColor
           Left = 0
-          Top = -574
+          Top = 191
           Width = 787
           Height = 344
           Align = alTop
@@ -3272,7 +3272,7 @@ object FNovaCotacao: TFNovaCotacao
             Width = 765
             Height = 149
             Color = 14474718
-            ColCount = 22
+            ColCount = 23
             DefaultRowHeight = 20
             DrawingStyle = gdsClassic
             Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSizing, goColSizing, goEditing, goTabs]
@@ -3313,11 +3313,12 @@ object FNovaCotacao: TFNovaCotacao
               99
               148
               151
-              59
+              199
               136
               61
               61
-              259)
+              259
+              64)
           end
           object ETotalComDesconto: TEditColor
             Left = 427
@@ -3487,7 +3488,7 @@ object FNovaCotacao: TFNovaCotacao
         end
         object PTabelaPreco: TPanelColor
           Left = 0
-          Top = -611
+          Top = 154
           Width = 787
           Height = 37
           Align = alTop
@@ -3602,7 +3603,7 @@ object FNovaCotacao: TFNovaCotacao
         end
         object PServico: TPanelColor
           Left = 0
-          Top = -100
+          Top = 665
           Width = 787
           Height = 134
           Align = alTop
@@ -3681,7 +3682,7 @@ object FNovaCotacao: TFNovaCotacao
         end
         object PMedico: TPanelColor
           Left = 0
-          Top = -675
+          Top = 90
           Width = 787
           Height = 64
           Align = alTop
@@ -3887,7 +3888,7 @@ object FNovaCotacao: TFNovaCotacao
         end
         object PCompose: TPanelColor
           Left = 0
-          Top = -230
+          Top = 535
           Width = 787
           Height = 130
           Align = alTop
@@ -3963,7 +3964,7 @@ object FNovaCotacao: TFNovaCotacao
         end
         object PClienteFaccionista: TPanelColor
           Left = 0
-          Top = -717
+          Top = 48
           Width = 787
           Height = 42
           Align = alTop

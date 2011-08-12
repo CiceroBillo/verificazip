@@ -989,7 +989,7 @@ begin
                                   ' COT.N_QTD_PRO, COT.N_VLR_TOT, COT.C_COD_UNI, '+
                                   ' COT.C_IMP_FOT, COT.C_OBS_ORC, COT.C_FLA_RES, '+
                                   ' COT.C_IMP_DES, COT.N_PER_DES, N_QTD_BAI, COT.N_QTD_CON, C_DES_COR, '+
-                                  ' COT.I_SEQ_MOV, COT.I_COD_COR, COT.D_ULT_ALT, COT.C_PRO_REF,'+
+                                  ' COT.I_SEQ_MOV, COT.I_COD_COR, COT.D_ULT_ALT, COT.C_PRO_REF, COT.C_NUM_SER,'+
                                   ' COT.I_COD_EMB, COT.C_DES_EMB,COT.N_QTD_DEV, COT.C_IND_FAT, '+
                                   ' COT.C_IND_BRI, COT.N_SAL_BRI, COT.C_NOM_PRO PRODUTOCOTACAO, '+
                                   ' COT.D_DAT_ORC, COT.N_ALT_PRO ALTURAPRODUTOGRADE, '+
@@ -1070,6 +1070,7 @@ begin
       ValCustoTotal := Orcamento.FieldByName('N_CUS_TOT').AsFloat;
       DesRefClienteOriginal := Orcamento.FieldByName('C_PRO_REF').AsString;
       DesRefCliente := Orcamento.FieldByName('C_PRO_REF').AsString;
+      DesNumeroSerie:= Orcamento.FieldByName('C_NUM_SER').AsString;
       PesLiquido := Orcamento.FieldByName('N_PES_LIQ').AsFloat;
       PesBruto := Orcamento.FieldByName('N_PES_BRU').AsFloat;
       UnidadeParentes.free;
@@ -1755,6 +1756,7 @@ begin
   VpaDProCotacaoPara.DesObservacao := VpaDProCotacaoDe.DesObservacao;
   VpaDProCotacaoPara.DesRefCliente := VpaDProCotacaoDe.DesRefCliente;
   VpaDProCotacaoPara.DesOrdemCompra := VpaDProCotacaoDe.DesOrdemCompra;
+  VpaDProCotacaoPara.DesNumeroSerie:= VpaDProCotacaoDe.DesNumeroSerie;
   VpaDProCotacaoPara.DesPrateleira := VpaDProCotacaoDe.DesPrateleira;
   VpaDProCotacaoPara.UM := VpaDProCotacaoDe.UM;
   VpaDProCotacaoPara.UMAnterior := VpaDProCotacaoDe.UMAnterior;
@@ -1803,6 +1805,7 @@ begin
   VpaDItemDestino.DesEmbalagem := VpaDItemOrigem.DesEmbalagem;
   VpaDItemDestino.DesObservacao := VpaDItemOrigem.DesObservacao;
   VpaDItemDestino.DesRefCliente := VpaDItemOrigem.DesRefCliente;
+  VpaDItemDestino.DesNumeroSerie:= VpaDItemOrigem.DesNumeroSerie;
   VpaDItemDestino.UM := VpaDItemOrigem.UM;
   VpaDItemDestino.UMAnterior := VpaDItemOrigem.UMAnterior;
   VpaDItemDestino.UMOriginal := VpaDItemOrigem.UMOriginal;
@@ -2658,6 +2661,7 @@ begin
       VpfDProdutoPara.DesObservacao := VpfDProdutoDE.DesObservacao;
       VpfDProdutoPara.DesRefCliente := IntToStr(VpaDCotacao.LanOrcamento);
       VpfDProdutoPara.DesOrdemCompra := VpfDProdutoDE.DesOrdemCompra;
+      VpfDProdutoPara.DesNumeroSerie:= VpfDprodutoDe.DesNumeroSerie;
       VpfDProdutoPara.UM := VpfDProdutoDE.UM;
       VpfDProdutoPara.UMAnterior := VpfDProdutoDE.UMAnterior;
       VpfDProdutoPara.UMOriginal := VpfDProdutoDE.UMOriginal;
@@ -4918,6 +4922,7 @@ begin
     CotCadastro.FieldByName('I_COD_EMB').AsInteger := VpfDProCotacao.CodEmbalagem;
     CotCadastro.FieldByName('C_DES_EMB').AsString := VpfDProCotacao.DesEmbalagem;
     CotCadastro.FieldByName('C_PRO_REF').AsString := VpfDProCotacao.DesRefCliente;
+    CotCadastro.FieldByName('C_NUM_SER').AsString := VpfDProCotacao.DesNumeroSerie;
     CotCadastro.FieldByName('N_QTD_DEV').AsFloat := VpfDProCotacao.QtdDevolvido;
     CotCadastro.FieldByName('N_SAL_BRI').AsFloat := VpfDProCotacao.QtdSaldoBrinde;
     CotCadastro.FieldByName('D_DAT_ORC').AsDateTime := VpfDProCotacao.DatOrcamento;

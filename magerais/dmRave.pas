@@ -905,14 +905,18 @@ begin
                              ' COR.COD_COR, COR.NOM_COR, '+
                              ' PRO.C_NOM_PRO, '+
                              ' TAM.NOMTAMANHO, '+
-                             ' CLA.C_COD_CLA, CLA.C_NOM_CLA '+
-                             ' from MOVORCAMENTOS MOV, CADPRODUTOS PRO, COR, TAMANHO TAM, CADCLASSIFICACAO CLA '+
+                             ' CLA.C_COD_CLA, CLA.C_NOM_CLA, '+
+                             ' MPR.N_QTD_PRO ' +
+                             ' from MOVORCAMENTOS MOV, CADPRODUTOS PRO, COR, TAMANHO TAM, CADCLASSIFICACAO CLA, MOVQDADEPRODUTO MPR '+
                              ' where MOV.I_EMP_FIL = '+ IntToStr(VpaCodFilial)+
                              ' AND MOV.I_LAN_ORC = '+IntToStr(VpaNumPedido)+
                              ' AND MOV.I_SEQ_PRO = PRO.I_SEQ_PRO'+
                              ' AND PRO.I_COD_EMP = CLA.I_COD_EMP ' +
                              ' AND PRO.C_COD_CLA = CLA.C_COD_CLA ' +
                              ' AND PRO.C_TIP_CLA = CLA.C_TIP_CLA ' +
+                             ' AND '+SQLTextoRightJoin('MOV.I_SEQ_PRO','MPR.I_SEQ_PRO')+
+                             ' AND '+SQLTextoRightJoin('MOV.I_COD_COR','MPR.I_COD_COR')+
+                             ' AND '+SQLTextoRightJoin('MOV.I_COD_TAM','MPR.I_COD_TAM')+
                              ' AND '+SQLTextoRightJoin('MOV.I_COD_COR','COR.COD_COR')+
                              ' AND '+SQLTextoRightJoin('MOV.I_COD_TAM','TAM.CODTAMANHO')+
                              ' ORDER BY MOV.I_SEQ_MOV ');

@@ -14,7 +14,7 @@ uses
   PainelGradiente,  DBGrids, Tabela, DBKeyViolation, DBCtrls,
   numericos, LabelCorMove, Parcela, BotaoCadastro,
   EditorImagem, ConvUnidade,UnCotacao, Grids, Mask, Funarquivos, FMTBcd,
-  SqlExpr, DBClient;
+  SqlExpr, DBClient, Menus;
 
 type
   TFConsultaPrecosProdutos = class(TFormularioPermissao)
@@ -107,6 +107,8 @@ type
     SpeedButton4: TSpeedButton;
     Label11: TLabel;
     Ecor: TRBEditLocaliza;
+    Menu: TPopupMenu;
+    ConsultaestoqueporNroSerie1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure CProAtiClick(Sender: TObject);
@@ -140,6 +142,7 @@ type
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
     procedure FotoDblClick(Sender: TObject);
     procedure EcorFimConsulta(Sender: TObject);
+    procedure ConsultaestoqueporNroSerie1Click(Sender: TObject);
   private
     { Private declarations }
     VprTeclaPresionada : Boolean;
@@ -164,7 +167,7 @@ implementation
 uses APrincipal, Constantes,ConstMsg, FunObjeto,
   AProdutosKit,FunSql, ACotacao, AConsultaCondicaoPgto,
   ANovaCotacao, UnProdutos, ANovaNotaFiscalNota,
-  ANovoProdutoPro, AMenuFiscalECF;
+  ANovoProdutoPro, AMenuFiscalECF, AEstoqueNumeroSerie;
 
 {$R *.DFM}
 
@@ -256,6 +259,14 @@ begin
       AlterarVisibleDet([BAltera],true);
   end;
   BMenuFiscal.Visible := NomeModulo = 'PDV';
+end;
+
+procedure TFConsultaPrecosProdutos.ConsultaestoqueporNroSerie1Click(
+  Sender: TObject);
+begin
+  FEstoqueNumeroSerie := TFEstoqueNumeroSerie.CriarSDI(self,'',FPrincipal.VerificaPermisao('FEstoqueNumeroSerie'));
+  FEstoqueNumeroSerie.ConsultaEstoqueNumeroSerie(CadProdutosI_SEQ_PRO.AsInteger, CadProdutosI_COD_COR.AsInteger);
+  FEstoqueNumeroSerie.free;
 end;
 
 {****************** atualiza a consulta dos produtos **************************}

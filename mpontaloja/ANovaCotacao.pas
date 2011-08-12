@@ -12,8 +12,8 @@ uses
 
 type
   TRBDColunaGradeProduto =(clProCodProduto,clProNomProduto,clProCodCor, clProNomCor, clProCodTamanho, clProNomTamanho, clProAltura, clProUM, clProQtdproduto,
-                           clProValUnitario, clProValTotal, clProPerDesconto, clProNumSerie, clProOrdemCompra, clProCodEmbalagem, clProNomEmbalagem,
-                           clProImprimeFoto,clProImprDescricao,clProDesObservacoes, clProComprimentoProduto,clProQtdTotalPecas, clProCodBarras);
+                           clProValUnitario, clProValTotal, clProPerDesconto, clProRefCliente, clProOrdemCompra, clProCodEmbalagem, clProNomEmbalagem,
+                           clProImprimeFoto,clProImprDescricao,clProDesObservacoes, clProComprimentoProduto,clProQtdTotalPecas, clProCodBarras, clProNumSerie);
   TFNovaCotacao = class(TFormularioPermissao)
     PanelColor2: TPanelColor;
     Aux: TSQLQuery;
@@ -841,7 +841,7 @@ end;
 {******************************************************************************}
 function TFNovaCotacao.ExisteReferenciaCliente : Boolean;
 begin
-  result := FunProdutos.CarProdutodaReferencia(GProdutos.Cells[RColunaGrade(clProNumSerie),GProdutos.ALinha],ECliente.Ainteiro,VprDProCotacao.CodProduto,VprDProCotacao.CodCor);
+  result := FunProdutos.CarProdutodaReferencia(GProdutos.Cells[RColunaGrade(clProRefCliente),GProdutos.ALinha],ECliente.Ainteiro,VprDProCotacao.CodProduto,VprDProCotacao.CodCor);
   if result then
   begin
     GProdutos.Cells[RColunaGrade(clProCodProduto),GProdutos.Alinha] := VprDProCotacao.CodProduto;
@@ -1571,14 +1571,15 @@ begin
     clProComprimentoProduto: result:=12;
     clProQtdTotalPecas : result := 13;
     clProPerDesconto: result:=14;
-    clProNumSerie: result:=15;
+    clProRefCliente: result:=15;
     clProOrdemCompra: result:=16;
-    clProCodEmbalagem: result:=17;
-    clProNomEmbalagem: result:=18;
-    clProImprimeFoto: result:=19;
-    clProImprDescricao: result:=20;
-    clProDesObservacoes: result:=21;
-    clProCodBarras: result:=22;
+    clProNumSerie: result:= 17;
+    clProCodEmbalagem: result:=18;
+    clProNomEmbalagem: result:=19;
+    clProImprimeFoto: result:=20;
+    clProImprDescricao: result:=21;
+    clProDesObservacoes: result:=22;
+    clProCodBarras: result:=23;
   end;
 end;
 
@@ -1591,7 +1592,7 @@ begin
   begin
     VprDProCotacao.DesRefClienteOriginal := FunProdutos.RReferenciaProduto(VprDProCotacao.SeqProduto,VprDCotacao.CodCliente,GProdutos.Cells[RColunaGrade(clProCodCor),GProdutos.ALinha]);
     VprDProCotacao.DesRefCliente := VprDProCotacao.DesRefClienteOriginal;
-    GProdutos.Cells[RColunaGrade(clProNumSerie),GProdutos.ALinha] := VprDProCotacao.DesRefCliente;
+    GProdutos.Cells[RColunaGrade(clProRefCliente),GProdutos.ALinha] := VprDProCotacao.DesRefCliente;
     VprReferenciaAnterior := VprDProCotacao.DesRefCliente;
   end;
 end;
@@ -2100,13 +2101,11 @@ begin
   GProdutos.Cells[RColunaGrade(clProValUnitario),0] := 'Valor Unitário';
   GProdutos.Cells[RColunaGrade(clProValTotal),0] := 'Valor Total';
   GProdutos.Cells[RColunaGrade(clProPerDesconto),0] := 'Per Desconto';
-  if config.NumeroSerieProduto then
-    GProdutos.Cells[RColunaGrade(clProNumSerie),0] := 'Número Série'
-  else
-    GProdutos.Cells[RColunaGrade(clProNumSerie),0] := 'Referencia Cliente';
+  GProdutos.Cells[RColunaGrade(clProNumSerie),0] := 'Número Série';
   if config.Farmacia then
     GProdutos.Cells[RColunaGrade(clProNumSerie),0] := 'Numero Lote';
   GProdutos.Cells[RColunaGrade(clProOrdemCompra),0] := 'Ordem de Compra';
+  GProdutos.Cells[RColunaGrade(clProRefCliente),0] := 'Referencia Cliente';
   GProdutos.Cells[RColunaGrade(clProCodEmbalagem),0] := 'Emba.';
   GProdutos.Cells[RColunaGrade(clProNomEmbalagem),0] := 'Descrição';
   GProdutos.Cells[RColunaGrade(clProImprimeFoto),0] := 'Imp Foto';
@@ -2426,8 +2425,9 @@ begin
   end;
 
   VprDProCotacao.PerDesconto := StrToFloat(DeletaChars(GProdutos.Cells[RColunaGrade(clProPerDesconto),GProdutos.ALinha],'.'));
-  VprDProCotacao.DesRefCliente := GProdutos.Cells[RColunaGrade(clProNumSerie),GProdutos.Alinha];
+  VprDProCotacao.DesRefCliente := GProdutos.Cells[RColunaGrade(clProRefCliente),GProdutos.Alinha];
   VprDProCotacao.DesOrdemCompra := GProdutos.Cells[RColunaGrade(clProOrdemCompra),GProdutos.ALinha];
+  VprDProCotacao.DesNumeroSerie:= GProdutos.Cells[RColunaGrade(clProNumSerie),GProdutos.ALinha];
   if GProdutos.Cells[RColunaGrade(clProCodEmbalagem),GProdutos.ALinha] <> '' then
     VprDProCotacao.CodEmbalagem := StrToInt(GProdutos.Cells[RColunaGrade(clProCodEmbalagem),GProdutos.Alinha])
   else
@@ -2871,8 +2871,9 @@ begin
   else
     GProdutos.Cells[RColunaGrade(clProAltura),VpaLinha] := '';
   GProdutos.Cells[RColunaGrade(clProUM),VpaLinha] := VprDProCotacao.UM;
-  GProdutos.Cells[RColunaGrade(clProNumSerie),VpaLinha] := VprDProCotacao.DesRefCliente;
+  GProdutos.Cells[RColunaGrade(clProRefCliente),VpaLinha] := VprDProCotacao.DesRefCliente;
   GProdutos.Cells[RColunaGrade(clProOrdemCompra),VpaLinha] := VprDProCotacao.DesOrdemCompra;
+  GProdutos.Cells[RColunaGrade(clProNumSerie),VpaLinha] := VprDProCotacao.DesNumeroSerie;
   if VprDProCotacao.CodEmbalagem <> 0 then
     GProdutos.Cells[RColunaGrade(clProCodEmbalagem),VpaLinha] := IntToStr(VprDProCotacao.CodEmbalagem)
   else
@@ -3017,7 +3018,7 @@ begin
     begin
       if config.Farmacia and (VprDProCotacao.IndMedicamentoControlado) then
       begin
-        if VprDProCotacao.DesRefCliente = '' then
+        if VprDProCotacao.DesNumeroSerie = '' then
         begin
           VpaValidos := false;
           aviso('NUMERO DO LOTE NÃO PREENCHIDO!!!'#13'É necessário preencher o numero do lote quando o medicamento é controlado.');
@@ -3171,7 +3172,8 @@ begin
           key := 'N';
 
   if (key = '.') and  (RColunaGrade(clProCodProduto) <> GProdutos.col) and
-     (RColunaGrade(clProNumSerie) <> GProdutos.col) and (RColunaGrade(clProOrdemCompra) <> GProdutos.col)then
+     (RColunaGrade(clProRefCliente) <> GProdutos.col) and (RColunaGrade(clProOrdemCompra) <> GProdutos.col) and
+     (RColunaGrade(clProNumSerie) <> GProdutos.col) then
     key := DecimalSeparator;
   if NomeModulo = 'PDV' then //nao permite alterar o valor total do produto
   begin
@@ -3319,16 +3321,16 @@ begin
                         CalculaValorTotalProduto;
                       end
                       else
-                        if RColunaGrade(clProNumSerie) = GProdutos.AColuna then
+                        if RColunaGrade(clProRefCliente) = GProdutos.AColuna then
                         begin
                           if not config.NumeroSerieProduto then
                           begin
-                            if (GProdutos.Cells[RColunaGrade(clProNumSerie),GProdutos.ALinha] <> '') and (GProdutos.Cells[RColunaGrade(clProCodProduto),GProdutos.ALinha] ='') then
+                            if (GProdutos.Cells[RColunaGrade(clProRefCliente),GProdutos.ALinha] <> '') and (GProdutos.Cells[RColunaGrade(clProCodProduto),GProdutos.ALinha] ='') then
                             begin
                               if not ExisteReferenciaCliente then
                               begin
                                 aviso('REFERÊNCIA CLIENTE NÃO CADASTRADA!!!'#13'A referência digitada não existe cadastrada para o cliente selecionado.');
-                                GProdutos.Col := RColunaGrade(clProNumSerie);
+                                GProdutos.Col := RColunaGrade(clProRefCliente);
                                 Abort;
                               end;
                             end;

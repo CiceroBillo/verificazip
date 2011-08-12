@@ -86,6 +86,7 @@ type
     function RSeqBarraDisponivel(VpaSeqProduto : Integer):Integer;
     function RSeqReservaExcessoDisponivel : Integer;
     function RSeqReservaProdutoDisponivel : Integer;
+    function RSeqNumeroSerie(VpaSeqProduto, VpaCodCor, VpaCodTamanho: Integer):integer;
     function RDBaixaConsumoOp(VpaBaixas : TList;VpaSeqProduto,VpaCodCor : Integer; VpaIndMaterialExtra : Boolean):TRBDConsumoFracaoOP;
     function RCodProdutoDisponivelpelaClassificacao(VpaCodClassificacao : String):String;
     function RQtdMetrosBarraProduto(VpaSeqProduto : Integer):Double;
@@ -164,6 +165,7 @@ type
     function AtualizaQtdKit(VpaSeqProduto : String;VpaKit : Boolean):Boolean;
     function EstornaEstoque(VpaDMovimento : TRBDMovEstoque) : String;
     function AdicionaProdutoNaTabelaPreco(VpaCodTabela: Integer; VpaDProduto: TRBDProduto;VpaCodTamanho, VpaCodCor : Integer): String;
+    function AdicionaSequencialNumeroSerie(VpaNumSerie: Integer): String;
     function VerificaItemKit( codigoPro : string ) : Boolean;
     procedure ConverteMoedaTabela( NovaMoeda, TabelaPreco, SequencialProduto : Integer );
     procedure ConverteMoedaProduto( NovaMoeda, TabelaPreco, SequencialProduto : Integer );
@@ -340,7 +342,7 @@ type
     function ConcluiDesenho(VpaSeqProduto, VpaCodCor, VpaSeqMovimento : Integer) : string;
     function ConcluiFichaTecnica(VpaCodFilial,VpaLanOrcamento, VpaSeqItem : Integer):string;
     procedure PreparaImpressaoEtiqueta(VpaEtiquetas : TList;VpaPosInicial : Integer);
-    function CalculaNumeroSerie(VpaNumSerie : Integer) :string;
+    function CalculaNumeroSerie(VpaNumSerie, VpaSeqProduto, VpaCodCor, VpaCodTamanho : Integer) :string;
     function GeraCodigosBArras : String;
     procedure ConverteNomesProdutosSemAcento;
     procedure AdicionaTodasTabelasdePreco(VpaDProduto : TRBDProduto);
@@ -990,6 +992,25 @@ begin
                             ' and SEQCONSUMO = '+IntToStr(VpaSeqConsumo));
   result := AUX.FieldByName('ULTIMO').AsInteger +1;
   Aux.close;
+end;
+
+{******************************************************************************}
+function TFuncoesProduto.RSeqNumeroSerie(VpaSeqProduto, VpaCodCor, VpaCodTamanho: Integer): integer;
+begin
+  AdicionaSQLAbreTabela(Aux,'Select DESNUMEROSERIE From ESTOQUENUMEROSERIE '+
+                            ' Where SEQPRODUTO = '+ IntToStr(VpaSeqProduto)+
+                            ' AND CODCOR = '+IntToStr(VpaCodCor)+
+                            ' AND CODTAMANHO = '+IntToStr(VpaCodTamanho));
+  if Aux.Eof then
+  begin
+     AdicionaSQLAbreTabela(Tabela,'Select MAX(I_SEQ_LOT) ULTIMO From CFG_GERAL ');
+     result := Tabela.FieldByName('ULTIMO').AsInteger +1;
+  end
+  else
+    if AUX.FieldByName('DESNUMEROSERIE').AsString <> '' then
+      result := StrToInt(AUX.FieldByName('DESNUMEROSERIE').AsString);
+  Aux.close;
+  Tabela.Close;
 end;
 
 {******************************************************************************}
@@ -3470,6 +3491,24 @@ begin
       aux.Next;
       VpfLaco:= VpfLaco+1;
   end;
+end;
+
+{******************************************************************************}
+function TFuncoesProduto.AdicionaSequencialNumeroSerie(VpaNumSerie: Integer): String;
+var
+  VpfSequencia: Integer;
+begin
+   AdicionaSQLAbreTabela(ProCadastro,'SELECT I_SEQ_LOT FROM CFG_GERAL');
+
+   VpfSequencia:= ProCadastro.FieldByName('I_SEQ_LOT').AsInteger;
+   if not VpfSequencia < VpaNumSerie then
+   begin
+     ProCadastro.Edit;
+     ProCadastro.FieldByName('I_SEQ_LOT').AsInteger:= VpfSequencia + 1;
+     ProCadastro.Post;
+     result := ProCadastro.AMensagemErroGravacao;
+   end;
+   ProCadastro.Close;
 end;
 
 {******************************************************************************}
@@ -7714,7 +7753,7 @@ begin
 end;
 
 {******************************************************************************}
-function TFuncoesProduto.CalculaNumeroSerie(VpaNumSerie : Integer) :string;
+function TFuncoesProduto.CalculaNumeroSerie(VpaNumSerie, VpaSeqProduto, VpaCodCor, VpaCodTamanho : Integer) :string;
 VAR
   VpfDAta : String;
 begin
@@ -7722,6 +7761,7 @@ begin
   result := '';
   case Varia.RegraNumeroSerie of
     rnNNNNNDDMAAD : result := IntToStr(VpaNumSerie)+copy(VpfData,2,1)+copy(VpfData,1,1)+copy(VpfData,3,1)+copy(VpfData,7,2)+copy(VpfData,4,1);
+    rnSequencial : result := IntToStr(RSeqNumeroSerie(VpaSeqProduto, VpaCodCor, VpaCodTamanho));
   end;
 end;
 

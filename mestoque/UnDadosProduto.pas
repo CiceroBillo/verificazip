@@ -1952,6 +1952,7 @@ Type
       DesRefClienteOriginal,
       DesRefCliente,
       DesOrdemCompra,
+      DesNumeroSerie,
       DesPrateleira,
       UM,
       UMAnterior,
